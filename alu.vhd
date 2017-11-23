@@ -29,7 +29,12 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity alu is
+entity alu is port(
+		regA : in std_logic_vector(15 downto 0);
+		regB : in std_logic_vector(15 downto 0);
+		ALUop : in std_logic_vector(3 downto 0);
+		ALUres : out std_logic_vector(15 downto 0)
+	);
 end alu;
 
 architecture Behavioral of alu is

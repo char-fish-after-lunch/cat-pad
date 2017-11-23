@@ -29,7 +29,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity write_back is
+entity write_back is port(
+		dstSrc	:	in std_logic_vector(3 downto 0);
+		wbSrc		:	in std_logic;
+		wbEN		:	in std_logic;
+		
+		ramData	: in std_logic_vector(15 downto 0);
+		ALUres	: in std_logic_vector(15 downto 0);
+		
+		writeData : out std_logic_vector(15 downto 0)
+	);
 end write_back;
 
 architecture Behavioral of write_back is

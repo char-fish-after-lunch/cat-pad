@@ -29,7 +29,14 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity if_id is
+entity if_id is port(
+	clk : in std_logic;
+
+	IFPC : in std_logic_vector(15 downto 0);
+	inst : in std_logic_vector(15 downto 0);
+	IFPC_o : out std_logic_vector(15 downto 0);
+	inst_o : out std_logic_vector(15 downto 0)
+);
 end if_id;
 
 architecture Behavioral of if_id is

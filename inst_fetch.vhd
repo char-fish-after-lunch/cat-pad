@@ -29,7 +29,11 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity inst_fetch is
+entity inst_fetch is port(
+		pc: in std_logic_vector(15 downto 0);
+		instr: out std_logic_vector(15 downto 0);
+		clk: in std_logic
+	);
 end inst_fetch;
 
 architecture Behavioral of inst_fetch is

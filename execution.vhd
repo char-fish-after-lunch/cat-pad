@@ -29,7 +29,34 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity execution is
+entity execution is port(
+		regA 			:  in std_logic_vector(15 downto 0);
+		regB 			:  in std_logic_vector(15 downto 0);
+		regAN 		:  in std_logic_vector(3 downto 0);
+		regBN 		:  in std_logic_vector(3 downto 0);
+		immediate	:  in std_logic_vector(15 downto 0);
+		PC 			:  in std_logic_vector(15 downto 0);
+		oprSrcB		:	in std_logic;
+		ALUres		:	in std_logic_vector(15 downto 0);
+		isMFPC		:	in std_logic;
+		
+		-- signal from forward unit
+		fwdSrcA	: in std_logic_vector(1 downto 0);
+		fwdSrcB	: in std_logic_vector(1 downto 0);
+		
+		-- signals used to decide forward unit result
+		mem_aluRes	: in std_logic_vector(15 downto 0);
+		wb_ramRes	: in std_logic_vector(15 downto 0);
+		wb_aluRes	: in std_logic_vector(15 downto 0);
+		wbSrc			: in std_logic;
+		
+		regA_o 		:  out std_logic_vector(15 downto 0);
+		regB_o 		:  out std_logic_vector(15 downto 0);
+		
+		regB_o 		:  out std_logic_vector(15 downto 0);
+		ALUres_o 	:	out std_logic_vector(15 downto 0);
+		out_PC		:	out std_logic_vector(15 downto 0)
+	);
 end execution;
 
 architecture Behavioral of execution is

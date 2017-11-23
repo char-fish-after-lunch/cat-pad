@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    14:40:12 11/17/2017 
+-- Create Date:    21:27:10 11/23/2017 
 -- Design Name: 
--- Module Name:    inst_decode - Behavioral 
+-- Module Name:    ram_interactor - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -19,7 +19,6 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use cat_pad.consts.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -30,20 +29,22 @@ use cat_pad.consts.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity inst_decode is port(
-		inst : in std_logic_vector(15 downto 0);
-		regSrcA : in std_logic_vector(3 downto 0);
-		regSrcB : in std_logic_vector(3 downto 0);
-		immeCtrl : in std_logic_vector(2 downto 0);
-		immeExt : in std_logic;
+entity ram_interactor is port(
+		clk : in std_logic;
 		
-		regAN : out std_logic_vector(3 downto 0);
-		regBN : out std_logic_vector(3 downto 0);
-		immediate : out std_logic_vector(15 downto 0)
+		if_ram_addr	  : in std_logic_vector(15 downto 0);
+		mem_ram_addr  : in std_logic_vector(15 downto 0);
+		mem_ram_data  : in std_logic_vector(15 downto 0);
+		
+		-- signals from mem
+		ramWrite	:	in std_logic;
+		ramRead	:	in std_logic;
+		
+		res_data : out std_logic_vector(15 downto 0)
 	);
-end inst_decode;
+end ram_interactor;
 
-architecture Behavioral of inst_decode is
+architecture Behavioral of ram_interactor is
 
 begin
 

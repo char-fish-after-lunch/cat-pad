@@ -29,7 +29,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity registers is
+entity registers is port(
+		regSrcA : in std_logic_vector(3 downto 0);
+		regSrcB : in std_logic_vector(3 downto 0);
+		
+		writeSrc 	: in std_logic_vector(3 downto 0);
+		writeData 	: in std_logic_vector(15 downto 0);
+		
+		writeEN		: in std_logic;
+	
+		regA : out std_logic_vector(15 downto 0);
+		regB : out std_logic_vector(15 downto 0)
+	);
 end registers;
 
 architecture Behavioral of registers is

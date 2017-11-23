@@ -29,7 +29,23 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity mem_wb is
+entity mem_wb is port(
+		clk : in std_logic;
+
+		dstSrc	:	in std_logic_vector(3 downto 0);
+		wbSrc		:	in std_logic;
+		wbEN		:	in std_logic;
+		
+		dstSrc_o		:	out std_logic_vector(3 downto 0);
+		wbSrc_o		:	out std_logic;
+		wbEN_o		:	out std_logic;
+
+		ramData	: in std_logic_vector(15 downto 0);
+		ALUres	: in std_logic_vector(15 downto 0);
+		
+		ramData_o	: out std_logic_vector(15 downto 0);
+		ALUres_o		: out std_logic_vector(15 downto 0)
+	);
 end mem_wb;
 
 architecture Behavioral of mem_wb is
