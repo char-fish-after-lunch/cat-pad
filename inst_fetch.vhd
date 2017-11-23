@@ -39,7 +39,7 @@ end inst_fetch;
 architecture Behavioral of inst_fetch is
 
 begin
-
+	
 
 end Behavioral;
 
