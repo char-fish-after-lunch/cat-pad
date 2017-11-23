@@ -74,9 +74,67 @@ entity id_exe is port(
 end id_exe;
 
 architecture Behavioral of id_exe is
-
+	signal inner_regA 			:  std_logic_vector(15 downto 0);
+	signal inner_regB 			:  std_logic_vector(15 downto 0);
+	signal inner_regAN 		:  std_logic_vector(3 downto 0);
+	signal inner_regBN 		:  std_logic_vector(3 downto 0);
+	signal inner_immediate	:  std_logic_vector(15 downto 0);
+	signal inner_IDPC 			:  std_logic_vector(15 downto 0);
+	signal inner_dstSrc		:	std_logic_vector(3 downto 0);
+	signal inner_immeExt		:	std_logic;
+	signal inner_oprSrcB		:	std_logic;
+	signal inner_ALUop			:	std_logic_vector(3 downto 0);
+	signal inner_isBranch		:	std_logic;
+	signal inner_isCond		:	std_logic;
+	signal inner_isRelative	:	std_logic;
+	signal inner_isMFPC		:	std_logic;
+	signal inner_ramWrite		:	std_logic;
+	signal inner_ramRead		:	std_logic;
+	signal inner_wbSrc			:	std_logic;
+	signal inner_wbEN			:	std_logic;
 begin
-
+	process(clk)
+	begin
+		if (rising_edge(clk)) then
+			inner_regA <= regA;
+			inner_regB <= regB;
+			inner_regAN <= regAN;
+			inner_regBN <= regBN;
+			inner_immediate <= immediate;
+			inner_IDPC <= IDPC;
+			inner_dstSrc <= dstSrc;
+			inner_immeExt <= immeExt;
+			inner_oprSrcB <= oprSrcB;
+			inner_ALUop	 <= ALUop;
+			inner_isBranch <= isBranch;
+			inner_isCond <= isCond;
+			inner_isRelative <= isRelative;
+			inner_isMFPC <= isMFPC;
+			inner_ramWrite <= ramWrite;
+			inner_ramRead <= ramRead;
+			inner_wbSrc <= wbSrc;
+			inner_wbEN <= wbEN;
+		end if;
+	end process;
+	
+	regA_o <= inner_regA;
+	regB_o <= inner_regB;
+	regAN_o <= inner_regAN;
+	regBN_o <= inner_regBN;
+	immediate_o <= inner_immediate;
+	IDPC_o <= inner_IDPC;
+	dstSrc_o <= inner_dstSrc;
+	immeExt_o <= inner_immeExt;
+	oprSrcB_o <= inner_oprSrcB;
+	ALUop_o <= inner_ALUop;
+	isBranch_o <= inner_isBranch;
+	isCond_o <= inner_isCond;
+	isRelative_o <= inner_isRelative;
+	isMFPC_o <= inner_isMFPC;
+	ramWrite_o <= inner_ramWrite;
+	ramRead_o <= inner_ramRead;
+	wbSrc_o <= inner_wbSrc;
+	wbEN_o <= inner_wbEN;
 
 end Behavioral;
 

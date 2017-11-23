@@ -49,9 +49,30 @@ entity mem_wb is port(
 end mem_wb;
 
 architecture Behavioral of mem_wb is
-
+	signal inner_dstSrc	:	std_logic_vector(3 downto 0);
+	signal inner_wbSrc	:	std_logic;
+	signal inner_wbEN		:	std_logic;
+	
+	signal inner_ramData	:  std_logic_vector(15 downto 0);
+	signal inner_ALUres	:  std_logic_vector(15 downto 0);
+	
 begin
-
+	process(clk)
+	begin
+		if (rising_edge(clk)) then
+			inner_dstSrc <= dstSrc;
+			inner_wbSrc <= wbSrc;
+			inner_wbEN <= wbEN;
+			inner_ramData <= ramData;
+			inner_ALUres <= ALUres;
+		end if;
+	end process;
+	
+	dstSrc_o <= inner_dstSrc;
+	wbSrc_o <= inner_wbSrc;
+	wbEN_o <= inner_wbEN;
+	ramData_o <= inner_ramData;
+	ALUres_o <= inner_ALUres;
 
 end Behavioral;
 

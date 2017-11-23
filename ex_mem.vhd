@@ -53,9 +53,37 @@ entity ex_mem is port(
 end ex_mem;
 
 architecture Behavioral of ex_mem is
-
+	
+	signal inner_dstSrc		:	std_logic_vector(3 downto 0) := "0000";
+	signal inner_ramWrite	:	std_logic := '0';
+	signal inner_ramRead		:	std_logic := '0';
+	signal inner_wbSrc		:	std_logic := '0';
+	signal inner_wbEN			:	std_logic := '0';
+	
+	signal inner_regB 		:  std_logic_vector(15 downto 0) := "0000000000000000";
+	signal inner_ALUres 		:	std_logic_vector(15 downto 0) := "0000000000000000";
+	
 begin
-
+	process(clk)
+	begin
+		if (rising_edge(clk)) then
+			inner_dstSrc <= dstSrc;
+			inner_ramWrite	<=	ramWrite;
+			inner_ramRead	<=	ramRead;
+			inner_wbSrc	<=	wbSrc;
+			inner_wbEN	<=	wbEN;
+			inner_regB	<=	regB;
+			inner_ALUres	<=	ALUres;
+		end if;
+	end process;
+	
+	dstSrc_o 	<= inner_dstSrc;
+	ramWrite_o  <= inner_ramWrite;
+	ramRead_o	<=	inner_ramRead;
+	wbSrc_o		<=	inner_wbSrc;
+	wbEN_o		<=	inner_wbEN;
+	regB_o		<=	inner_regB;
+	ALUres_o		<=	inner_ALUres;
 
 end Behavioral;
 
