@@ -30,6 +30,11 @@ package consts is
 		constant imme_11b : std_logic_vector(2 downto 0) := "011";
 		constant imme_5b  : std_logic_vector(2 downto 0) := "100";
 		
+		constant reg_IH  : std_logic_vector(3 downto 0) := "1000";
+		constant reg_SP  : std_logic_vector(3 downto 0) := "1001";
+		constant reg_T   : std_logic_vector(3 downto 0) := "1010";
+		
+		
 
 
 end consts;

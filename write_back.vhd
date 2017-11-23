@@ -37,14 +37,31 @@ entity write_back is port(
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
 		
-		writeData : out std_logic_vector(15 downto 0)
+		writeData : out std_logic_vector(15 downto 0);
+		writeDst : out std_logic_vector(3 downto 0);
+		isWriting : out std_logic
 	);
 end write_back;
 
 architecture Behavioral of write_back is
 
 begin
-
+	isWriting <= wbEN;
+	
+	process(wbEN, wbSrc, dstSrc)
+	begin
+		if (wbEN = '1') then
+			if (wbSrc = '1') then
+				writeData <= ALUres;
+			else
+				writeData <= ramData;
+			end if;
+			writeDst <= dstSrc;
+		else
+			writeData <= (others => '0');
+			writeDst <= (others => '0');
+		end if;
+	end process;
 
 end Behavioral;
 

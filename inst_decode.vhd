@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use cat_pad.consts.ALL;
+use work.consts.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -46,7 +46,38 @@ end inst_decode;
 architecture Behavioral of inst_decode is
 
 begin
-
-
+	regAN <= regSrcA;
+	regBN <= regSrcB;
+	
+	process(immeCtrl, immeExt)
+	begin
+		case immeCtrl is
+			when imme_8b => 
+				immediate(7 downto 0) <= inst(7 downto 0);
+				if (immeExt = '1') then
+					immediate(15 downto 8) <= (others => inst(7));
+				else
+					immediate(15 downto 8) <= (others => '0');
+				end if;
+			when imme_4b => 
+				immediate(3 downto 0) <= inst(3 downto 0);
+				immediate(15 downto 4) <= (others => inst(3));
+			when imme_3b => 
+				if (inst(4 downto 2) = "000") then
+					immediate <= "0000000000001000";
+				else
+					immediate(2 downto 0) <= inst(4 downto 2);
+					immediate(15 downto 3) <= (others => inst(4));
+				end if;
+			when imme_11b => 
+				immediate(10 downto 0) <= inst(10 downto 0);
+				immediate(15 downto 11) <= (others => inst(10));
+			when imme_5b => 
+				immediate(4 downto 0) <= inst(4 downto 0);
+				immediate(15 downto 5) <= (others => inst(4));
+			when others =>
+				immediate <= "0000000000000000";
+		end case;
+	end process;
 end Behavioral;
 

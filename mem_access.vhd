@@ -53,7 +53,12 @@ end mem_access;
 architecture Behavioral of mem_access is
 
 begin
-
+	ramWrite_o <= ramWrite;
+	ramRead_o <= ramRead;
+	ram_addr_o <= ram_addr;
+	ram_data_o <= ram_data_in;
+	
+	ram_return_o <= ram_return;
 
 end Behavioral;
 
