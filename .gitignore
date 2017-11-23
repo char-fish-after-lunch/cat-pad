@@ -3,3 +3,8 @@ _xmsgs
 ipcore_dir
 iseconfig
 
+*.cf
+
+build/
+*.o
+
