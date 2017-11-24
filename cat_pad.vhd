@@ -135,9 +135,6 @@ architecture Behavioral of cat_pad is
     signal s_fwdSrcA	: std_logic_vector(1 downto 0);
     signal s_fwdSrcB	: std_logic_vector(1 downto 0);
 
-    signal s_mem_aluRes	: std_logic_vector(15 downto 0);
-    signal s_wb_ramRes	: std_logic_vector(15 downto 0);
-    signal s_wb_aluRes	: std_logic_vector(15 downto 0);
     signal s_regA_fwd 	: std_logic_vector(3 downto 0);
     signal s_regB_fwd 	: std_logic_vector(3 downto 0);
     signal s_regB_o_exe : std_logic_vector(15 downto 0);
@@ -204,11 +201,11 @@ begin
     
     u_execution : execution port map(regA => s_regA_o, regB => s_regB_o, regAN => s_regAN_o, regBN => s_regBN_o, immediate => s_immediate_o,
         PC => s_IDPC_o, oprSrcB => s_oprSrcB_exe, ALUres => s_ALUres, isMFPC => s_isMFPC_exe, ALU_oprA => s_ALU_oprA, ALU_oprB => s_ALU_oprB,
-        shifted_PC => s_shifted_PC, B_ALU_res => s_B_ALU_res, fwdSrcA => s_fwdSrcA, fwdSrcB => s_fwdSrcB, mem_aluRes => s_mem_aluRes,
-        wb_ramRes => s_wb_ramRes, wb_aluRes => s_wb_aluRes, regA_fwd => s_regA_fwd, regB_fwd => s_regB_fwd, regB_o => s_regB_o_exe, 
+        shifted_PC => s_shifted_PC, B_ALU_res => s_B_ALU_res, fwdSrcA => s_fwdSrcA, fwdSrcB => s_fwdSrcB, mem_aluRes => s_ALUres_mem,
+        wb_ramRes => s_ramData_wb, wb_aluRes => s_ALUres_wb, regA_fwd => s_regA_fwd, regB_fwd => s_regB_fwd, regB_o => s_regB_o_exe, 
         ALUres_o => s_ALUres_o, out_PC => s_EXEPC);
 		
-	 u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
+	u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 
     u_branch_judger : branch_judger port map(next_PC => s_next_pc_out, ALUres => s_B_ALU_res, shifted_PC => s_shifted_PC, 
         isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_in);
@@ -236,9 +233,11 @@ begin
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);
 
     u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
-        wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB);
+        wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB,
+        wbSrc => s_wbSrc_wb);
 
     
+    test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
 
     process(s_pc_out)
     begin
@@ -256,7 +255,7 @@ begin
         end case;
     end process;
 
-    disp2 <= s_ALUop & "000";
+    disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
 
     leds <= s_inst_o;
 
@@ -265,8 +264,7 @@ begin
     test_ALUres <= s_ALUres_o;
     test_regSrcA <= s_regSrcA;
     test_regSrcB <= s_regSrcB;
-    test_regA <= s_regA;
-    test_regB <= s_immediate;
+    test_regA <= s_ALU_oprB;
 
 
 end Behavioral;
