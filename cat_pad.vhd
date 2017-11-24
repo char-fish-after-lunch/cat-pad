@@ -159,7 +159,7 @@ architecture Behavioral of cat_pad is
     signal s_wbSrc_wb	: std_logic;
     signal s_wbEN_wb	: std_logic;
     signal s_ramData_wb	: std_logic_vector(15 downto 0);
-    signal s_ALUres_wb	: std_logic_vector(15 downto 0)
+    signal s_ALUres_wb	: std_logic_vector(15 downto 0);
 
 begin
     u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out);

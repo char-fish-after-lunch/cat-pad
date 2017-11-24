@@ -34,10 +34,10 @@ package consts is
 		constant reg_SP  : std_logic_vector(3 downto 0) := "1001";
 		constant reg_T   : std_logic_vector(3 downto 0) := "1010";
 		
-		constant fwd_original  : std_logic_vector(3 downto 0) := "00";
-		constant fwd_alu_res   : std_logic_vector(3 downto 0) := "01";
-		constant fwd_wb_ram    : std_logic_vector(3 downto 0) := "10";
-		constant fwd_wb_alu    : std_logic_vector(3 downto 0) := "11";
+		constant fwd_original  : std_logic_vector(1 downto 0) := "00";
+		constant fwd_alu_res   : std_logic_vector(1 downto 0) := "01";
+		constant fwd_wb_ram    : std_logic_vector(1 downto 0) := "10";
+		constant fwd_wb_alu    : std_logic_vector(1 downto 0) := "11";
 		
 		
 

@@ -14,3 +14,7 @@ test[^.]*
 *.vho
 .lso
 
+isim
+*.log
+*.xmsgs
+*.ini
