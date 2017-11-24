@@ -34,5 +34,7 @@ isim
 *.xbcd
 *.exe
 *.wdb
+*.vcd
 
 test_control
+test_basic_frame

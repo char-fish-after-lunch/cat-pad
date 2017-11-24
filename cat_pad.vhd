@@ -182,11 +182,13 @@ begin
     -- s_fwdSrcA <= fwd_original;
     -- s_fwdSrcB <= fwd_original;
 
-    u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out);
+    u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
+											pc_pause => s_pc_pause);
     
     u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
-    u_if_id : if_id port map(clk => clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o);
+    u_if_id : if_id port map(clk => clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
+							clear => s_id_clear);
 
     u_control : control port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl, dstSrc => s_dstSrc,
         immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, isCond => s_isCond, isRelative => s_isRelative,
@@ -204,7 +206,7 @@ begin
         wbEN => s_wbEN, regA_o => s_regA_o, regB_o => s_regB_o, regAN_o => s_regAN_o, regBN_o => s_regBN_o, immediate_o => s_immediate_o,
         IDPC_o => s_IDPC_o, dstSrc_o => s_dstSrc_exe, immeExt_o => s_immeExt_exe, oprSrcB_o => s_oprSrcB_exe, ALUop_o => s_ALUop_exe,
         isBranch_o => s_isBranch_exe, isCond_o => s_isCond_exe, isRelative_o => s_isRelative_exe, isMFPC_o => s_isMFPC_exe,
-        ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe);
+        ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe, clear => s_exe_clear);
 
     
     u_execution : execution port map(regA => s_regA_o, regB => s_regB_o, regAN => s_regAN_o, regBN => s_regBN_o, immediate => s_immediate_o,

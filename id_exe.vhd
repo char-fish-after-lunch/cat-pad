@@ -31,7 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity id_exe is port(
 		clk : in std_logic;
-		keep : in std_logic;
+		clear : in std_logic;
 
 		regA 			:  in std_logic_vector(15 downto 0);
 		regB 			:  in std_logic_vector(15 downto 0);
@@ -96,25 +96,46 @@ architecture Behavioral of id_exe is
 begin
 	process(clk)
 	begin
-		if (rising_edge(clk) and (keep = '0')) then
-			inner_regA <= regA;
-			inner_regB <= regB;
-			inner_regAN <= regAN;
-			inner_regBN <= regBN;
-			inner_immediate <= immediate;
-			inner_IDPC <= IDPC;
-			inner_dstSrc <= dstSrc;
-			inner_immeExt <= immeExt;
-			inner_oprSrcB <= oprSrcB;
-			inner_ALUop	 <= ALUop;
-			inner_isBranch <= isBranch;
-			inner_isCond <= isCond;
-			inner_isRelative <= isRelative;
-			inner_isMFPC <= isMFPC;
-			inner_ramWrite <= ramWrite;
-			inner_ramRead <= ramRead;
-			inner_wbSrc <= wbSrc;
-			inner_wbEN <= wbEN;
+		if (rising_edge(clk)) then
+			if clear = '0' then
+				inner_regA <= regA;
+				inner_regB <= regB;
+				inner_regAN <= regAN;
+				inner_regBN <= regBN;
+				inner_immediate <= immediate;
+				inner_IDPC <= IDPC;
+				inner_dstSrc <= dstSrc;
+				inner_immeExt <= immeExt;
+				inner_oprSrcB <= oprSrcB;
+				inner_ALUop	 <= ALUop;
+				inner_isBranch <= isBranch;
+				inner_isCond <= isCond;
+				inner_isRelative <= isRelative;
+				inner_isMFPC <= isMFPC;
+				inner_ramWrite <= ramWrite;
+				inner_ramRead <= ramRead;
+				inner_wbSrc <= wbSrc;
+				inner_wbEN <= wbEN;
+			else
+				inner_regA <= (15 downto 0 => '0');
+				inner_regB <= (15 downto 0 => '0');
+				inner_regAN <= "0000";
+				inner_regBN <= "0000";
+				inner_immediate <= (15 downto 0 => '0');
+				inner_IDPC <= (15 downto 0 => '0');
+				inner_dstSrc <= "0000";
+				inner_immeExt <= '0';
+				inner_oprSrcB <= '0';
+				inner_ALUop	 <= "0000";
+				inner_isBranch <= '0';
+				inner_isCond <= '0';
+				inner_isRelative <= '0';
+				inner_isMFPC <= '0';
+				inner_ramWrite <= '0';
+				inner_ramRead <= '0';
+				inner_wbSrc <= '0';
+				inner_wbEN <= '0';
+			end if;
 		end if;
 	end process;
 	

@@ -111,7 +111,7 @@ package components is
 
     component id_exe port(
 		clk : in std_logic;
-		keep : in std_logic;
+		clear : in std_logic;
 
 		regA 			:  in std_logic_vector(15 downto 0);
 		regB 			:  in std_logic_vector(15 downto 0);
