@@ -185,7 +185,8 @@ package components is
     component inst_fetch port(
 		pc: in std_logic_vector(15 downto 0);
 		instr: out std_logic_vector(15 downto 0);
-		clk: in std_logic);
+		if_addr: out std_logic_vector(15 downto 0);
+		if_data: in std_logic_vector(15 downto 0));
     end component;
     
 
@@ -245,7 +246,27 @@ package components is
 		ramWrite	:	in std_logic;
 		ramRead	:	in std_logic;
 		
-		res_data : out std_logic_vector(15 downto 0));
+		res_data : out std_logic_vector(15 downto 0);
+		if_res_data : out std_logic_vector(15 downto 0);
+
+		-- ram related 
+		ram1addr : out  STD_LOGIC_VECTOR (17 downto 0);
+		ram1data : inout  STD_LOGIC_VECTOR (15 downto 0);
+		ram1oe : out  STD_LOGIC;
+		ram1rw : out  STD_LOGIC;
+		ram1en : out  STD_LOGIC;
+		ram2addr : out  STD_LOGIC_VECTOR (17 downto 0);
+		ram2data : inout  STD_LOGIC_VECTOR (15 downto 0);
+		ram2oe : out  STD_LOGIC;
+		ram2rw : out  STD_LOGIC;
+		ram2en : out  STD_LOGIC;
+
+		-- IO related
+		rdn : out  STD_LOGIC;
+		wrn : out  STD_LOGIC;
+		tbre : in  STD_LOGIC;
+		tsre : in  STD_LOGIC;
+		data_ready : in  STD_LOGIC);
     end component;
 
     component registers port(

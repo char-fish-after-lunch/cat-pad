@@ -211,7 +211,7 @@ begin
 				end case;
 			when INSTR_H_GROUP3 =>
 				case inst(1 downto 0) is
-					when "10" =>
+					when "01" =>
 						-- ADDU
 						regSrcA		<= "0" & inst(10 downto 8);
 						regSrcB		<= "0" & inst(7 downto 5);

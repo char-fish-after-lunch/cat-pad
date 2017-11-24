@@ -48,7 +48,7 @@ architecture Behavioral of write_back is
 begin
 	isWriting <= wbEN;
 	
-	process(wbEN, wbSrc, dstSrc)
+	process(wbEN, wbSrc, dstSrc, ALUres, ramData)
 	begin
 		if (wbEN = '1') then
 			if (wbSrc = '1') then
