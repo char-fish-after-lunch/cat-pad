@@ -5,7 +5,7 @@ iseconfig
 *.cf
 build/
 *.o
-test[^.]*
+
 *.xst
 *.prj
 *.stx

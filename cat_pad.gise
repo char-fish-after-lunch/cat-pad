@@ -21,6 +21,7 @@
 
   <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="cat_pad.xise"/>
 
+<<<<<<< HEAD
   <files xmlns="http://www.xilinx.com/XMLSchema">
     <file xil_pn:fileType="FILE_LSO" xil_pn:name=".lso"/>
     <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="_ngo"/>
@@ -255,5 +256,10 @@
       <outfile xil_pn:name="cat_pad_ngdbuild.xrpt"/>
     </transform>
   </transforms>
+=======
+  <files xmlns="http://www.xilinx.com/XMLSchema"/>
+
+  <transforms xmlns="http://www.xilinx.com/XMLSchema"/>
+>>>>>>> other_unit_test
 
 </generated_project>
