@@ -2,11 +2,15 @@
 _xmsgs
 ipcore_dir
 iseconfig
-
 *.cf
-
 build/
 *.o
-
 test[^.]*
+*.xst
+*.prj
+*.stx
+*.ref
+*.gise
+*.vho
+.lso
 

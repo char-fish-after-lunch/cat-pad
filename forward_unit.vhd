@@ -29,7 +29,15 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity forward_unit is
+entity forward_unit is port(
+		regReadSrcA : in std_logic_vector(3 downto 0);
+		regReadSrcB : in std_logic_vector(3 downto 0);
+		memDst 		: in std_logic_vector(3 downto 0);
+		wbDst 		: in std_logic_vector(3 downto 0);
+		
+		srcA	: out std_logic_vector(1 downto 0);
+		srcB	: out std_logic_vector(1 downto 0)
+	);
 end forward_unit;
 
 architecture Behavioral of forward_unit is

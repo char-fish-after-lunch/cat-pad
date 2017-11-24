@@ -21,7 +21,31 @@
 
   <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="cat_pad.xise"/>
 
-  <files xmlns="http://www.xilinx.com/XMLSchema"/>
+  <files xmlns="http://www.xilinx.com/XMLSchema">
+    <file xil_pn:fileType="FILE_LSO" xil_pn:name=".lso"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="alu.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="alu.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="alu.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="branch_judger.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="branch_judger.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="branch_judger.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="control.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="control.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="control.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="id_exe.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="id_exe.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="id_exe.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="inst_decode.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="inst_decode.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="inst_decode.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="mem_access.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="mem_access.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="mem_access.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="write_back.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="write_back.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="write_back.xst"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="xst"/>
+  </files>
 
   <transforms xmlns="http://www.xilinx.com/XMLSchema"/>
 
