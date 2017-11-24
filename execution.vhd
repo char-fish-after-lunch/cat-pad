@@ -80,7 +80,7 @@ begin
 	
 	shifted_PC <= PC + immediate;
 	
-	process(isMFPC, ALUres)
+	process(isMFPC, ALUres, PC)
 	begin
 		if (isMFPC = '1') then
 			ALUres_o <= PC;
@@ -89,7 +89,7 @@ begin
 		end if;
 	end process;
 	
-	process(fwdSrcA, mem_aluRes, wb_ramRes, wb_aluRes)
+	process(fwdSrcA, mem_aluRes, wb_ramRes, wb_aluRes, regA)
 	begin
 		case fwdSrcA is
 			when fwd_original => ALU_oprA <= regA;
@@ -100,7 +100,7 @@ begin
 		end case;
 	end process;
 	
-	process(fwdSrcB, mem_aluRes, wb_ramRes, wb_aluRes, oprSrcB)
+	process(fwdSrcB, mem_aluRes, wb_ramRes, wb_aluRes, oprSrcB, regB, immediate)
 	begin
 		case fwdSrcB is
 			when fwd_original =>

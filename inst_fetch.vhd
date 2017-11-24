@@ -32,14 +32,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity inst_fetch is port(
 		pc: in std_logic_vector(15 downto 0);
 		instr: out std_logic_vector(15 downto 0);
-		clk: in std_logic
+
+		if_addr: out std_logic_vector(15 downto 0);
+		if_data: in std_logic_vector(15 downto 0)
 	);
 end inst_fetch;
 
 architecture Behavioral of inst_fetch is
 
 begin
-	
-
+	if_addr <= pc;
+	instr <= if_data;
 end Behavioral;
 

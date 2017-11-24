@@ -58,7 +58,14 @@ entity cat_pad is port(
     wrn : out  STD_LOGIC;
     tbre : in  STD_LOGIC;
     tsre : in  STD_LOGIC;
-    data_ready : in  STD_LOGIC
+    data_ready : in  STD_LOGIC;
+
+
+    test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
+    test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
+    test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
+    test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
+    test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
 );
 end cat_pad;
 
@@ -151,6 +158,7 @@ architecture Behavioral of cat_pad is
     signal s_mem_ram_addr   : std_logic_vector(15 downto 0);
     signal s_mem_ram_data   : std_logic_vector(15 downto 0);
     signal s_res_data       : std_logic_vector(15 downto 0);
+    signal s_if_res_data    : std_logic_vector(15 downto 0);
     signal s_ramWrite_ram	: std_logic;
     signal s_ramRead_ram	: std_logic;
 
@@ -164,9 +172,14 @@ architecture Behavioral of cat_pad is
     signal s_ALUres_wb	: std_logic_vector(15 downto 0);
 
 begin
+
+    -- -- TODO: remove this hack when forward unit added 
+    -- s_fwdSrcA <= fwd_original;
+    -- s_fwdSrcB <= fwd_original;
+
     u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out);
     
-    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, clk => clk);
+    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
     u_if_id : if_id port map(clk => clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o);
 
@@ -195,14 +208,14 @@ begin
         wb_ramRes => s_wb_ramRes, wb_aluRes => s_wb_aluRes, regA_fwd => s_regA_fwd, regB_fwd => s_regB_fwd, regB_o => s_regB_o_exe, 
         ALUres_o => s_ALUres_o, out_PC => s_EXEPC);
 		
-	u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
+	 u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 
     u_branch_judger : branch_judger port map(next_PC => s_next_pc_out, ALUres => s_B_ALU_res, shifted_PC => s_shifted_PC, 
         isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_in);
 
     u_ex_mem : ex_mem port map(clk => clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
         wbSrc => s_wbSrc_exe, wbEN => s_wbEN_exe, regB => s_regB_o_exe, ALUres => s_ALUres_o, dstSrc_o => s_dstSrc_mem,
-        ramWrite_o => s_ramWrite_mem, ramRead_o => s_ramRead_mem, wbSrc_o => s_wbSrc_mem, wbEN_o => s_wbSrc_mem,
+        ramWrite_o => s_ramWrite_mem, ramRead_o => s_ramRead_mem, wbSrc_o => s_wbSrc_mem, wbEN_o => s_wbEN_mem,
         regB_o => s_regB_mem, ALUres_o => s_ALUres_mem);
 
     u_mem_access : mem_access port map(ram_addr => s_ALUres_mem, ram_data_in => s_regB_mem, ramWrite => s_ramWrite_mem,
@@ -213,8 +226,47 @@ begin
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb);
 		
+    u_ram_interactor: ram_interactor port map(clk => clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+        mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
+        if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr, ram1oe => ram1oe, ram1rw => ram1rw, ram1en => ram1en,
+        ram2data => ram2data, ram2addr => ram2addr, ram2oe => ram2oe, ram2rw => ram2rw, ram2en => ram2en, rdn => rdn, wrn => wrn, 
+        tbre => tbre, tsre => tsre, data_ready => data_ready);
+    
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);
+
+    u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
+        wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB);
+
+    
+
+    process(s_pc_out)
+    begin
+        case s_pc_out(3 downto 0) is
+            when "0001" => disp1 <= "0110000";
+            when "0010" => disp1 <= "1101101";
+            when "0011" => disp1 <= "1111001";
+            when "0100" => disp1 <= "0110011";
+            when "0101" => disp1 <= "1011011";
+            when "0110" => disp1 <= "1011011";
+            when "0111" => disp1 <= "1110000";
+            when "1000" => disp1 <= "1111111";
+            when "1001" => disp1 <= "1111011";
+            when others => disp1 <= "1111111";
+        end case;
+    end process;
+
+    disp2 <= s_ALUop & "000";
+
+    leds <= s_inst_o;
+
+    
+
+    test_ALUres <= s_ALUres_o;
+    test_regSrcA <= s_regSrcA;
+    test_regSrcB <= s_regSrcB;
+    test_regA <= s_regA;
+    test_regB <= s_immediate;
 
 
 end Behavioral;

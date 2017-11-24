@@ -49,7 +49,7 @@ begin
 	regAN <= regSrcA;
 	regBN <= regSrcB;
 	
-	process(immeCtrl, immeExt)
+	process(immeCtrl, immeExt, inst)
 	begin
 		case immeCtrl is
 			when imme_8b => 

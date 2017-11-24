@@ -37,8 +37,8 @@ entity forward_unit is port(
 		wbDst 		: in std_logic_vector(3 downto 0);
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
-		--加一个判断是不是从内存里面读指令
-		
+		--add one to check if it is reading from ram
+
 		srcA	: out std_logic_vector(1 downto 0);
 		srcB	: out std_logic_vector(1 downto 0)
 	);
@@ -47,11 +47,13 @@ end forward_unit;
 architecture Behavioral of forward_unit is
 
 begin
+	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB)
+	begin
 	if(regReadSrcA = memDst and regReadSrcA = wbDst and ramRead = '0') then
 		srcA <= fwd_wb_ram;
 		--both need to write, use mem
 	elsif(regReadSrcA = memDst and ramRead = '0') then
-		srcA <= fwd_alu_res
+		srcA <= fwd_alu_res;
 		--use data from mem
 	elsif(regReadSrcA = wbDst and ramRead = '0') then
 		srcA <= fwd_wb_alu;
@@ -77,6 +79,6 @@ begin
 		srcB <= fwd_original;
 		--else use register or imm
 	end if;
-
+	end process;
 end Behavioral;
 

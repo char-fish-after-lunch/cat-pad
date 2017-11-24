@@ -5,7 +5,7 @@ iseconfig
 *.cf
 build/
 *.o
-test[^.]*
+
 *.xst
 *.prj
 *.stx
@@ -32,3 +32,7 @@ isim
 *.sym
 *.lst
 *.xbcd
+*.exe
+*.wdb
+
+test_control

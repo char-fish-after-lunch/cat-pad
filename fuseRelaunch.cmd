@@ -1,1 +1,1 @@
--intstyle "ise" -incremental -o "D:/workspace/xilinx/cat_pad/test_control_isim_beh.exe" -prj "D:/workspace/xilinx/cat_pad/test_control_beh.prj" "test_control" 
+-intstyle "ise" -incremental -o "D:/workspace/xilinx/cat_pad/test_control_isim_beh.exe" -prj "D:/workspace/xilinx/cat_pad/test_control_beh.prj" "work.test_forward_unit" 

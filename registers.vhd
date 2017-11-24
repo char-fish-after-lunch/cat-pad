@@ -57,7 +57,7 @@ architecture Behavioral of registers is
 	signal SP : std_logic_vector(15 downto 0) := "0000000000000000";
 	signal T : std_logic_vector(15 downto 0) := "0000000000000000";
 begin
-	process(regSrcA)
+	process(regSrcA, r0, r1, r2, r3, r4, r5, r6, r7, IH, SP, T)
 	begin
 		case regSrcA is
 			when "0000" => regA <= r0;
@@ -75,7 +75,7 @@ begin
 		end case;
 	end process;
 
-	process(regSrcB)
+	process(regSrcB, r0, r1, r2, r3, r4, r5, r6, r7, IH, SP, T)
 	begin
 		case regSrcB is
 			when "0000" => regB <= r0;
@@ -89,26 +89,28 @@ begin
 			when reg_IH => regB <= IH;
 			when reg_SP => regB <= SP;
 			when reg_T  => regB <= T;
-			when others => regA <= (others => '0');
+			when others => regB <= (others => '0');
 		end case;
 	end process;
 	
 	process(writeEN, writeSrc, writeData)
 	begin
-		case writeSrc is
-			when "0000" => r0 <= writeData;
-			when "0001" => r1 <= writeData;
-			when "0010" => r2 <= writeData;
-			when "0011" => r3 <= writeData;
-			when "0100" => r4 <= writeData;
-			when "0101" => r5 <= writeData;
-			when "0110" => r6 <= writeData;
-			when "0111" => r7 <= writeData;
-			when reg_IH => IH <= writeData;
-			when reg_SP => SP <= writeData;
-			when reg_T  => T <= writeData;
-			when others => -- do nothing
-		end case;
+		if (writeEN = '1') then 
+			case writeSrc is
+				when "0000" => r0 <= writeData;
+				when "0001" => r1 <= writeData;
+				when "0010" => r2 <= writeData;
+				when "0011" => r3 <= writeData;
+				when "0100" => r4 <= writeData;
+				when "0101" => r5 <= writeData;
+				when "0110" => r6 <= writeData;
+				when "0111" => r7 <= writeData;
+				when reg_IH => IH <= writeData;
+				when reg_SP => SP <= writeData;
+				when reg_T  => T <= writeData;
+				when others => -- do nothing
+			end case;
+		end if;
 	end process;
 
 end Behavioral;

@@ -59,15 +59,18 @@ begin
 		variable ramCtrl : std_logic_vector(1 downto 0) := "00";
 		variable wbCtrl : std_logic_vector(1 downto 0) := "00";
 	begin
+
 		regSrcA		<= "0000";
 		regSrcB		<= "0000";
 		immeCtrl	<= "000";
+		dstSrc		<= "0000";
+		immeExt		<= '1';
+		oprSrcB		<= '0';
 		ALUop		<= "0000";
 		branch		:= "000";
 		ramCtrl		:= "00";
 		wbCtrl		:= "00";
 		isMFPC		<= '0';
-		immeExt		<= '1';
 		case instrType is
 			when INSTR_H_ADDIU =>
 				regSrcA		<= "0" & inst(10 downto 8);
@@ -211,7 +214,7 @@ begin
 				end case;
 			when INSTR_H_GROUP3 =>
 				case inst(1 downto 0) is
-					when "10" =>
+					when "01" =>
 						-- ADDU
 						regSrcA		<= "0" & inst(10 downto 8);
 						regSrcB		<= "0" & inst(7 downto 5);
