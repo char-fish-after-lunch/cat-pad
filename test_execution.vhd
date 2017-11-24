@@ -39,19 +39,19 @@ architecture Behavioral of test_execution is
     signal out_PC		:  std_logic_vector(15 downto 0);
 
     component execution is port(
-            regA 			:  in std_logic_vector(15 downto 0);
-            regB 			:  in std_logic_vector(15 downto 0);
+            regA 		:  in std_logic_vector(15 downto 0);
+            regB 		:  in std_logic_vector(15 downto 0);
             regAN 		:  in std_logic_vector(3 downto 0);
             regBN 		:  in std_logic_vector(3 downto 0);
             immediate	:  in std_logic_vector(15 downto 0);
             PC 			:  in std_logic_vector(15 downto 0);
-            oprSrcB		:	in std_logic;
-            ALUres		:	in std_logic_vector(15 downto 0);
-            isMFPC		:	in std_logic;
+            oprSrcB		:  in std_logic;
+            ALUres		:  in std_logic_vector(15 downto 0);
+            isMFPC		:  in std_logic;
             
             -- send to ALU
-            ALU_oprA 		:  out std_logic_vector(15 downto 0);
-            ALU_oprB 		:  out std_logic_vector(15 downto 0);
+            ALU_oprA 	:  out std_logic_vector(15 downto 0);
+            ALU_oprB 	:  out std_logic_vector(15 downto 0);
             
             -- send to branch judger
             shifted_PC	:  out std_logic_vector(15 downto 0);
@@ -67,8 +67,8 @@ architecture Behavioral of test_execution is
             wb_aluRes	: in std_logic_vector(15 downto 0);
             
             -- send to forward unit to detect conflicts
-            regA_fwd 		:  out std_logic_vector(3 downto 0);
-            regB_fwd 		:  out std_logic_vector(3 downto 0);
+            regA_fwd 	:  out std_logic_vector(3 downto 0);
+            regB_fwd 	:  out std_logic_vector(3 downto 0);
             
             regB_o 		:  out std_logic_vector(15 downto 0);
             ALUres_o 	:	out std_logic_vector(15 downto 0);
@@ -96,6 +96,13 @@ begin
         oprSrcB <= '1';
         ALUres <= "0000000000000000";
         isMFPC <= '0';
+
+        fwdSrcA <= "00";
+        fwdSrcB <= "00";
+        
+        mem_aluRes <= "0000000000000000";
+        wb_ramRes <= "0000000000000000";
+        wb_aluRes <= "0000000000000000";
 
         wait for 2 ns;
         wait;
