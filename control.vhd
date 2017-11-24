@@ -66,6 +66,7 @@ begin
 		ramCtrl		:= "00";
 		wbCtrl		:= "00";
 		isMFPC		<= '0';
+		immeExt		<= '1';
 		case instrType is
 			when INSTR_H_ADDIU =>
 				regSrcA		<= "0" & inst(10 downto 8);
@@ -97,6 +98,7 @@ begin
 				oprSrcB		<= '1';
 				ALUop		<= "1010";
 				wbCtrl		:= "11";
+				immeExt		<= '0';
 			when INSTR_H_LW =>
 				regSrcA		<= "0" & inst(10 downto 8);
 				immeCtrl	<= "100";

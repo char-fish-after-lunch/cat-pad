@@ -8,3 +8,5 @@ iseconfig
 build/
 *.o
 
+test[^.]*
+
