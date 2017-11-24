@@ -21,7 +21,7 @@
 | ID           | WB           | ID           | EXE(1), MEM(2), WB(3)  | MOVE  | MOVE  |
 | EXE          | WB           | ID           | EXE(1), MEM(2), WB(3)  | ADDU  | MOVE  |
 | MEM          | WB           | ID           | NOTEXIST(1), MEM(2), WB(3) | LW    | MOVE  |
-| ID           | MEM          | IF           | ID(1), EXE(2), MEM(3)    | (ANY) | 
+| ID           | MEM          | IF           | ID(1), EXE(2), MEM(3)    | SW | (ANY) | 
 
 这种情况，产生结果的指令如果领先它2条，那么该有的结果都有了，可以直接forward；如果只领先1条，那么如果是普通运算指令，ALU已经结束了结果也有了，可以直接forward; 但是如果是从内存里读数据的话，结果还得等一周期，所以只能暂停一波。forward unit只处理这里说的两种情况。
 
@@ -41,9 +41,11 @@
 ### 端口列表
 
 输入：
-* idWbEN: ID阶段是否写回信号（control的输出信号）
-* idDstSrc(4): ID阶段目标写回地址（control的输出信号）
-* exeRamWrite: ID/EXE中RAM是否写
+* exeWbEN: ID/EXE是否写回信号
+* exeDstSrc(4): ID/EXE目标写回地址
+* exeRamRead: ID/EXE中RAM是否读
+* idRegSrcA(4): ID阶段中寄存器地址A（control的输出信号）
+* idRegSrcB(4): ID阶段中寄存器地址B（control的输出信号）
 
 输出：
 * pcPause: 下一时钟周期时钟是否更新
