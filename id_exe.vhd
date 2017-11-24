@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity id_exe is port(
 		clk : in std_logic;
+		keep : in std_logic;
 
 		regA 			:  in std_logic_vector(15 downto 0);
 		regB 			:  in std_logic_vector(15 downto 0);
@@ -95,7 +96,7 @@ architecture Behavioral of id_exe is
 begin
 	process(clk)
 	begin
-		if (rising_edge(clk)) then
+		if (rising_edge(clk) and (keep = '0')) then
 			inner_regA <= regA;
 			inner_regB <= regB;
 			inner_regAN <= regAN;

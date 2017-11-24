@@ -52,7 +52,8 @@ end stall_unit;
 architecture Behavioral of stall_unit is
 
 begin
-	process(exeWbEN, exeDstSrc, exeRamRead, idRegSrcA, idRegSrcB)
+	process(exeWbEN, exeDstSrc, exeRamRead, idRegSrcA, idRegSrcB,
+		exeBranchJudge, exeBranchTo, ifAddr)
 	begin
 		-- deals with RAW conflict
 		if (exeWbEN = '1') and (exeRamRead = '1') and

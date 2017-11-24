@@ -37,6 +37,8 @@ entity branch_judger is port(
 	isCond		:	in std_logic;
 	isRelative	:	in std_logic;
 
+	willBranch	:	out std_logic;
+
 	next_PC_o	: out std_logic_vector(15 downto 0)  -- real next PC
 );
 end branch_judger;
@@ -47,9 +49,11 @@ begin
 
 	process(isBranch, isCond, isRelative, ALUres, shifted_PC, next_PC)
 	begin
+		willBranch <= '0';
 		if (isBranch = '1') then
 			if (isCond = '1') then
 				if (ALUres(0) = '1') then
+					willBranch <= '1';
 					if (isRelative = '1') then
 						next_PC_o <= shifted_PC;
 					else
@@ -59,6 +63,7 @@ begin
 					next_PC_o <= next_PC; -- condition not satisfied
 				end if;
 			else 
+				willBranch <= '1';
 				if (isRelative = '1') then
 					next_PC_o <= shifted_PC;
 				else

@@ -70,7 +70,10 @@ entity cat_pad is port(
 end cat_pad;
 
 architecture Behavioral of cat_pad is
+	signal s_pc_inc : std_logic;
 	signal s_next_pc_in : std_logic_vector(15 downto 0);
+	signal s_next_pc_o : std_logic_vector(15 downto 0);
+	signal s_pc_pause : std_logic;
 	signal s_next_pc_out : std_logic_vector(15 downto 0);
 	signal s_pc_out : std_logic_vector(15 downto 0);
     signal s_instr : std_logic_vector(15 downto 0);
@@ -125,8 +128,11 @@ architecture Behavioral of cat_pad is
 	signal s_ramRead_exe : std_logic;
 	signal s_wbSrc_exe : std_logic;
 	signal s_wbEN_exe : std_logic;
+	signal s_id_keep: std_logic;
+	signal s_id_clear: std_logic;
 
     -- exe 
+	signal s_exe_clear: std_logic;
     signal s_ALUres		: std_logic_vector(15 downto 0);
     signal s_ALU_oprA 	: std_logic_vector(15 downto 0);
     signal s_ALU_oprB 	: std_logic_vector(15 downto 0);
@@ -140,6 +146,8 @@ architecture Behavioral of cat_pad is
     signal s_regB_o_exe : std_logic_vector(15 downto 0);
     signal s_ALUres_o 	: std_logic_vector(15 downto 0);
     signal s_EXEPC		: std_logic_vector(15 downto 0);
+
+	signal s_willBranch	: std_logic;
 
     signal s_dstSrc_mem		: std_logic_vector(3 downto 0);
 	signal s_ramWrite_mem	: std_logic;
@@ -208,7 +216,7 @@ begin
 	u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 
     u_branch_judger : branch_judger port map(next_PC => s_next_pc_out, ALUres => s_B_ALU_res, shifted_PC => s_shifted_PC, 
-        isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_in);
+        isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_o, willBranch => s_willBranch);
 
     u_ex_mem : ex_mem port map(clk => clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
         wbSrc => s_wbSrc_exe, wbEN => s_wbEN_exe, regB => s_regB_o_exe, ALUres => s_ALUres_o, dstSrc_o => s_dstSrc_mem,
@@ -235,6 +243,30 @@ begin
     u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
         wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB,
         wbSrc => s_wbSrc_wb);
+
+	u_stall_unit : stall_unit port map(
+					exeWbEN => s_wbEN_exe,
+					exeDstSrc => s_dstSrc_exe,
+					exeRamRead => s_ramRead_exe,
+					idRegSrcA => s_regAN,
+					idRegSrcB => s_regBN,
+					exeBranchJudge => s_willBranch,
+					exeBranchTo => s_next_pc_o,
+					pcPause => s_pc_pause,
+					idKeep => s_id_keep,
+					idClear => s_id_clear,
+					exeClear => s_exe_clear,
+					pcInc => s_pc_inc,
+					ifAddr => s_pc_out
+				);
+	process(s_next_pc_o, s_next_pc_out, s_pc_inc)
+	begin
+		if s_pc_inc = '1' then
+			s_next_pc_in <= s_next_pc_out;
+		else
+			s_next_pc_in <= s_next_pc_o;
+		end if;
+	end process;
 
     
     test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
