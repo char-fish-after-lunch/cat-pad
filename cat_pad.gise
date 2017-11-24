@@ -32,6 +32,12 @@
     <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="control.prj"/>
     <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="control.stx"/>
     <file xil_pn:fileType="FILE_XST" xil_pn:name="control.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="ex_mem.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="ex_mem.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="ex_mem.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="execution.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="execution.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="execution.xst"/>
     <file xil_pn:fileType="FILE_LOG" xil_pn:name="fuse.log"/>
     <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="id_exe.prj"/>
     <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="id_exe.stx"/>
@@ -39,11 +45,23 @@
     <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="inst_decode.prj"/>
     <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="inst_decode.stx"/>
     <file xil_pn:fileType="FILE_XST" xil_pn:name="inst_decode.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="inst_fetch.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="inst_fetch.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="inst_fetch.xst"/>
     <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="isim"/>
     <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_CMD" xil_pn:name="isim.cmd"/>
     <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="mem_access.prj"/>
     <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="mem_access.stx"/>
     <file xil_pn:fileType="FILE_XST" xil_pn:name="mem_access.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="mem_wb.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="mem_wb.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="mem_wb.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="pc_controller.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="pc_controller.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="pc_controller.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="registers.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="registers.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="registers.xst"/>
     <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="test_control_beh.prj"/>
     <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_ISIM_EXE" xil_pn:name="test_control_isim_beh.exe"/>
     <file xil_pn:fileType="FILE_ISIM_MISC" xil_pn:name="test_control_isim_beh.wdb"/>
@@ -63,6 +81,10 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="OutOfDateForOutputs"/>
+      <status xil_pn:value="InputChanged"/>
+      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="alu.vhd"/>
       <outfile xil_pn:name="branch_judger.vhd"/>
       <outfile xil_pn:name="cat_pad.vhd"/>
@@ -100,6 +122,11 @@
     <transform xil_pn:end_ts="1511511002" xil_pn:in_ck="-6608089597192932736" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1511511002">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
+      <status xil_pn:value="OutOfDateForOutputs"/>
+      <status xil_pn:value="InputChanged"/>
+      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="alu.vhd"/>
       <outfile xil_pn:name="branch_judger.vhd"/>
       <outfile xil_pn:name="cat_pad.vhd"/>
@@ -125,6 +152,9 @@
     <transform xil_pn:end_ts="1511511012" xil_pn:in_ck="-6608089597192932736" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="5847787541425391035" xil_pn:start_ts="1511511002">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
+      <status xil_pn:value="InputChanged"/>
       <outfile xil_pn:name="fuse.log"/>
       <outfile xil_pn:name="isim"/>
       <outfile xil_pn:name="test_control_beh.prj"/>
@@ -134,6 +164,9 @@
     <transform xil_pn:end_ts="1511511013" xil_pn:in_ck="1800840200855801839" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="-4971457785539796888" xil_pn:start_ts="1511511012">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
+      <status xil_pn:value="OutOfDateForOutputs"/>
+      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="isim.cmd"/>
       <outfile xil_pn:name="test_control_isim_beh.wdb"/>
     </transform>

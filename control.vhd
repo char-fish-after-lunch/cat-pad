@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+
 use work.consts.ALL;
 
 -- Uncomment the following library declaration if using

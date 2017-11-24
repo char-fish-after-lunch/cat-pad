@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use work.consts.ALL;
 
 -- Uncomment the following library declaration if using
@@ -95,6 +96,7 @@ begin
 			when fwd_alu_res  => ALU_oprA <= mem_aluRes;
 			when fwd_wb_ram   => ALU_oprA <= wb_ramRes;
 			when fwd_wb_alu   => ALU_oprA <= wb_aluRes;
+			when others => ALU_oprA <= regA;
 		end case;
 	end process;
 	
@@ -110,6 +112,12 @@ begin
 			when fwd_alu_res  => ALU_oprB <= mem_aluRes;
 			when fwd_wb_ram   => ALU_oprB <= wb_ramRes;
 			when fwd_wb_alu   => ALU_oprB <= wb_aluRes;
+			when others => 
+				if (oprSrcB = '1') then
+					ALU_oprB <= immediate;
+				else
+					ALU_oprB <= regB;
+				end if;
 		end case;
 	end process;
 	
