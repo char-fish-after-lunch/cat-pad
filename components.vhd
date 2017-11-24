@@ -108,17 +108,6 @@ package components is
     end component;
 
 
-    component forward_unit port(
-		regReadSrcA : in std_logic_vector(3 downto 0);
-		regReadSrcB : in std_logic_vector(3 downto 0);
-		memDst 		: in std_logic_vector(3 downto 0);
-		wbDst 		: in std_logic_vector(3 downto 0);
-		
-		srcA	: out std_logic_vector(1 downto 0);
-		srcB	: out std_logic_vector(1 downto 0));
-    end component;
-
-
     component id_exe port(
 		clk : in std_logic;
 

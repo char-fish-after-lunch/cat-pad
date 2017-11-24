@@ -61,7 +61,7 @@ begin
 	else
 		srcA <= fwd_original;
 		--else use register or imm
-	end if;
+	end if; 
 
 	if(oprSrcB = '1') then
 		srcB <= fwd_original;
