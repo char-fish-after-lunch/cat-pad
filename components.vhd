@@ -297,6 +297,7 @@ package components is
 		wbDst 		: in std_logic_vector(3 downto 0);
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
+		wbSrc		: in std_logic;
 		--add one to check if it is reading from ram
 
 		srcA	: out std_logic_vector(1 downto 0);

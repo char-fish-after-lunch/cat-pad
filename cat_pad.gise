@@ -35,6 +35,7 @@
   <transforms xmlns="http://www.xilinx.com/XMLSchema">
     <transform xil_pn:end_ts="1511536379" xil_pn:name="TRAN_copyInitialToAbstractSimulation" xil_pn:start_ts="1511536379">
       <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
     </transform>
     <transform xil_pn:end_ts="1511536379" xil_pn:in_ck="6527840658689521886" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1511536379">
       <status xil_pn:value="SuccessfullyRun"/>
@@ -102,7 +103,7 @@
       <outfile xil_pn:name="test_forward_unit.vhd"/>
       <outfile xil_pn:name="write_back.vhd"/>
     </transform>
-    <transform xil_pn:end_ts="1511536385" xil_pn:in_ck="6527840658689521886" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-6080656031999986639" xil_pn:start_ts="1511536379">
+    <transform xil_pn:end_ts="1511538700" xil_pn:in_ck="6527840658689521886" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-6080656031999986639" xil_pn:start_ts="1511538691">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="fuse.log"/>
@@ -112,7 +113,7 @@
       <outfile xil_pn:name="test_basic_frame_isim_beh.exe"/>
       <outfile xil_pn:name="xilinxsim.ini"/>
     </transform>
-    <transform xil_pn:end_ts="1511536389" xil_pn:in_ck="-5069229535207892486" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="-3289344778190512770" xil_pn:start_ts="1511536385">
+    <transform xil_pn:end_ts="1511538714" xil_pn:in_ck="-5069229535207892486" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="-3289344778190512770" xil_pn:start_ts="1511538700">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="isim.cmd"/>

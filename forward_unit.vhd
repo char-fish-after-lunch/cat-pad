@@ -37,6 +37,7 @@ entity forward_unit is port(
 		wbDst 		: in std_logic_vector(3 downto 0);
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
+		wbSrc		: in std_logic;
 		--add one to check if it is reading from ram
 
 		srcA	: out std_logic_vector(1 downto 0);
@@ -47,16 +48,20 @@ end forward_unit;
 architecture Behavioral of forward_unit is
 
 begin
-	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB)
+	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB, wbSrc)
 	begin
 	if(regReadSrcA = memDst and regReadSrcA = wbDst and ramRead = '0') then
-		srcA <= fwd_wb_ram;
+		srcA <= fwd_alu_res;
 		--both need to write, use mem
 	elsif(regReadSrcA = memDst and ramRead = '0') then
 		srcA <= fwd_alu_res;
 		--use data from mem
 	elsif(regReadSrcA = wbDst and ramRead = '0') then
-		srcA <= fwd_wb_alu;
+		if (wbSrc = '1') then
+			srcA <= fwd_wb_alu;
+		else
+			srcA <= fwd_wb_ram;
+		end if;
 		--use data from wb
 	else
 		srcA <= fwd_original;
@@ -67,13 +72,17 @@ begin
 		srcB <= fwd_original;
 		--never use register
 	elsif(regReadSrcB = memDst and regReadSrcB = wbDst and ramRead = '0') then
-		srcB <= fwd_wb_ram;
+		srcB <= fwd_alu_res;
 		--both need to write, use mem
 	elsif(regReadSrcB = memDst and ramRead = '0') then
 		srcB <= fwd_alu_res;
 		--use data from mem
 	elsif(regReadSrcB = wbDst and ramRead = '0') then
-		srcB <= fwd_wb_alu;
+		if (wbSrc = '1') then
+			srcA <= fwd_wb_alu;
+		else
+			srcA <= fwd_wb_ram;
+		end if;
 		--use data from wb
 	else
 		srcB <= fwd_original;
