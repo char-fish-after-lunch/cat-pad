@@ -46,10 +46,15 @@
 * exeRamRead: ID/EXE中RAM是否读
 * idRegSrcA(4): ID阶段中寄存器地址A（control的输出信号）
 * idRegSrcB(4): ID阶段中寄存器地址B（control的输出信号）
+* exeBranchJudge: EXE阶段是否跳转
+* exeBranchTo(16): EXE阶段跳转地址
+* ifAddr(16): IF阶段传入的指令地址
 
 输出：
 * pcPause: 下一时钟周期时钟是否更新
 * idKeep: IF/ID寄存器保持
+* idClear: IF/ID寄存器置零
 * exeClear: ID/EXE寄存器置零
+* pcInc: PC是否自增（否则接受跳转的地址）
 
 
