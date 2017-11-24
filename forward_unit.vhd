@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use work.consts.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -47,33 +48,33 @@ architecture Behavioral of forward_unit is
 
 begin
 	if(regReadSrcA = memDst and regReadSrcA = wbDst and ramRead = '0') then
-		srcA <= "00";
+		srcA <= fwd_wb_ram;
 		--both need to write, use mem
 	elsif(regReadSrcA = memDst and ramRead = '0') then
-		srcA <= "11"
+		srcA <= fwd_alu_res
 		--use data from mem
 	elsif(regReadSrcA = wbDst and ramRead = '0') then
-		srcA <= "10";
+		srcA <= fwd_wb_alu;
 		--use data from wb
 	else
-		srcA <= "01";
+		srcA <= fwd_original;
 		--else use register or imm
 	end if;
 
 	if(oprSrcB = '1') then
-		srcB <= "01";
+		srcB <= fwd_original;
 		--never use register
 	elsif(regReadSrcB = memDst and regReadSrcB = wbDst and ramRead = '0') then
-		srcB <= "00";
+		srcB <= fwd_wb_ram;
 		--both need to write, use mem
 	elsif(regReadSrcB = memDst and ramRead = '0') then
-		srcB <= "11";
+		srcB <= fwd_alu_res;
 		--use data from mem
 	elsif(regReadSrcB = wbDst and ramRead = '0') then
-		srcB <= "10";
+		srcB <= fwd_wb_alu;
 		--use data from wb
 	else
-		srcB <= "01";
+		srcB <= fwd_original;
 		--else use register or imm
 	end if;
 
