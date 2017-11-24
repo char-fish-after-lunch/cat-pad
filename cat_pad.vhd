@@ -202,7 +202,7 @@ begin
 
     u_ex_mem : ex_mem port map(clk => clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
         wbSrc => s_wbSrc_exe, wbEN => s_wbEN_exe, regB => s_regB_o_exe, ALUres => s_ALUres_o, dstSrc_o => s_dstSrc_mem,
-        ramWrite_o => s_ramWrite_mem, ramRead_o => s_ramRead_mem, wbSrc_o => s_wbSrc_mem, wbEN_o => s_wbSrc_mem,
+        ramWrite_o => s_ramWrite_mem, ramRead_o => s_ramRead_mem, wbSrc_o => s_wbSrc_mem, wbEN_o => s_wbEN_mem,
         regB_o => s_regB_mem, ALUres_o => s_ALUres_mem);
 
     u_mem_access : mem_access port map(ram_addr => s_ALUres_mem, ram_data_in => s_regB_mem, ramWrite => s_ramWrite_mem,

@@ -89,7 +89,7 @@ begin
 			when reg_IH => regB <= IH;
 			when reg_SP => regB <= SP;
 			when reg_T  => regB <= T;
-			when others => regA <= (others => '0');
+			when others => regB <= (others => '0');
 		end case;
 	end process;
 	
