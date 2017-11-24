@@ -32,8 +32,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity if_id is port(
 	clk : in std_logic;
 
-	IFPC : in std_logic_vector(15 downto 0) := "0000000000000000";
-	inst : in std_logic_vector(15 downto 0) := "0000000000000000";
+	IFPC : in std_logic_vector(15 downto 0);
+	inst : in std_logic_vector(15 downto 0);
 	IFPC_o : out std_logic_vector(15 downto 0);
 	inst_o : out std_logic_vector(15 downto 0)
 );
