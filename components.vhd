@@ -299,8 +299,21 @@ package components is
 		writeDst : out std_logic_vector(3 downto 0);
 		isWriting : out std_logic);
     end component;
-    -- component 
-    -- end component;
+
+
+    component forward_unit port(
+		regReadSrcA : in std_logic_vector(3 downto 0);
+		regReadSrcB : in std_logic_vector(3 downto 0);
+		memDst 		: in std_logic_vector(3 downto 0);
+		wbDst 		: in std_logic_vector(3 downto 0);
+		ramRead		: in std_logic;
+		oprSrcB		: in std_logic;
+		--add one to check if it is reading from ram
+
+		srcA	: out std_logic_vector(1 downto 0);
+		srcB	: out std_logic_vector(1 downto 0)
+	);
+    end component;
     -- component 
     -- end component;
 

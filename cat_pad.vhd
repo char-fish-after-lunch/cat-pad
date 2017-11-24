@@ -173,9 +173,9 @@ architecture Behavioral of cat_pad is
 
 begin
 
-    -- TODO: remove this hack when forward unit added 
-    s_fwdSrcA <= fwd_original;
-    s_fwdSrcB <= fwd_original;
+    -- -- TODO: remove this hack when forward unit added 
+    -- s_fwdSrcA <= fwd_original;
+    -- s_fwdSrcB <= fwd_original;
 
     u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out);
     
@@ -234,6 +234,11 @@ begin
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);
+
+    u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
+        wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB);
+
+    
 
     process(s_pc_out)
     begin
