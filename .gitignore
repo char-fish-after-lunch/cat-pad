@@ -2,6 +2,10 @@
 _xmsgs
 ipcore_dir
 iseconfig
+*.cf
+build/
+*.o
+test[^.]*
 *.xst
 *.prj
 *.stx
@@ -24,3 +28,7 @@ iseconfig
 *.lst
 *.xbcd
 .lso
+isim
+*.log
+*.xmsgs
+*.ini
