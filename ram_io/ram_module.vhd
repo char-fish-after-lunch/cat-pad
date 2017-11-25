@@ -46,82 +46,75 @@ entity ram_module is port(
 end ram_module;
 
 architecture Behavioral of ram_module is
-	type ram_state is (unused, read_ram_prepare, read_ram_get_data, write_ram_prepare, write_ram_get_data);
-	signal state, next_state : ram_state := unused;
-	signal rev_clk : std_logic;
+	type ram_state is (unused, read_ram, write_ram);
+	type procedure_state is (prepare, get_data);
+	signal state : ram_state := unused;
+	signal pro_state : procedure_state := prepare;
+	signal temp_data : STD_LOGIC_VECTOR (15 downto 0);
 begin
-	rev_clk <= clk;
 	
-	process(clk, rev_clk, state, ram_isRead, ram_isUsed)
+	process(clk, ram_isRead, ram_isUsed)
 	begin
-		if (rev_clk = '1') then		
+		if (rising_edge(clk)) then		
 			-- if the ram is in the first half of the period, then the state should change immediately
 			-- according to isUsed and isRead
 			if (ram_isUsed = '1') then
 				if (ram_isRead = '1') then
-					state <= read_ram_prepare;
+					state <= read_ram;
 				else
-					state <= write_ram_prepare;
+					state <= write_ram;
 				end if;
 			else
 				state <= unused;
 			end if;
+		end if;
+
+		-- when the clk falls down, the state goes to the next state
+		if (clk = '1') then
+			pro_state <= prepare;
 		else
-			-- when the clk falls down, the state goes to the next state
-			if (falling_edge(clk)) then
-				state <= next_state;
-			end if;
+			pro_state <= get_data;
 		end if;
 	end process;
 
-	process(state)
-	begin
-		case state is
-			when unused =>
-				next_state <= unused;
-				
-			when read_ram_prepare =>
-				next_state <= read_ram_get_data;
-			when write_ram_prepare =>
-				next_state <= write_ram_get_data;
-			when read_ram_get_data =>
-				next_state <= unused;
-			when write_ram_get_data =>
-				next_state <= unused;
-		end case;
-	end process;
-
-	process(state, ram_addr, ram_data, put_data_o)
+	process(state, pro_state, ram_addr, ram_data, put_data_o)
 	begin
 		ram_en_o <= '1';
 		ram_oe_o <= '1';
 		ram_rw_o <= '1';
-		ram_addr_o <= (others => '0');
 
 		case state is
 			when unused =>
-			when read_ram_prepare =>
-				put_data_o <= (others => 'Z');
-				ram_addr_o <= "00" & ram_addr;
-				ram_oe_o <= '0';
-				ram_en_o <= '0';
-				ram_res <= put_data_o;
-			when read_ram_get_data =>
-				ram_addr_o <= "00" & ram_addr;
-				ram_oe_o <= '0';
-				ram_en_o <= '0';
-				ram_res <= put_data_o;
-			when write_ram_prepare =>
-				ram_en_o <= '0';
-				put_data_o <= ram_data;
-				ram_addr_o <= "00" & ram_addr;
-			when write_ram_get_data =>
-				ram_en_o <= '0';
-				put_data_o <= ram_data;
-				ram_addr_o <= "00" & ram_addr;
-				ram_rw_o <= '0';
+			when read_ram =>
+				if (pro_state = prepare) then 
+					put_data_o <= (others => 'Z');
+					ram_addr_o <= "00" & ram_addr;
+					ram_oe_o <= '0';
+					ram_en_o <= '0';
+					temp_data <= put_data_o;
+				else
+					put_data_o <= (others => 'Z');
+					ram_addr_o <= "00" & ram_addr;
+					ram_oe_o <= '0';
+					ram_en_o <= '0';
+					temp_data <= put_data_o;
+				end if;
+
+			when write_ram =>
+				if (pro_state = prepare) then
+					ram_en_o <= '0';
+					put_data_o <= ram_data;
+					ram_addr_o <= "00" & ram_addr;
+				else
+					ram_en_o <= '0';
+					put_data_o <= ram_data;
+					ram_addr_o <= "00" & ram_addr;
+					ram_rw_o <= '0';
+				end if;
 		end case;
 	end process;
+	
+	ram_res <= temp_data;
 
 end Behavioral;
 

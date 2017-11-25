@@ -240,9 +240,9 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_inst_o;
+            leds <= s_ALUres;
 				
-				disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
+			disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
