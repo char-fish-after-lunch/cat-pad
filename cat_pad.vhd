@@ -166,6 +166,7 @@ architecture Behavioral of cat_pad is
     signal s_if_res_data    : std_logic_vector(15 downto 0);
     signal s_ramWrite_ram	: std_logic;
     signal s_ramRead_ram	: std_logic;
+	signal s_conflict_ram	: std_logic; -- 1 if a conflict occurred
 
     signal s_ram_data : std_logic_vector(15 downto 0);
 
@@ -175,6 +176,10 @@ architecture Behavioral of cat_pad is
     signal s_wbEN_wb	: std_logic;
     signal s_ramData_wb	: std_logic_vector(15 downto 0);
     signal s_ALUres_wb	: std_logic_vector(15 downto 0);
+
+	-- stall unit
+	signal s_stall_set_pc	: std_logic;
+	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
 
 begin
 
@@ -247,6 +252,7 @@ begin
         wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, memWbEN => s_wbEN_mem);
 
 	u_stall_unit : stall_unit port map(
+					clk => clk,
 					exeWbEN => s_wbEN_exe,
 					exeDstSrc => s_dstSrc_exe,
 					exeRamRead => s_ramRead_exe,
@@ -259,11 +265,18 @@ begin
 					idClear => s_id_clear,
 					exeClear => s_exe_clear,
 					pcInc => s_pc_inc,
-					ifAddr => s_pc_out
+					ifAddr => s_pc_out,
+					setPC => s_stall_set_pc,
+					setPCVal => s_stall_set_pc_val,
+					ramConflict => s_conflict_ram
 				);
-	process(s_next_pc_o, s_next_pc_out, s_pc_inc)
+
+	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,
+			s_set_pc_val)
 	begin
-		if s_pc_inc = '1' then
+		if s_stall_set_pc = '1' then
+			s_next_pc_in <= s_set_pc_val;
+		elsif s_pc_inc = '1' then
 			s_next_pc_in <= s_next_pc_out;
 		else
 			s_next_pc_in <= s_next_pc_o;

@@ -316,6 +316,7 @@ package components is
     -- end component;
 
 	component stall_unit port(
+		clk: in std_logic;
 		exeWbEN: in std_logic;
 		exeDstSrc: in std_logic_vector(3 downto 0);
 		exeRamRead: in std_logic;
@@ -324,12 +325,15 @@ package components is
 		exeBranchJudge: in std_logic;
 		exeBranchTo: in std_logic_vector(15 downto 0);
 		ifAddr: in std_logic_vector(15 downto 0);
+		ramConflict: in std_logic;
 
 		pcPause: out std_logic;
 		idKeep: out std_logic;
 		idClear: out std_logic;
 		exeClear: out std_logic;
-		pcInc: out std_logic
+		pcInc: out std_logic;
+		setPC: out std_logic;
+		setPCVal: out std_logic_vector(15 downto 0)
 	);
 	end component;
 
