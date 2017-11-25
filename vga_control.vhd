@@ -19,6 +19,8 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use ieee.std_logic_unsigned.all;
+use ieee.std_logic_arith.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -37,6 +39,7 @@ entity vga_control is port(
         out_green : out std_logic_vector(2 downto 0);
         out_blue : out std_logic_vector(2 downto 0);
 
+        test : out std_logic_vector(2 downto 0);
         hs : out std_logic;
         vs : out std_logic
     );
@@ -67,10 +70,10 @@ b_t <= "000";
         if rst = '0' then
 			x <= (others => '0');
 		elsif clk'event and clk = '1' then
-			if x = 799 then
+			if x = "1100011111" then
 				x <= (others => '0');
 			else
-				x <= x + 1;
+				x <= x + "0000000001";
 			end if;
 		end if;
     end process;
@@ -80,11 +83,11 @@ b_t <= "000";
         if rst = '0' then
 			y <= (others => '0');
         elsif clk'event and clk = '1' then
-            if x = 799 then
-                if y = 524 then
+            if x = "1100011111" then
+                if y = "1000001100" then
                     y <= (others => '0');
                 else
-                    y <= y + 1;
+                    y <= y + "0000000001";
                 end if;
 			end if;
         end if;
@@ -95,7 +98,7 @@ b_t <= "000";
         if rst = '0' then
             hs_t <= '1';
         elsif clk'event and clk = '1' then
-            if x >= 656 and x < 752 then
+            if x >= "1010010000" and x < "1011110000" then
 		        hs_t <= '0';
 		   	else
 		        hs_t <= '1';
@@ -108,7 +111,7 @@ b_t <= "000";
         if rst = '0' then
             vs_t <= '1';
         elsif clk'event and clk = '1' then
-            if y >= 490 and y < 492 then
+            if y >= "0111101010" and y < "0111101100" then
 		        vs_t <= '0';
 		   	else
 		        vs_t <= '1';
@@ -137,13 +140,15 @@ b_t <= "000";
     process(hs_t, vs_t, r_t, g_t, b_t)
     begin
         if hs_t = '1' and vs_t = '1' then
-			out_red <= r_t;
-			out_green <= g_t;
-			out_blue <= b_t;
+			out_red <= "010";
+			out_green <= "101";
+			out_blue <= "000";
+			test <= "101"; --it is always this, why???
 		else
 			out_red <= (others => '0');
 			out_green <= (others => '0');
 			out_blue <= (others => '0');
+			test <= "000";
 		end if;
     end process;
 
