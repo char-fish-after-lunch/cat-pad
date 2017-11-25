@@ -300,7 +300,9 @@ package components is
 		regReadSrcA : in std_logic_vector(3 downto 0);
 		regReadSrcB : in std_logic_vector(3 downto 0);
 		memDst 		: in std_logic_vector(3 downto 0);
+		memWbEN		: in std_logic;
 		wbDst 		: in std_logic_vector(3 downto 0);
+		wbEN		: in std_logic;
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
 		wbSrc		: in std_logic;

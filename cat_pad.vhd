@@ -244,7 +244,7 @@ begin
 
     u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
         wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB,
-        wbSrc => s_wbSrc_wb);
+        wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, memWbEN => s_wbEN_mem);
 
 	u_stall_unit : stall_unit port map(
 					exeWbEN => s_wbEN_exe,
