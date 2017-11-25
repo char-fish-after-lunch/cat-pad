@@ -34,6 +34,7 @@ isim
 *.xbcd
 *.exe
 *.wdb
+*.vcd
 
 test_control
 
@@ -54,3 +55,5 @@ planAhead*
 *.drc
 *.ut
 *.xwbt
+
+test_basic_frame

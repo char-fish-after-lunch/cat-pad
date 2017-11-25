@@ -290,6 +290,41 @@ begin
 		end if;
 
 
+		-- case if_ram_addr is
+		-- -- LI R1 1
+		-- -- LI R2 1
+		-- -- LI R4 9
+		-- -- ADDU R1 R2 R1
+		-- -- ADDU R1 R2 R2
+		-- -- ADDIU R4 FF
+		-- -- BNEZ R4 F9
+		-- -- NOP
+		-- -- NOP
+
+		-- -- LI R1 1
+		-- -- LI R2 1
+		-- -- LI R4 9
+		-- -- BEQZ R4 4
+		-- -- ADDIU R4 FF
+		-- -- ADDU R1 R2 R1
+		-- -- ADDU R1 R2 R2
+		-- -- B FB
+		-- -- NOP
+		-- -- NOP
+
+
+
+
+		-- 	when "0000000000000000" => if_res_data <= "0110100100000001";
+		-- 	when "0000000000000001" => if_res_data <= "0110101000000001";
+		-- 	when "0000000000000010" => if_res_data <= "0110110000001001";
+		-- 	when "0000000000000011" => if_res_data <= "0010010000000100";
+		-- 	when "0000000000000100" => if_res_data <= "0100110011111111";
+		-- 	when "0000000000000101" => if_res_data <= "1110000101000101";
+		-- 	when "0000000000000110" => if_res_data <= "1110000101001001";
+		-- 	when "0000000000000111" => if_res_data <= "0001011111111011";
+		-- 	when others => if_res_data <= "0000100000000000"; -- NOP
+		-- end case;
 	end process;
 	-- a fake ram 
 

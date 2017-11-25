@@ -81,7 +81,10 @@ end cat_pad;
 architecture Behavioral of cat_pad is
 	signal isBootloaded : std_logic := '0';
 
+	signal s_pc_inc : std_logic;
 	signal s_next_pc_in : std_logic_vector(15 downto 0);
+	signal s_next_pc_o : std_logic_vector(15 downto 0);
+	signal s_pc_pause : std_logic;
 	signal s_next_pc_out : std_logic_vector(15 downto 0);
 	signal s_pc_out : std_logic_vector(15 downto 0);
     signal s_instr : std_logic_vector(15 downto 0);
@@ -136,8 +139,11 @@ architecture Behavioral of cat_pad is
 	signal s_ramRead_exe : std_logic;
 	signal s_wbSrc_exe : std_logic;
 	signal s_wbEN_exe : std_logic;
+	signal s_id_keep: std_logic;
+	signal s_id_clear: std_logic;
 
     -- exe 
+	signal s_exe_clear: std_logic;
     signal s_ALUres		: std_logic_vector(15 downto 0);
     signal s_ALU_oprA 	: std_logic_vector(15 downto 0);
     signal s_ALU_oprB 	: std_logic_vector(15 downto 0);
@@ -151,6 +157,8 @@ architecture Behavioral of cat_pad is
     signal s_regB_o_exe : std_logic_vector(15 downto 0);
     signal s_ALUres_o 	: std_logic_vector(15 downto 0);
     signal s_EXEPC		: std_logic_vector(15 downto 0);
+
+	signal s_willBranch	: std_logic;
 
     signal s_dstSrc_mem		: std_logic_vector(3 downto 0);
 	signal s_ramWrite_mem	: std_logic;
@@ -257,12 +265,14 @@ begin
 				disp2 <= bootloader_state;
 		end if;
 	 end process;
-	 
-    u_pc_controller : pc_controller port map(clk => real_clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out);
+     
+    u_pc_controller : pc_controller port map(clk => real_clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
+											pc_pause => s_pc_pause);
     
     u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
-    u_if_id : if_id port map(clk => real_clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o);
+    u_if_id : if_id port map(clk => real_clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
+							clear => s_id_clear);
 
     u_control : control port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl, dstSrc => s_dstSrc,
         immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, isCond => s_isCond, isRelative => s_isRelative,
@@ -280,7 +290,7 @@ begin
         wbEN => s_wbEN, regA_o => s_regA_o, regB_o => s_regB_o, regAN_o => s_regAN_o, regBN_o => s_regBN_o, immediate_o => s_immediate_o,
         IDPC_o => s_IDPC_o, dstSrc_o => s_dstSrc_exe, immeExt_o => s_immeExt_exe, oprSrcB_o => s_oprSrcB_exe, ALUop_o => s_ALUop_exe,
         isBranch_o => s_isBranch_exe, isCond_o => s_isCond_exe, isRelative_o => s_isRelative_exe, isMFPC_o => s_isMFPC_exe,
-        ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe);
+        ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe, clear => s_exe_clear);
 
     
     u_execution : execution port map(regA => s_regA_o, regB => s_regB_o, regAN => s_regAN_o, regBN => s_regBN_o, immediate => s_immediate_o,
@@ -292,7 +302,7 @@ begin
 	 u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 
     u_branch_judger : branch_judger port map(next_PC => s_next_pc_out, ALUres => s_B_ALU_res, shifted_PC => s_shifted_PC, 
-        isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_in);
+        isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_o, willBranch => s_willBranch);
 
     u_ex_mem : ex_mem port map(clk => real_clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
         wbSrc => s_wbSrc_exe, wbEN => s_wbEN_exe, regB => s_regB_o_exe, ALUres => s_ALUres_o, dstSrc_o => s_dstSrc_mem,
@@ -318,7 +328,31 @@ begin
 
     u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
         wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB,
-        wbSrc => s_wbSrc_wb);
+        wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, memWbEN => s_wbEN_mem);
+
+	u_stall_unit : stall_unit port map(
+					exeWbEN => s_wbEN_exe,
+					exeDstSrc => s_dstSrc_exe,
+					exeRamRead => s_ramRead_exe,
+					idRegSrcA => s_regAN,
+					idRegSrcB => s_regBN,
+					exeBranchJudge => s_willBranch,
+					exeBranchTo => s_next_pc_o,
+					pcPause => s_pc_pause,
+					idKeep => s_id_keep,
+					idClear => s_id_clear,
+					exeClear => s_exe_clear,
+					pcInc => s_pc_inc,
+					ifAddr => s_pc_out
+				);
+	process(s_next_pc_o, s_next_pc_out, s_pc_inc)
+	begin
+		if s_pc_inc = '1' then
+			s_next_pc_in <= s_next_pc_out;
+		else
+			s_next_pc_in <= s_next_pc_o;
+		end if;
+	end process;
 
     
     -- test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;

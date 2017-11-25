@@ -9,7 +9,7 @@
 -- Target Devices: 
 -- Tool versions: 
 -- Description: 
---
+--	This is the stall unit for CATPAD.
 -- Dependencies: 
 --
 -- Revision: 
@@ -29,13 +29,51 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+
 entity stall_unit is
+	port(
+		exeWbEN: in std_logic;
+		exeDstSrc: in std_logic_vector(3 downto 0);
+		exeRamRead: in std_logic;
+		idRegSrcA: in std_logic_vector(3 downto 0);
+		idRegSrcB: in std_logic_vector(3 downto 0);
+		exeBranchJudge: in std_logic;
+		exeBranchTo: in std_logic_vector(15 downto 0);
+		ifAddr: in std_logic_vector(15 downto 0);
+
+		pcPause: out std_logic;
+		idKeep: out std_logic;
+		idClear: out std_logic;
+		exeClear: out std_logic;
+		pcInc: out std_logic
+	);
 end stall_unit;
 
 architecture Behavioral of stall_unit is
 
 begin
-
+	process(exeWbEN, exeDstSrc, exeRamRead, idRegSrcA, idRegSrcB,
+		exeBranchJudge, exeBranchTo, ifAddr)
+	begin
+		-- deals with RAW conflict
+		if (exeWbEN = '1') and (exeRamRead = '1') and
+			((exeDstSrc = idRegSrcA) or (exeDstSrc = idRegSrcB)) then
+			pcPause <= '1';
+			idKeep <= '1';
+			exeClear <= '1';
+		else
+			pcPause <= '0';
+			idKeep <= '0';
+			exeClear <= '0';
+		end if;
+		if (exeBranchJudge = '1') and (exeBranchTo /= ifAddr) then
+			idClear <= '1';
+			pcInc <= '0';
+		else
+			idClear <= '0';
+			pcInc <= '1';
+		end if;
+	end process;
 
 end Behavioral;
 
