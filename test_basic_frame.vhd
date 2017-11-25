@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use std.textio.all;
-use IEEE.STD_LOGIC_TEXTIO.ALL;
 
 
 entity test_basic_frame is

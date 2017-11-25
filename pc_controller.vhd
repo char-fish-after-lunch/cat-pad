@@ -33,6 +33,7 @@ entity pc_controller is port(
 	clk : in std_logic;
 	-- pause : in std_logic;
 	next_pc_in : in std_logic_vector(15 downto 0);
+	pc_pause : in std_logic;
 	next_pc_out : out std_logic_vector(15 downto 0);
 	pc_out : out std_logic_vector(15 downto 0)
 	
@@ -45,7 +46,7 @@ begin
 	
 	process(clk)
 	begin
-		if (rising_edge(clk)) then
+		if (rising_edge(clk) and (pc_pause = '0')) then
 			inner_pc <= next_pc_in;
 		end if;
 	end process;

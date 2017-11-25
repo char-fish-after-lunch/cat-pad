@@ -32,6 +32,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity if_id is port(
 	clk : in std_logic;
 
+	keep : in std_logic;
+	clear : in std_logic;
+
 	IFPC : in std_logic_vector(15 downto 0);
 	inst : in std_logic_vector(15 downto 0);
 	IFPC_o : out std_logic_vector(15 downto 0);
@@ -47,8 +50,13 @@ begin
 	process(clk)
 	begin
 		if (rising_edge(clk)) then
-			inner_IFPC <= IFPC;
-			inner_inst <= inst;
+			if clear = '1' then
+				inner_IFPC <= (15 downto 0 => '0');
+				inner_inst <= (15 downto 0 => '0');
+			elsif keep = '0' then
+				inner_IFPC <= IFPC;
+				inner_inst <= inst;
+			end if;
 		end if;
 	end process;
 	

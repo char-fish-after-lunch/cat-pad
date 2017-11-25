@@ -26,6 +26,7 @@ package components is
         isCond		:	in std_logic;
         isRelative	:	in std_logic;
 
+		willBranch	:	out std_logic;
         next_PC_o	: out std_logic_vector(15 downto 0));
 	end component; 
     
@@ -110,6 +111,7 @@ package components is
 
     component id_exe port(
 		clk : in std_logic;
+		clear : in std_logic;
 
 		regA 			:  in std_logic_vector(15 downto 0);
 		regB 			:  in std_logic_vector(15 downto 0);
@@ -152,6 +154,9 @@ package components is
 
     component if_id port(
         clk : in std_logic;
+
+		keep : in std_logic;
+		clear : in std_logic;
 
         IFPC : in std_logic_vector(15 downto 0);
         inst : in std_logic_vector(15 downto 0);
@@ -219,6 +224,7 @@ package components is
         clk : in std_logic;
         -- pause : in std_logic;
         next_pc_in : in std_logic_vector(15 downto 0);
+		pc_pause : in std_logic;
         next_pc_out : out std_logic_vector(15 downto 0);
         pc_out : out std_logic_vector(15 downto 0));
     end component;
@@ -294,7 +300,9 @@ package components is
 		regReadSrcA : in std_logic_vector(3 downto 0);
 		regReadSrcB : in std_logic_vector(3 downto 0);
 		memDst 		: in std_logic_vector(3 downto 0);
+		memWbEN		: in std_logic;
 		wbDst 		: in std_logic_vector(3 downto 0);
+		wbEN		: in std_logic;
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
 		wbSrc		: in std_logic;
@@ -306,5 +314,23 @@ package components is
     end component;
     -- component 
     -- end component;
+
+	component stall_unit port(
+		exeWbEN: in std_logic;
+		exeDstSrc: in std_logic_vector(3 downto 0);
+		exeRamRead: in std_logic;
+		idRegSrcA: in std_logic_vector(3 downto 0);
+		idRegSrcB: in std_logic_vector(3 downto 0);
+		exeBranchJudge: in std_logic;
+		exeBranchTo: in std_logic_vector(15 downto 0);
+		ifAddr: in std_logic_vector(15 downto 0);
+
+		pcPause: out std_logic;
+		idKeep: out std_logic;
+		idClear: out std_logic;
+		exeClear: out std_logic;
+		pcInc: out std_logic
+	);
+	end component;
 
 end components;
