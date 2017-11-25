@@ -77,6 +77,7 @@ architecture Behavioral of cat_pad is
 	signal s_next_pc_out : std_logic_vector(15 downto 0);
 	signal s_pc_out : std_logic_vector(15 downto 0);
     signal s_instr : std_logic_vector(15 downto 0);
+	signal s_raw_instr : std_logic_vector(15 downto 0);
 
     signal s_IFPC_o : std_logic_vector(15 downto 0);
     signal s_inst_o : std_logic_vector(15 downto 0);
@@ -190,7 +191,7 @@ begin
     u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
 											pc_pause => s_pc_pause);
     
-    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
+    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_raw_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
     u_if_id : if_id port map(clk => clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
 							clear => s_id_clear);
@@ -271,11 +272,24 @@ begin
 					ramConflict => s_conflict_ram
 				);
 
+	u_instruction_forward_unit : instruction_forward_unit port map(
+					idRamWrite => s_ramWrite,
+					idRegA => s_regA,
+					idRegB => s_regB,
+					idImme => s_immediate,
+					exeRamWrite => s_ramWrite_exe,
+					exeAluRes => s_ALUres,
+					exeRegB => s_regB_o_exe,
+					address => s_pc_out,
+					originalInstr => s_raw_instr,
+					instr => s_instr 
+				);
+
 	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,
-			s_set_pc_val)
+			s_stall_set_pc_val)
 	begin
 		if s_stall_set_pc = '1' then
-			s_next_pc_in <= s_set_pc_val;
+			s_next_pc_in <= s_stall_set_pc_val;
 		elsif s_pc_inc = '1' then
 			s_next_pc_in <= s_next_pc_out;
 		else
