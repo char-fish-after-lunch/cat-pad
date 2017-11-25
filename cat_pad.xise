@@ -126,6 +126,9 @@
     <file xil_pn:name="cat_pad.ucf" xil_pn:type="FILE_UCF">
       <association xil_pn:name="Implementation" xil_pn:seqID="85"/>
     </file>
+    <file xil_pn:name="ram_io/bootloader.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="Implementation" xil_pn:seqID="87"/>
+    </file>
   </files>
 
   <properties>

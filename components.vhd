@@ -304,7 +304,28 @@ package components is
 		srcB	: out std_logic_vector(1 downto 0)
 	);
     end component;
-    -- component 
-    -- end component;
+
+
+    component bootloader port(
+		clk : in std_logic;
+		flashByte : out std_logic;
+		flashVpen : out std_logic;
+		flashCE : out std_logic;
+		flashOE : out std_logic;
+		flashWE : out std_logic;
+		flashRP : out std_logic;
+		flash_addr : out std_logic_vector(22 downto 0);
+		flash_data : inout std_logic_vector(15 downto 0);
+		
+		ram1addr : out  STD_LOGIC_VECTOR (17 downto 0);
+		ram1data : inout  STD_LOGIC_VECTOR (15 downto 0);
+		ram1oe : out  STD_LOGIC;
+		ram1rw : out  STD_LOGIC;
+		ram1en : out  STD_LOGIC;
+		
+		rdn : out  STD_LOGIC;
+		wrn : out  STD_LOGIC
+	);
+    end component;
 
 end components;
