@@ -49,7 +49,8 @@ end uart_module;
 architecture Behavioral of uart_module is
 
 begin
-
-
+	rdn <= '1';
+	wrn <= '1';
+	uart_res <= (others => '0');
 end Behavioral;
 

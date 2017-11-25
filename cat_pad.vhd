@@ -58,14 +58,14 @@ entity cat_pad is port(
     wrn : out  STD_LOGIC;
     tbre : in  STD_LOGIC;
     tsre : in  STD_LOGIC;
-    data_ready : in  STD_LOGIC;
+    data_ready : in  STD_LOGIC
 
 
-    test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
-    test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
-    test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
-    test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
-    test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
+    -- test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
+    -- test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
+    -- test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
+    -- test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
+    -- test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
 );
 end cat_pad;
 
@@ -237,7 +237,7 @@ begin
         wbSrc => s_wbSrc_wb);
 
     
-    test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
+    -- test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
 
     process(s_pc_out)
     begin
@@ -261,10 +261,10 @@ begin
 
     
 
-    test_ALUres <= s_ALUres_o;
-    test_regSrcA <= s_regSrcA;
-    test_regSrcB <= s_regSrcB;
-    test_regA <= s_ALU_oprB;
+    -- test_ALUres <= s_ALUres_o;
+    -- test_regSrcA <= s_regSrcA;
+    -- test_regSrcB <= s_regSrcB;
+    -- test_regA <= s_ALU_oprB;
 
 
 end Behavioral;
