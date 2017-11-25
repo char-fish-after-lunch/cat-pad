@@ -47,33 +47,29 @@ end vga_control;
 
 architecture Behavioral of vga_control is
     -- some tmp signal
-    signal clk, clk_2 : std_logic;
-    signal r_t, g_t, b_t : std_logic_vector (2 downto 0);
+    signal clk, clk_2 : std_logic := '0';
+    signal r_t, g_t, b_t, test_t : std_logic_vector (2 downto 0);
     signal hs_t,vs_t : std_logic;
-    signal x, y : std_logic_vector(9 downto 0);
+    signal x, y : integer range 0 to 1000;
 
 begin
-clk <= clk_2;
-r_t <= "000";
-g_t <= "111";
-b_t <= "000";
 
     process (clk_in) -- make that 25Hz
 	begin
 		if clk_in'event and clk_in = '1' then
-			clk_2 <= not clk_2;
+			clk <= not clk;
 		end if;
     end process;
     
     process(clk, rst) --行区间扫描
     begin
         if rst = '0' then
-			x <= (others => '0');
+			x <= 0;
 		elsif clk'event and clk = '1' then
-			if x = "1100011111" then
-				x <= (others => '0');
+			if x = 799 then
+				x <= 0;
 			else
-				x <= x + "0000000001";
+				x <= x + 1;
 			end if;
 		end if;
     end process;
@@ -81,13 +77,14 @@ b_t <= "000";
     process(clk, rst) --场区间扫描
     begin
         if rst = '0' then
-			y <= (others => '0');
+			y <= 0; 
+			y <= 0;
         elsif clk'event and clk = '1' then
-            if x = "1100011111" then
-                if y = "1000001100" then
-                    y <= (others => '0');
+            if x = 799 then
+                if y = 524 then
+                    y <= 0;
                 else
-                    y <= y + "0000000001";
+                    y <= y + 1;
                 end if;
 			end if;
         end if;
@@ -98,7 +95,7 @@ b_t <= "000";
         if rst = '0' then
             hs_t <= '1';
         elsif clk'event and clk = '1' then
-            if x >= "1010010000" and x < "1011110000" then
+            if x >= 656 and x < 752 then
 		        hs_t <= '0';
 		   	else
 		        hs_t <= '1';
@@ -111,7 +108,7 @@ b_t <= "000";
         if rst = '0' then
             vs_t <= '1';
         elsif clk'event and clk = '1' then
-            if y >= "0111101010" and y < "0111101100" then
+            if y >= 490 and y < 492 then
 		        vs_t <= '0';
 		   	else
 		        vs_t <= '1';
@@ -136,19 +133,41 @@ b_t <= "000";
             vs <= vs_t;
         end if;
     end process;
+    
+    process(clk, rst, x, y)
+    begin
+        if rst = '0' then
+            r_t <= "000";
+            g_t <= "000";
+            b_t <= "000";
+            test_t <= "000";
+        elsif clk'event and clk = '1' then
+            if x < 20 and y < 20 then
+                r_t <= "010";
+                g_t <= "101";
+                b_t <= "000";
+                test_t <= "110";
+            else
+                r_t <= "111";
+                g_t <= "111";
+                b_t <= "010";
+                test_t <= "100";
+            end if;
+        end if;
+    end process;
 
     process(hs_t, vs_t, r_t, g_t, b_t)
-    begin
+    begin 
         if hs_t = '1' and vs_t = '1' then
-			out_red <= "010";
-			out_green <= "101";
-			out_blue <= "000";
-			test <= "101"; --it is always this, why???
+			out_red <= r_t;
+			out_green <= g_t;
+			out_blue <= b_t;
+			test <= test_t; --it is always this, why???
 		else
 			out_red <= (others => '0');
 			out_green <= (others => '0');
 			out_blue <= (others => '0');
-			test <= "000";
+			test <= test_t;
 		end if;
     end process;
 
