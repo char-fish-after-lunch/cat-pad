@@ -66,7 +66,7 @@ entity cat_pad is port(
     flashOE : out std_logic;
     flashWE : out std_logic;
     flashRP : out std_logic;
-    flash_addr : out std_logic_vector(22 downto 0);
+    flash_addr : out std_logic_vector(22 downto 1);
     flash_data : inout std_logic_vector(15 downto 0)
 
 
@@ -197,7 +197,12 @@ architecture Behavioral of cat_pad is
     signal ram1oe_pad : STD_LOGIC;
     signal ram1rw_pad : STD_LOGIC;
     signal ram1en_pad : STD_LOGIC;
+	 
+	 signal 
+		res_log : STD_LOGIC_VECTOR (15 downto 0);
 
+	 signal 
+		bootloader_state : STD_LOGIC_VECTOR (6 downto 0);
 begin
 
 	u_bootloader : bootloader port map(
@@ -218,14 +223,16 @@ begin
         ram1rw => ram1rw_bootloader,
         wrn => wrn_bootloader,
         rdn => rdn_bootloader,
-        isBootloaded_o => isBootloaded
+        isBootloaded_o => isBootloaded,
+		  bootloader_state => bootloader_state,
+		  res_log => res_log
     ); 
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad)
 	 begin
 		-- if not bootloaded, all clock is blocked
-		if (isBootloaded) then
+		if (isBootloaded = '1') then
 			real_clk <= manual_clk;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
@@ -233,6 +240,9 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
+            leds <= s_inst_o;
+				
+				disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -242,6 +252,9 @@ begin
             ram1en <= ram1en_bootloader;
             ram1oe <= ram1oe_bootloader;
             ram1rw <= ram1rw_bootloader;
+            
+            leds <= res_log;
+				disp2 <= bootloader_state;
 		end if;
 	 end process;
 	 
@@ -326,9 +339,7 @@ begin
         end case;
     end process;
 
-    disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
 
-    leds <= s_inst_o;
 
     
 

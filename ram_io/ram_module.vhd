@@ -107,6 +107,7 @@ begin
 				ram_en_o <= '0';
 				ram_res <= put_data_o;
 			when read_ram_get_data =>
+				ram_addr_o <= "00" & ram_addr;
 				ram_oe_o <= '0';
 				ram_en_o <= '0';
 				ram_res <= put_data_o;
