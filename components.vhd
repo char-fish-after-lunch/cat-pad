@@ -265,6 +265,7 @@ package components is
     end component;
 
     component registers port(
+		clk : in std_logic;
 		regSrcA : in std_logic_vector(3 downto 0);
 		regSrcB : in std_logic_vector(3 downto 0);
 		
@@ -274,7 +275,11 @@ package components is
 		writeEN		: in std_logic;
 	
 		regA : out std_logic_vector(15 downto 0);
-		regB : out std_logic_vector(15 downto 0));
+		regB : out std_logic_vector(15 downto 0);
+		test_reg_out_1 : out std_logic_vector(15 downto 0);
+		test_reg_out_2 : out std_logic_vector(15 downto 0)
+
+		);
     end component;
 
     -- component stall_unit port(

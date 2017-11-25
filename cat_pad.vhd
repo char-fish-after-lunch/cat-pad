@@ -211,6 +211,11 @@ architecture Behavioral of cat_pad is
 
 	 signal 
 		bootloader_state : STD_LOGIC_VECTOR (6 downto 0);
+
+    signal
+		test_reg_out_1 : std_logic_vector(15 downto 0);
+    signal
+		test_reg_out_2 : std_logic_vector(15 downto 0);
 begin
 
 	u_bootloader : bootloader port map(
@@ -237,7 +242,8 @@ begin
     ); 
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
-        rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad)
+        rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_ALU_oprA,
+		   s_ALU_oprB, bootloader_state, test_reg_out_1, test_reg_out_2)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
@@ -248,9 +254,9 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_ALUres;
+            leds <= test_reg_out_1(7 downto 0) & test_reg_out_2(7 downto 0);
 				
-			disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
+			disp2 <= s_regB(6 downto 0);
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -261,8 +267,8 @@ begin
             ram1oe <= ram1oe_bootloader;
             ram1rw <= ram1rw_bootloader;
             
-            leds <= res_log;
-				disp2 <= bootloader_state;
+			disp2 <= bootloader_state;
+			leds <= "0000000000000000";
 		end if;
 	 end process;
      
@@ -281,8 +287,9 @@ begin
     u_inst_decode : inst_decode port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl,
         immeExt => s_immeExt, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate);
 		
-    u_registers : registers port map(regSrcA => s_regSrcA, regSrcB => s_regSrcB, writeSrc => s_writeSrc, writeData => s_writeData,
-        writeEN => s_writeEN, regA => s_regA, regB => s_regB);
+    u_registers : registers port map(clk => real_clk, regSrcA => s_regSrcA, regSrcB => s_regSrcB, writeSrc => s_writeSrc, 
+        writeData => s_writeData, writeEN => s_writeEN, regA => s_regA, regB => s_regB, test_reg_out_1 => test_reg_out_1,
+         test_reg_out_2 => test_reg_out_2);
     
     u_id_exe : id_exe port map(clk => real_clk, regA => s_regA, regB => s_regB, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate,
         IDPC => s_IFPC_o, dstSrc => s_dstSrc, immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, 
