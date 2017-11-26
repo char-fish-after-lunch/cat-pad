@@ -59,17 +59,28 @@ entity cat_pad is port(
     tbre : in  STD_LOGIC;
     tsre : in  STD_LOGIC;
     data_ready : in  STD_LOGIC;
+    
+    flashByte : out std_logic;
+    flashVpen : out std_logic;
+    flashCE : out std_logic;
+    flashOE : out std_logic;
+    flashWE : out std_logic;
+    flashRP : out std_logic;
+    flash_addr : out std_logic_vector(22 downto 1);
+    flash_data : inout std_logic_vector(15 downto 0)
 
 
-    test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
-    test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
-    test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
-    test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
-    test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
+    -- test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
+    -- test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
+    -- test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
+    -- test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
+    -- test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
 );
 end cat_pad;
 
 architecture Behavioral of cat_pad is
+	signal isBootloaded : std_logic := '0';
+
 	signal s_pc_inc : std_logic;
 	signal s_next_pc_in : std_logic_vector(15 downto 0);
 	signal s_next_pc_o : std_logic_vector(15 downto 0);
@@ -182,18 +193,107 @@ architecture Behavioral of cat_pad is
 	signal s_stall_set_pc	: std_logic;
 	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
 
+	signal real_clk : std_logic := '0';
+
+    signal wrn_bootloader : std_logic;
+    signal rdn_bootloader : std_logic;
+     
+    signal ram1addr_bootloader : STD_LOGIC_VECTOR (17 downto 0);
+    signal ram1oe_bootloader : STD_LOGIC;
+    signal ram1rw_bootloader : STD_LOGIC;
+    signal ram1en_bootloader : STD_LOGIC;
+
+    
+    signal wrn_pad : std_logic;
+    signal rdn_pad : std_logic;
+     
+    signal ram1addr_pad : STD_LOGIC_VECTOR (17 downto 0);
+    signal ram1oe_pad : STD_LOGIC;
+    signal ram1rw_pad : STD_LOGIC;
+    signal ram1en_pad : STD_LOGIC;
+	 
+	 signal 
+		res_log : STD_LOGIC_VECTOR (15 downto 0);
+
+	 signal 
+		bootloader_state : STD_LOGIC_VECTOR (6 downto 0);
+
+    signal
+		test_reg_out_1 : std_logic_vector(15 downto 0);
+    signal
+		test_reg_out_2 : std_logic_vector(15 downto 0);
+
+    signal s_hasConflict : std_logic;
+	 
+    signal s_ram2oe : STD_LOGIC;
+    signal s_ram2rw : STD_LOGIC;
+    signal s_ram2en : STD_LOGIC;
 begin
 
-    -- -- TODO: remove this hack when forward unit added 
-    -- s_fwdSrcA <= fwd_original;
-    -- s_fwdSrcB <= fwd_original;
+	u_bootloader : bootloader port map(
+        clk => clk,
+        isBootloaded => isBootloaded,
+        flashByte => flashByte,
+        flashVpen => flashVpen,
+        flashCE => flashCE,
+        flashOE => flashOE,
+        flashWE => flashWE,
+        flashRP => flashRP,
+        flash_addr => flash_addr,
+        flash_data => flash_data,
+        ram1addr => ram1addr_bootloader,
+        ram1data => ram1data,
+        ram1oe => ram1oe_bootloader,
+        ram1en => ram1en_bootloader,
+        ram1rw => ram1rw_bootloader,
+        wrn => wrn_bootloader,
+        rdn => rdn_bootloader,
+        isBootloaded_o => isBootloaded,
+		  bootloader_state => bootloader_state,
+		  res_log => res_log
+    ); 
+	 
+	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
+        rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_ram2en, s_ram2oe, s_ram2rw)
+	 begin
+		-- if not bootloaded, all clock is blocked
+		if (isBootloaded = '1') then
+			real_clk <= manual_clk;
+            wrn <= wrn_pad;
+            rdn <= rdn_pad;
+            ram1addr <= ram1addr_pad;
+            ram1en <= ram1en_pad;
+            ram1oe <= ram1oe_pad;
+            ram1rw <= ram1rw_pad;
+            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_ram2en & s_ram2oe & s_ram2rw & s_mem_ram_data(5 downto 0);
+				--leds <= test_reg_out_1;
+			disp2 <= s_regB(6 downto 0);
+            -- signals connect to real CPU
+		else 
+			real_clk <= '0';
+            wrn <= wrn_bootloader;
+            rdn <= rdn_bootloader;
+            ram1addr <= ram1addr_bootloader;
+            ram1en <= ram1en_bootloader;
+            ram1oe <= ram1oe_bootloader;
+            ram1rw <= ram1rw_bootloader;
+            
+			disp2 <= bootloader_state;
+			leds <= "0000000000000000";
+		end if;
+	 end process;
 
-    u_pc_controller : pc_controller port map(clk => clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
+     ram2en <= s_ram2en;
+     ram2oe <= s_ram2oe;
+     ram2rw <= s_ram2rw;
+     
+    u_pc_controller : pc_controller port map(clk => real_clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
 											pc_pause => s_pc_pause);
     
     u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_raw_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
-    u_if_id : if_id port map(clk => clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
+    u_if_id : if_id port map(clk => real_clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
 							clear => s_id_clear);
 
     u_control : control port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl, dstSrc => s_dstSrc,
@@ -203,10 +303,11 @@ begin
     u_inst_decode : inst_decode port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl,
         immeExt => s_immeExt, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate);
 		
-    u_registers : registers port map(regSrcA => s_regSrcA, regSrcB => s_regSrcB, writeSrc => s_writeSrc, writeData => s_writeData,
-        writeEN => s_writeEN, regA => s_regA, regB => s_regB);
+    u_registers : registers port map(clk => real_clk, regSrcA => s_regSrcA, regSrcB => s_regSrcB, writeSrc => s_writeSrc, 
+        writeData => s_writeData, writeEN => s_writeEN, regA => s_regA, regB => s_regB, test_reg_out_1 => test_reg_out_1,
+         test_reg_out_2 => test_reg_out_2);
     
-    u_id_exe : id_exe port map(clk => clk, regA => s_regA, regB => s_regB, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate,
+    u_id_exe : id_exe port map(clk => real_clk, regA => s_regA, regB => s_regB, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate,
         IDPC => s_IFPC_o, dstSrc => s_dstSrc, immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, 
         isCond => s_isCond, isRelative => s_isRelative, isMFPC => s_isMFPC, ramWrite => s_ramWrite, ramRead => s_ramRead, wbSrc => s_wbSrc,
         wbEN => s_wbEN, regA_o => s_regA_o, regB_o => s_regB_o, regAN_o => s_regAN_o, regBN_o => s_regBN_o, immediate_o => s_immediate_o,
@@ -221,12 +322,12 @@ begin
         wb_ramRes => s_ramData_wb, wb_aluRes => s_ALUres_wb, regA_fwd => s_regA_fwd, regB_fwd => s_regB_fwd, regB_o => s_regB_o_exe, 
         ALUres_o => s_ALUres_o, out_PC => s_EXEPC);
 		
-	u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
+	 u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 
     u_branch_judger : branch_judger port map(next_PC => s_next_pc_out, ALUres => s_B_ALU_res, shifted_PC => s_shifted_PC, 
         isBranch => s_isBranch_exe, isCond => s_isCond_exe, isRelative => s_isRelative_exe, next_PC_o => s_next_pc_o, willBranch => s_willBranch);
 
-    u_ex_mem : ex_mem port map(clk => clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
+    u_ex_mem : ex_mem port map(clk => real_clk, dstSrc => s_dstSrc_exe, ramWrite => s_ramWrite_exe, ramRead => s_ramRead_exe,
         wbSrc => s_wbSrc_exe, wbEN => s_wbEN_exe, regB => s_regB_o_exe, ALUres => s_ALUres_o, dstSrc_o => s_dstSrc_mem,
         ramWrite_o => s_ramWrite_mem, ramRead_o => s_ramRead_mem, wbSrc_o => s_wbSrc_mem, wbEN_o => s_wbEN_mem,
         regB_o => s_regB_mem, ALUres_o => s_ALUres_mem);
@@ -235,15 +336,15 @@ begin
         ramRead => s_ramRead_mem, ramWrite_o => s_ramWrite_ram, ramRead_o => s_ramRead_ram, ram_data_o => s_mem_ram_data,
         ram_addr_o => s_mem_ram_addr, ram_return => s_res_data, ram_return_o => s_ram_data);
 		
-    u_mem_wb : mem_wb port map(clk => clk, dstSrc => s_dstSrc_mem, wbSrc => s_wbSrc_mem, wbEN => s_wbEN_mem,
+    u_mem_wb : mem_wb port map(clk => real_clk, dstSrc => s_dstSrc_mem, wbSrc => s_wbSrc_mem, wbEN => s_wbEN_mem,
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb);
 		
-    u_ram_interactor: ram_interactor port map(clk => clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
-        if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr, ram1oe => ram1oe, ram1rw => ram1rw, ram1en => ram1en,
-        ram2data => ram2data, ram2addr => ram2addr, ram2oe => ram2oe, ram2rw => ram2rw, ram2en => ram2en, rdn => rdn, wrn => wrn, 
-        tbre => tbre, tsre => tsre, data_ready => data_ready);
+        if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
+        ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
+        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict);
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);
@@ -298,7 +399,7 @@ begin
 	end process;
 
     
-    test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
+    -- test_regB <= s_regA_fwd & s_regB_fwd & s_dstSrc_mem & s_dstSrc_wb;
 
     process(s_pc_out)
     begin
@@ -316,16 +417,14 @@ begin
         end case;
     end process;
 
-    disp2 <= s_fwdSrcA & "000" & s_fwdSrcB;
 
-    leds <= s_inst_o;
 
     
 
-    test_ALUres <= s_ALUres_o;
-    test_regSrcA <= s_regSrcA;
-    test_regSrcB <= s_regSrcB;
-    test_regA <= s_ALU_oprB;
+    -- test_ALUres <= s_ALUres_o;
+    -- test_regSrcA <= s_regSrcA;
+    -- test_regSrcB <= s_regSrcB;
+    -- test_regA <= s_ALU_oprB;
 
 
 end Behavioral;

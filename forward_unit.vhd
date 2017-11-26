@@ -50,7 +50,7 @@ end forward_unit;
 architecture Behavioral of forward_unit is
 
 begin
-	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB, wbSrc)
+	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB, wbSrc, wbEN, memWbEN)
 	begin
 	if(regReadSrcA = memDst and ramRead = '0' and memWbEN = '1') then
 		srcA <= fwd_alu_res;
@@ -75,9 +75,9 @@ begin
 		--use data from mem
 	elsif(regReadSrcB = wbDst and wbEN = '1') then
 		if (wbSrc = '1') then
-			srcA <= fwd_wb_alu;
+			srcB <= fwd_wb_alu;
 		else
-			srcA <= fwd_wb_ram;
+			srcB <= fwd_wb_ram;
 		end if;
 		--use data from wb
 	else
