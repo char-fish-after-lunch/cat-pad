@@ -261,7 +261,9 @@ package components is
 		wrn : out  STD_LOGIC;
 		tbre : in  STD_LOGIC;
 		tsre : in  STD_LOGIC;
-		data_ready : in  STD_LOGIC);
+		data_ready : in  STD_LOGIC;
+		
+		hasConflict : out STD_LOGIC);
     end component;
 
     component registers port(

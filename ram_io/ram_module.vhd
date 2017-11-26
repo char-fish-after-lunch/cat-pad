@@ -55,18 +55,16 @@ begin
 	
 	process(clk, ram_isRead, ram_isUsed)
 	begin
-		if (rising_edge(clk)) then		
-			-- if the ram is in the first half of the period, then the state should change immediately
-			-- according to isUsed and isRead
-			if (ram_isUsed = '1') then
-				if (ram_isRead = '1') then
-					state <= read_ram;
-				else
-					state <= write_ram;
-				end if;
+		-- if the ram is in the first half of the period, then the state should change immediately
+		-- according to isUsed and isRead
+		if (ram_isUsed = '1') then
+			if (ram_isRead = '1') then
+				state <= read_ram;
 			else
-				state <= unused;
+				state <= write_ram;
 			end if;
+		else
+			state <= unused;
 		end if;
 
 		-- when the clk falls down, the state goes to the next state
@@ -105,11 +103,12 @@ begin
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
 					ram_addr_o <= "00" & ram_addr;
+					ram_rw_o <= '0';
 				else
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
 					ram_addr_o <= "00" & ram_addr;
-					ram_rw_o <= '0';
+					ram_rw_o <= '1';
 				end if;
 		end case;
 	end process;
