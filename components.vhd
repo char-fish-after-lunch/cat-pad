@@ -374,12 +374,12 @@ package components is
 	component instruction_forward_unit port(
 		idRamWrite: in std_logic;
 		idRegA: in std_logic_vector(15 downto 0);
-		idRegB: out std_logic_vector(15 downto 0);
-		idImme: out std_logic_vector(15 downto 0);
+		idRegB: in std_logic_vector(15 downto 0);
+		idImme: in std_logic_vector(15 downto 0);
 
 		exeRamWrite: in std_logic;
 		exeAluRes: in std_logic_vector(15 downto 0);
-		exeRegB: out std_logic_vector(15 downto 0);
+		exeRegB: in std_logic_vector(15 downto 0);
 
 		address: in std_logic_vector(15 downto 0);
 		originalInstr: in std_logic_vector(15 downto 0);

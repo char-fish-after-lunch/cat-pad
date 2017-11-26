@@ -178,7 +178,6 @@ architecture Behavioral of cat_pad is
     signal s_if_res_data    : std_logic_vector(15 downto 0);
     signal s_ramWrite_ram	: std_logic;
     signal s_ramRead_ram	: std_logic;
-	signal s_conflict_ram	: std_logic; -- 1 if a conflict occurred
 
     signal s_ram_data : std_logic_vector(15 downto 0);
 
@@ -255,7 +254,7 @@ begin
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_ram2en, s_ram2oe, s_ram2rw)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_pc_pause, s_id_clear, s_pc_inc)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
@@ -266,7 +265,7 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_ram2en & s_ram2oe & s_ram2rw & s_mem_ram_data(5 downto 0);
+            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_pc_pause & s_id_clear & s_pc_inc & s_mem_ram_data(5 downto 0);
 				--leds <= test_reg_out_1;
 			disp2 <= s_regB(6 downto 0);
             -- signals connect to real CPU
@@ -370,7 +369,7 @@ begin
 					ifAddr => s_pc_out,
 					setPC => s_stall_set_pc,
 					setPCVal => s_stall_set_pc_val,
-					ramConflict => s_conflict_ram
+					ramConflict => s_hasConflict
 				);
 
 	u_instruction_forward_unit : instruction_forward_unit port map(

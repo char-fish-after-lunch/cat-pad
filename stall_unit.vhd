@@ -63,7 +63,7 @@ architecture Behavioral of stall_unit is
 	signal stashedPCUpdate : std_logic_vector(15 downto 0) := (15 downto 0 => '0');
 begin
 	process(exeWbEN, exeDstSrc, exeRamRead, idRegSrcA, idRegSrcB,
-		exeBranchJudge, exeBranchTo, ifAddr, suspend, stashedPC)
+		exeBranchJudge, exeBranchTo, ifAddr, suspend, stashedPC, ramConflict)
 	begin
 		pcPause <= '0';
 		idClear <= '0';
@@ -90,6 +90,8 @@ begin
 					-- the last fetched instruction is correct
 					if ramConflict = '1' then
 						suspendUpdate <= DELAYED;
+						pcPause <= '1';
+						idClear <= '1';
 					else
 						-- no conflict
 						pcInc <= '1';
