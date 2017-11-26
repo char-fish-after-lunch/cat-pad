@@ -60,10 +60,10 @@ begin
 		variable wbCtrl : std_logic_vector(1 downto 0) := "00";
 	begin
 
-		regSrcA		<= "0000";
-		regSrcB		<= "0000";
+		regSrcA		<= reg_O;
+		regSrcB		<= reg_O;
 		immeCtrl	<= "000";
-		dstSrc		<= "0000";
+		dstSrc		<= reg_O; -- by default, use register O
 		immeExt		<= '1';
 		oprSrcB		<= '0';
 		ALUop		<= "0000";
