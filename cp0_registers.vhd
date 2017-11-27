@@ -11,11 +11,11 @@ entity cp0_registers is
 		trapIn : in std_logic;
 		eretIn : in std_logic;
 
-		cause : out std_logic_vector(15 downto 0);
-		epc : out std_logic_vector(15 downto 0);
-		status :  out std_logic;
-		trap : out std_logic;
-		eret : out std_logic
+		cause : out std_logic_vector(15 downto 0) := (15 downto 0 => '0');
+		epc : out std_logic_vector(15 downto 0) := (15 downto 0 => '0');
+		status :  out std_logic := '0';
+		trap : out std_logic := '0';
+		eret : out std_logic := '0'
 	);
 end entity;
 

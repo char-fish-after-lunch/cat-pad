@@ -67,14 +67,14 @@ entity cat_pad is port(
     flashWE : out std_logic;
     flashRP : out std_logic;
     flash_addr : out std_logic_vector(22 downto 1);
-    flash_data : inout std_logic_vector(15 downto 0)
+    flash_data : inout std_logic_vector(15 downto 0);
 
 
-    -- test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
-    -- test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
-    -- test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
-    -- test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
-    -- test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
+    test_ALUres : out  STD_LOGIC_VECTOR (15 downto 0);
+    test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
+    test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
+    test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
+    test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
 );
 end cat_pad;
 
@@ -394,7 +394,8 @@ begin
 		isERET => s_isERET_exe,
 		isERET_o => s_isERET_mem,
         PC => s_IDPC_o,
-        PC_o => s_PC_mem);
+        PC_o => s_PC_mem,
+		clear => s_mem_clear);
 
     u_mem_access : mem_access port map(ram_addr => s_ALUres_mem, ram_data_in => s_regB_mem, ramWrite => s_ramWrite_mem,
         ramRead => s_ramRead_mem, ramWrite_o => s_ramWrite_ram, ramRead_o => s_ramRead_ram, ram_data_o => s_mem_ram_data,
@@ -411,7 +412,8 @@ begin
         int => s_post_int_mem,
         intCode => s_post_intCode_mem,
         int_o => s_int_wb, 
-        intCode_o => s_intCode_wb);
+        intCode_o => s_intCode_wb,
+		clear => s_wb_clear);
 		
     u_ram_interactor: ram_interactor port map(clk => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
@@ -420,7 +422,11 @@ begin
         tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict);
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
-        ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);
+        ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN, 
+		int => s_int_wb,
+		intCode => s_intCode_wb,
+		int_o => s_post_int_wb,
+		intCode_o => s_post_intCode_wb);
 
     u_forward_unit : forward_unit port map(regReadSrcA => s_regA_fwd, regReadSrcB => s_regB_fwd, memDst => s_dstSrc_mem,
         wbDst => s_dstSrc_wb, ramRead => s_ramRead_mem, oprSrcB => s_oprSrcB_exe, srcA => s_fwdSrcA, srcB => s_fwdSrcB,

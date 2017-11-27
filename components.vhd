@@ -79,7 +79,7 @@ package components is
         wbEN_o		:	out std_logic;
 		isERET_o	:	out std_logic;
         
-		PC_o			:	in std_logic_vector(15 downto 0);
+		PC_o			:	out std_logic_vector(15 downto 0);
         regB_o 		:  out std_logic_vector(15 downto 0);
         ALUres_o 	:	out std_logic_vector(15 downto 0));
     end component;
@@ -123,8 +123,8 @@ package components is
 		regB_o 		:  out std_logic_vector(15 downto 0);
 		ALUres_o 	:	out std_logic_vector(15 downto 0);
 		out_PC		:	out std_logic_vector(15 downto 0);
-		int_o			:	in std_logic;
-		intCode_o		:	in std_logic_vector(3 downto 0)
+		int_o			:	out std_logic;
+		intCode_o		:	out std_logic_vector(3 downto 0)
 	);
     end component;
 
