@@ -2,10 +2,10 @@
 
 ```
 |  IF1  |  ID1  |  EXE1 |  MEM1 |  WB1  |
-		|  IF2  |  ID2  |  EXE2 |  MEM2 |  WB2  |
-				|  IF3  |  ID3  |  EXE3 |  MEM3 |  WB3  |
-						|  IF4  |  ID4  |  EXE4 |  MEM4 |  WB4  |
-								|  IF5  |  ID5  |  EXE5 |  MEM5 |  WB5  |
+        |  IF2  |  ID2  |  EXE2 |  MEM2 |  WB2  |
+                |  IF3  |  ID3  |  EXE3 |  MEM3 |  WB3  |
+                        |  IF4  |  ID4  |  EXE4 |  MEM4 |  WB4  |
+                                |  IF5  |  ID5  |  EXE5 |  MEM5 |  WB5  |
 ```
 		
 
@@ -35,6 +35,12 @@
 
 检测流水线中指令地址，若有与写入地址位于同一RAM则将冲突的指令及之后全部清除。
 
+重大喜讯：将跳转指令置于延迟槽中在MIPS指令中是未定义行为！！！
+
+考虑指令B=4，A=1，且MEM1与IF4访问同一RAM。有下面几种情形：
+* EXE2阶段有跳转，且跳转预测成功。清除指令4，暂停累加。
+* EXE2阶段有跳转，且跳转预测失败。这种情形可以不做处理，直接按照branch的处理，将B指令清除（由于EXE3不可跳转，这样不会造成问题）。
+* EXE2阶段无跳转。这种情况有些麻烦。若EXE3中有跳转，则需要寄存跳转地址，直至能够正确读入指令。
 
 ## Bubble & Stall Control Unit 设计
 
@@ -49,6 +55,7 @@
 * exeBranchJudge: EXE阶段是否跳转
 * exeBranchTo(16): EXE阶段跳转地址
 * ifAddr(16): IF阶段传入的指令地址
+* ramConflict: 是否存在同时读写统一块RAM的冲突
 
 输出：
 * pcPause: 下一时钟周期时钟是否更新
@@ -56,5 +63,7 @@
 * idClear: IF/ID寄存器置零
 * exeClear: ID/EXE寄存器置零
 * pcInc: PC是否自增（否则接受跳转的地址）
+* setPC: 是否强行设置下一周期PC
+* setPCVal(16)：强行设置下一周期PC的值
 
 

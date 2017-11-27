@@ -261,10 +261,13 @@ package components is
 		wrn : out  STD_LOGIC;
 		tbre : in  STD_LOGIC;
 		tsre : in  STD_LOGIC;
-		data_ready : in  STD_LOGIC);
+		data_ready : in  STD_LOGIC;
+		
+		hasConflict : out STD_LOGIC);
     end component;
 
     component registers port(
+		clk : in std_logic;
 		regSrcA : in std_logic_vector(3 downto 0);
 		regSrcB : in std_logic_vector(3 downto 0);
 		
@@ -274,7 +277,11 @@ package components is
 		writeEN		: in std_logic;
 	
 		regA : out std_logic_vector(15 downto 0);
-		regB : out std_logic_vector(15 downto 0));
+		regB : out std_logic_vector(15 downto 0);
+		test_reg_out_1 : out std_logic_vector(15 downto 0);
+		test_reg_out_2 : out std_logic_vector(15 downto 0)
+
+		);
     end component;
 
     -- component stall_unit port(
@@ -312,10 +319,38 @@ package components is
 		srcB	: out std_logic_vector(1 downto 0)
 	);
     end component;
-    -- component 
-    -- end component;
+
+
+    component bootloader port(
+		clk : in std_logic;
+		isBootloaded : in std_logic;
+		flashByte : out std_logic;
+		flashVpen : out std_logic;
+		flashCE : out std_logic;
+		flashOE : out std_logic;
+		flashWE : out std_logic;
+		flashRP : out std_logic;
+		flash_addr : out std_logic_vector(22 downto 1);
+		flash_data : inout std_logic_vector(15 downto 0);
+		
+		res_log : out STD_LOGIC_VECTOR (15 downto 0);
+		bootloader_state : out STD_LOGIC_VECTOR (6 downto 0);
+
+		ram1addr : out  STD_LOGIC_VECTOR (17 downto 0);
+		ram1data : inout  STD_LOGIC_VECTOR (15 downto 0);
+		ram1oe : out  STD_LOGIC;
+		ram1rw : out  STD_LOGIC;
+		ram1en : out  STD_LOGIC;
+		
+		rdn : out  STD_LOGIC;
+		wrn : out  STD_LOGIC;
+		
+		isBootloaded_o : out STD_LOGIC
+	);
+    end component;
 
 	component stall_unit port(
+		clk: in std_logic;
 		exeWbEN: in std_logic;
 		exeDstSrc: in std_logic_vector(3 downto 0);
 		exeRamRead: in std_logic;
@@ -324,12 +359,32 @@ package components is
 		exeBranchJudge: in std_logic;
 		exeBranchTo: in std_logic_vector(15 downto 0);
 		ifAddr: in std_logic_vector(15 downto 0);
+		ramConflict: in std_logic;
 
 		pcPause: out std_logic;
 		idKeep: out std_logic;
 		idClear: out std_logic;
 		exeClear: out std_logic;
-		pcInc: out std_logic
+		pcInc: out std_logic;
+		setPC: out std_logic;
+		setPCVal: out std_logic_vector(15 downto 0)
+	);
+	end component;
+
+	component instruction_forward_unit port(
+		idRamWrite: in std_logic;
+		idRegA: in std_logic_vector(15 downto 0);
+		idRegB: in std_logic_vector(15 downto 0);
+		idImme: in std_logic_vector(15 downto 0);
+
+		exeRamWrite: in std_logic;
+		exeAluRes: in std_logic_vector(15 downto 0);
+		exeRegB: in std_logic_vector(15 downto 0);
+
+		address: in std_logic_vector(15 downto 0);
+		originalInstr: in std_logic_vector(15 downto 0);
+
+		instr: out std_logic_vector(15 downto 0)
 	);
 	end component;
 

@@ -30,6 +30,8 @@ use work.consts.ALL;
 --use UNISIM.VComponents.all;
 
 entity registers is port(
+		clk : in std_logic;
+
 		regSrcA : in std_logic_vector(3 downto 0);
 		regSrcB : in std_logic_vector(3 downto 0);
 		
@@ -39,7 +41,10 @@ entity registers is port(
 		writeEN		: in std_logic;
 	
 		regA : out std_logic_vector(15 downto 0);
-		regB : out std_logic_vector(15 downto 0)
+		regB : out std_logic_vector(15 downto 0);
+
+		test_reg_out_1 : out std_logic_vector(15 downto 0);
+		test_reg_out_2 : out std_logic_vector(15 downto 0)
 	);
 end registers;
 
@@ -93,25 +98,30 @@ begin
 		end case;
 	end process;
 	
-	process(writeEN, writeSrc, writeData)
+	process(writeEN, writeSrc, writeData, clk)
 	begin
 		if (writeEN = '1') then 
-			case writeSrc is
-				when "0000" => r0 <= writeData;
-				when "0001" => r1 <= writeData;
-				when "0010" => r2 <= writeData;
-				when "0011" => r3 <= writeData;
-				when "0100" => r4 <= writeData;
-				when "0101" => r5 <= writeData;
-				when "0110" => r6 <= writeData;
-				when "0111" => r7 <= writeData;
-				when reg_IH => IH <= writeData;
-				when reg_SP => SP <= writeData;
-				when reg_T  => T <= writeData;
-				when others => -- do nothing
-			end case;
+			if (falling_edge(clk)) then
+				case writeSrc is
+					when "0000" => r0 <= writeData;
+					when "0001" => r1 <= writeData;
+					when "0010" => r2 <= writeData;
+					when "0011" => r3 <= writeData;
+					when "0100" => r4 <= writeData;
+					when "0101" => r5 <= writeData;
+					when "0110" => r6 <= writeData;
+					when "0111" => r7 <= writeData;
+					when reg_IH => IH <= writeData;
+					when reg_SP => SP <= writeData;
+					when reg_T  => T <= writeData;
+					when others => -- do nothing
+				end case;
+			end if;
 		end if;
 	end process;
+
+	test_reg_out_1 <= r1;
+	test_reg_out_2 <= r2;
 
 end Behavioral;
 

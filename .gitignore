@@ -37,4 +37,25 @@ isim
 *.vcd
 
 test_control
+
+*.xml
+*.ncd
+*.xpi
+*.pad
+*.par
+*.pcf
+*.ptwx
+*.twr
+*.twx
+*.unroutes
+*.ngm
+
+planAhead*
+*.bgn
+*.drc
+*.ut
+*.xwbt
+
 test_basic_frame
+
+
