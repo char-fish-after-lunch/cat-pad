@@ -255,20 +255,21 @@ begin
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_pc_pause, s_id_clear, s_pc_inc)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, test_reg_out_1, s_pc_pause, s_id_clear, s_pc_inc,
+           wrn_pad, rdn_pad, test_reg_out_2)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
-			real_clk <= clk_11m;
+			real_clk <= manual_clk;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_pc_pause & s_id_clear & s_pc_inc & s_mem_ram_data(5 downto 0);
+            leds <= s_mem_ram_addr(15 downto 8) & test_reg_out_1(3 downto 0) & test_reg_out_2(3 downto 0);
 				--leds <= test_reg_out_1;
-			disp2 <= s_regB(6 downto 0);
+			disp2 <= s_mem_ram_addr(6 downto 0);
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -340,7 +341,7 @@ begin
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb);
 		
-    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => clk_11m, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
@@ -354,7 +355,7 @@ begin
         wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, memWbEN => s_wbEN_mem);
 
 	u_stall_unit : stall_unit port map(
-					clk => clk,
+					clk => real_clk,
 					exeWbEN => s_wbEN_exe,
 					exeDstSrc => s_dstSrc_exe,
 					exeRamRead => s_ramRead_exe,

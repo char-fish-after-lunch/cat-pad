@@ -1,7 +1,7 @@
 #Release 14.7 - par P.20131013 (nt64)
 #Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-#Sun Nov 26 17:26:26 2017
+#Mon Nov 27 12:54:45 2017
 
 #
 ## NOTE: This file is designed to be imported into a spreadsheet program
@@ -44,7 +44,7 @@ B4,,DIFFS,IO_L24N_0,UNUSED,,0,,,,,,,,,
 B5,,DIFFSI,IP_L22N_0,UNUSED,,0,,,,,,,,,
 B6,,DIFFM,IO_L20P_0,UNUSED,,0,,,,,,,,,
 B7,,,VCCAUX,,,,,,,,2.5,,,,
-B8,clk_11m,IBUF,IP_L13P_0/GCLK8,INPUT,LVCMOS25*,0,,,,NONE,,UNLOCATED,NO,NONE,
+B8,,DIFFMI,IP_L13P_0/GCLK8,UNUSED,,0,,,,,,,,,
 B9,clk,IBUF,IP_L13N_0/GCLK9,INPUT,LVCMOS25*,0,,,,NONE,,LOCATED,NO,NONE,
 B10,disp2<0>,IOB,IO_L12P_0/GCLK6,OUTPUT,LVCMOS25*,0,12,SLOW,NONE**,,,LOCATED,NO,NONE,
 B11,leds<3>,IOB,IO/VREF_0,OUTPUT,LVCMOS25*,0,12,SLOW,NONE**,,,LOCATED,NO,NONE,

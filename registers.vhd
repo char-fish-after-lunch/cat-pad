@@ -120,8 +120,8 @@ begin
 		end if;
 	end process;
 
-	test_reg_out_1 <= r1;
-	test_reg_out_2 <= r2;
+	test_reg_out_1 <= r0;
+	test_reg_out_2 <= r6;
 
 end Behavioral;
 

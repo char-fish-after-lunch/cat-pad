@@ -67,7 +67,7 @@ begin
 	process(uart_isUsed, state, clk, tsre, tbre)
 	begin
 	
-		if (rising_edge(clk)) then
+		if (falling_edge(clk)) then
 		case state is
 			when read_1 =>
 				t_rdn <= '0';
@@ -98,11 +98,11 @@ begin
 				t_put_data <= (others => 'Z');
 				if (uart_isUsed = '1') then
 					if (uart_isRead = '1') then
-						if (state = idling) then
+						if (isData = '1') then
 							state <= read_1;
 						end if;
 					else 
-						if (state = idling) then
+						if (isData = '1') then
 							state <= write_1;
 						end if;
 					end if;
@@ -114,7 +114,7 @@ begin
 		end if;
 	end process;
 
-	process(state, clk, put_data, data_ready)
+	process(state, put_data, data_ready)
 	begin
 		if (state = idling and data_ready = '1') then
 			can_read <= '1';
@@ -124,21 +124,29 @@ begin
 
 		if (state = idling) then
 			can_write <= '1';
+		else
+			can_write <= '0';
 		end if;
 
 	end process;
 
-	process(isData, put_data, state)
+	process(isData, put_data, state, can_read, can_write)
 	begin
-		if (state = read_1 or state = read_2 or state = idling) then
-			if (isData = '1') then
-				uart_res <= res_data;
-			else
-				uart_res <= "00000000000000" & can_read & can_write;
-			end if;
-		else
-			uart_res <= (others => '0');
-		end if;
+		-- if (state = read_1 or state = read_2 or state = idling) then
+		-- 	if (isData = '1') then
+		-- 		uart_res <= res_data;
+		-- 	else
+		-- 		uart_res <= "00000000000000" & can_read & can_write;
+		-- 	end if;
+		-- else
+		-- 	if (isData = '0') then
+		-- 		uart_res <= "00000000000000" & can_read & can_write;
+		-- 	else
+		-- 		uart_res <= (others => '0');
+		-- 	end if;
+
+		-- end if;
+		uart_res <= "00000000000000" & can_read & can_write;
 	end process;
 end Behavioral;
 
