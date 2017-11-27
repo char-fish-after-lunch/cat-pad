@@ -41,6 +41,10 @@ entity execution is port(
 		oprSrcB		:	in std_logic;
 		ALUres		:	in std_logic_vector(15 downto 0);
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
+
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
 		
 		-- send to ALU
 		ALU_oprA 		:  out std_logic_vector(15 downto 0);
@@ -65,7 +69,10 @@ entity execution is port(
 		
 		regB_o 		:  out std_logic_vector(15 downto 0);
 		ALUres_o 	:	out std_logic_vector(15 downto 0);
-		out_PC		:	out std_logic_vector(15 downto 0)
+		out_PC		:	out std_logic_vector(15 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0)
 	);
 end execution;
 
@@ -82,7 +89,15 @@ begin
 	
 	process(isMFPC, ALUres, PC)
 	begin
-		if (isMFPC = '1') then
+		int_o <= '0';
+		if int = '1' then
+			int_o <= int;
+			intCode_o <= intCode;
+			ALUres_o <= (others => '0');
+		elsif isInt = '1' then
+			int_o <= '1';
+			intCode_o <= immediate(3 downto 0);
+		elsif (isMFPC = '1') then
 			ALUres_o <= PC;
 		else
 			ALUres_o <= ALUres;

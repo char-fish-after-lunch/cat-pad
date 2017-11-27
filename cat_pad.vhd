@@ -106,7 +106,8 @@ architecture Behavioral of cat_pad is
 	signal s_ramWrite : std_logic;
 	signal s_ramRead : std_logic;
 	signal s_wbSrc : std_logic;
-	signal s_wbEN : std_logic;
+    signal s_wbEN : std_logic;
+    signal s_isINT  : std_logic;
     
     signal s_regAN : std_logic_vector(3 downto 0);
     signal s_regBN : std_logic_vector(3 downto 0);
@@ -135,13 +136,17 @@ architecture Behavioral of cat_pad is
 	signal s_isBranch_exe : std_logic;
 	signal s_isCond_exe	: std_logic;
 	signal s_isRelative_exe	: std_logic;
-	signal s_isMFPC_exe : std_logic;
+    signal s_isMFPC_exe : std_logic;
 	signal s_ramWrite_exe : std_logic;
 	signal s_ramRead_exe : std_logic;
 	signal s_wbSrc_exe : std_logic;
 	signal s_wbEN_exe : std_logic;
 	signal s_id_keep: std_logic;
-	signal s_id_clear: std_logic;
+    signal s_id_clear: std_logic;
+    
+    signal s_int_exe    : std_logic;
+    signal s_intCode_exe    : std_logic_vector(3 downto 0);
+
 
     -- exe 
 	signal s_exe_clear: std_logic;
@@ -169,6 +174,8 @@ architecture Behavioral of cat_pad is
 	
 	signal s_regB_mem 		: std_logic_vector(15 downto 0);
 	signal s_ALUres_mem 	: std_logic_vector(15 downto 0);
+    signal s_int_mem    : std_logic;
+    signal s_intCode_mem    : std_logic_vector(3 downto 0);
     
 	-- ram interactor
     signal s_if_ram_addr    : std_logic_vector(15 downto 0);
@@ -188,6 +195,8 @@ architecture Behavioral of cat_pad is
     signal s_ramData_wb	: std_logic_vector(15 downto 0);
     signal s_ALUres_wb	: std_logic_vector(15 downto 0);
 
+    signal s_int_wb    : std_logic;
+    signal s_intCode_wb    : std_logic_vector(3 downto 0);
 	-- stall unit
 	signal s_stall_set_pc	: std_logic;
 	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
@@ -319,7 +328,7 @@ begin
         PC => s_IDPC_o, oprSrcB => s_oprSrcB_exe, ALUres => s_ALUres, isMFPC => s_isMFPC_exe, ALU_oprA => s_ALU_oprA, ALU_oprB => s_ALU_oprB,
         shifted_PC => s_shifted_PC, B_ALU_res => s_B_ALU_res, fwdSrcA => s_fwdSrcA, fwdSrcB => s_fwdSrcB, mem_aluRes => s_ALUres_mem,
         wb_ramRes => s_ramData_wb, wb_aluRes => s_ALUres_wb, regA_fwd => s_regA_fwd, regB_fwd => s_regB_fwd, regB_o => s_regB_o_exe, 
-        ALUres_o => s_ALUres_o, out_PC => s_EXEPC);
+        ALUres_o => s_ALUres_o, out_PC => s_EXEPC, isINT => s_isINT);
 		
 	 u_alu : alu port map(regA => s_ALU_oprA, regB => s_ALU_oprB, ALUop => s_ALUop_exe, ALUres => s_ALUres);
 

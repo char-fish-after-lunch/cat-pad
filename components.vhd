@@ -42,7 +42,8 @@ package components is
         isBranch		:	out std_logic;
         isCond		:	out std_logic;
         isRelative	:	out std_logic;
-        isMFPC		:	out std_logic;
+		isMFPC		:	out std_logic;
+		isINT		:	out std_logic;
         ramWrite		:	out std_logic;
         ramRead		:	out std_logic;
         wbSrc		:	out std_logic;
@@ -59,7 +60,12 @@ package components is
         wbEN		:	in std_logic;
         
         regB 		:  in std_logic_vector(15 downto 0);
-        ALUres 	:	in std_logic_vector(15 downto 0);
+		ALUres 	:	in std_logic_vector(15 downto 0);
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
         
         dstSrc_o		:	out std_logic_vector(3 downto 0);
         ramWrite_o	:	out std_logic;
@@ -81,6 +87,10 @@ package components is
 		oprSrcB		:	in std_logic;
 		ALUres		:	in std_logic_vector(15 downto 0);
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
+
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
 		
 		-- send to ALU
 		ALU_oprA 		:  out std_logic_vector(15 downto 0);
@@ -105,7 +115,10 @@ package components is
 		
 		regB_o 		:  out std_logic_vector(15 downto 0);
 		ALUres_o 	:	out std_logic_vector(15 downto 0);
-		out_PC		:	out std_logic_vector(15 downto 0));
+		out_PC		:	out std_logic_vector(15 downto 0);
+		int_o			:	in std_logic;
+		intCode_o		:	in std_logic_vector(3 downto 0)
+	);
     end component;
 
 
@@ -132,6 +145,11 @@ package components is
 		wbSrc			:	in std_logic;
 		wbEN			:	in std_logic;
 		
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
 		regA_o 			: out std_logic_vector(15 downto 0);
 		regB_o 			: out std_logic_vector(15 downto 0);
 		regAN_o 			: out std_logic_vector(3 downto 0);
@@ -160,6 +178,11 @@ package components is
 
         IFPC : in std_logic_vector(15 downto 0);
         inst : in std_logic_vector(15 downto 0);
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
         IFPC_o : out std_logic_vector(15 downto 0);
         inst_o : out std_logic_vector(15 downto 0));
     end component;
@@ -190,6 +213,9 @@ package components is
 		
 		ramWrite	:	in std_logic;
 		ramRead	:	in std_logic;
+
+		int		:	in std_logic;
+		intCode	:	in std_logic_vector(3 downto 0);
 		
 		-- signals sen to ram dispatcher
 		ramWrite_o	:	out std_logic;
@@ -199,7 +225,12 @@ package components is
 		
 		-- result get from ram dispatcher
 		ram_return	 : in std_logic_vector(15 downto 0);
-		ram_return_o : out std_logic_vector(15 downto 0));
+		ram_return_o : out std_logic_vector(15 downto 0)
+
+
+		int_o		: out std_logic;
+		intCode_o	: out std_logic_vector(3 downto 0)
+	);
     end component;
     
     component mem_wb port(
@@ -216,6 +247,11 @@ package components is
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
 		
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
 		ramData_o	: out std_logic_vector(15 downto 0);
 		ALUres_o		: out std_logic_vector(15 downto 0));
     end component;
