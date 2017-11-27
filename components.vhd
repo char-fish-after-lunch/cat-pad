@@ -203,7 +203,11 @@ package components is
 		pc: in std_logic_vector(15 downto 0);
 		instr: out std_logic_vector(15 downto 0);
 		if_addr: out std_logic_vector(15 downto 0);
-		if_data: in std_logic_vector(15 downto 0));
+		if_data: in std_logic_vector(15 downto 0)
+
+		int_o	: out std_logic;
+		intCode_o	: out std_logic_vector(3 downto 0)
+	);
     end component;
     
 
@@ -329,13 +333,20 @@ package components is
 		dstSrc	:	in std_logic_vector(3 downto 0);
 		wbSrc	:	in std_logic;
 		wbEN	:	in std_logic;
+		int		:	in std_logic;
+		intCode	:	in std_logic_vector(3 downto 0);
 		
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
 		
 		writeData : out std_logic_vector(15 downto 0);
 		writeDst : out std_logic_vector(3 downto 0);
-		isWriting : out std_logic);
+		isWriting : out std_logic
+
+		int_o	:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0)
+	);
+
     end component;
 
 
@@ -421,6 +432,51 @@ package components is
 		originalInstr: in std_logic_vector(15 downto 0);
 
 		instr: out std_logic_vector(15 downto 0)
+	);
+	end component;
+
+	component cp0_registers port (
+		clk : in std_logic;
+		causeIn : in std_logic_vector(15 downto 0);
+		epcIn : in std_logic_vector(15 downto 0);
+		statusIn : in std_logic;
+		trapIn : in std_logic;
+		eretIn : in std_logic;
+
+		cause : out std_logic_vector(15 downto 0);
+		epc : out std_logic_vector(15 downto 0);
+		status :  out std_logic;
+		trap : out std_logic;
+		eret : out std_logic
+	);
+	end component;
+
+	component interrupt_control port (
+		wbInt: in std_logic; -- whether there is an interrupt in WB
+		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
+		wbERet : in std_logic; -- whether the instruction is an eret
+		memAddress : in std_logic_vector(15 downto 0); -- the address of the next instruction
+
+		cp0Status : in std_logic;
+		cp0Epc : in std_logic_vector(15 downto 0);
+		cp0Cause : in std_logic_vector(15 downto 0);
+		cp0ERet : in std_logic;
+		cp0Trap : in std_logic;
+
+		-- external hardware ISRs
+		ps2Request : in std_logic; -- PS/2 ISR
+		
+		memRamLock: out std_logic;
+		pipelineClear: out std_logic; -- whether clear the whole pipeline
+
+		cp0StatusUpdate : out std_logic;
+		cp0EpcUpdate : out std_logic_vector(15 downto 0);
+		cp0CauseUpdate : out std_logic_vector(15 downto 0)
+		cp0ERetUpdate : out std_logic;
+		cp0TrapUpdate : out std_logic;
+
+		pcSet : out std_logic;
+		pcSetVal : out std_logic_vector(15 downto 0)
 	);
 	end component;
 

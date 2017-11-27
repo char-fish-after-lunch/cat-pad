@@ -37,6 +37,7 @@ entity ex_mem is port(
 	ramRead	:	in std_logic;
 	wbSrc		:	in std_logic;
 	wbEN		:	in std_logic;
+	PC			:	in std_logic_vector(15 downto 0);
 	
 	regB 		:  in std_logic_vector(15 downto 0);
 	ALUres 	:	in std_logic_vector(15 downto 0);
@@ -51,10 +52,12 @@ entity ex_mem is port(
 	wbEN_o		:	out std_logic;
 	
 	regB_o 		:  out std_logic_vector(15 downto 0);
-	ALUres_o 	:	out std_logic_vector(15 downto 0)
+	ALUres_o 	:	out std_logic_vector(15 downto 0);
 
-	int_o		: 	in std_logic;
-	intCode_o	:	in std_logic_vector(3 downto 0);
+	PC_o		:	out std_logic_vector(15 downto 0);
+
+	int_o		: 	out std_logic;
+	intCode_o	:	out std_logic_vector(3 downto 0)
 );
 end ex_mem;
 
@@ -97,6 +100,8 @@ begin
 
 	int_o		<=	inner_int;
 	intCode_o	<=	inner_intCode;
+
+	PC_o <= PC;
 
 end Behavioral;
 

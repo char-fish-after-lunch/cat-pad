@@ -47,6 +47,7 @@ entity id_exe is port(
 		isCond		:	in std_logic;
 		isRelative	:	in std_logic;
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
 		ramWrite		:	in std_logic;
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
@@ -69,6 +70,7 @@ entity id_exe is port(
 		isCond_o			:	out std_logic;
 		isRelative_o	:	out std_logic;
 		isMFPC_o			:	out std_logic;
+		isINT_o				:	out std_logic;
 		ramWrite_o		:	out std_logic;
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
@@ -100,6 +102,7 @@ architecture Behavioral of id_exe is
 	signal inner_wbEN			:	std_logic;
 	signal inner_int			:	std_logic;
 	signal inner_intCode		:	std_logic_vector(3 downto 0);
+	signal inner_isINT			:	std_logic;
 begin
 	process(clk)
 	begin
