@@ -76,6 +76,7 @@ begin
 			when reg_IH => regA <= IH;
 			when reg_SP => regA <= SP;
 			when reg_T  => regA <= T;
+			when reg_O	=> regA <= (others => '0');
 			when others => regA <= (others => '0');
 		end case;
 	end process;
@@ -94,6 +95,7 @@ begin
 			when reg_IH => regB <= IH;
 			when reg_SP => regB <= SP;
 			when reg_T  => regB <= T;
+			when reg_O	=> regB <= (others => '0');
 			when others => regB <= (others => '0');
 		end case;
 	end process;
@@ -114,6 +116,7 @@ begin
 					when reg_IH => IH <= writeData;
 					when reg_SP => SP <= writeData;
 					when reg_T  => T <= writeData;
+					when reg_O	=> -- do nothing
 					when others => -- do nothing
 				end case;
 			end if;
