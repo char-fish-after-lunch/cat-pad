@@ -51,6 +51,9 @@ entity id_exe is port(
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
 		wbEN			:	in std_logic;
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
 		
 		regA_o 			: out std_logic_vector(15 downto 0);
 		regB_o 			: out std_logic_vector(15 downto 0);
@@ -70,6 +73,8 @@ entity id_exe is port(
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
 		wbEN_o			:	out std_logic
+		int_o			:	out std_logic;
+		intCode_o		:	out std_logic_vector(3 downto 0)
 		
 	);
 end id_exe;
@@ -93,6 +98,8 @@ architecture Behavioral of id_exe is
 	signal inner_ramRead		:	std_logic;
 	signal inner_wbSrc			:	std_logic;
 	signal inner_wbEN			:	std_logic;
+	signal inner_int			:	std_logic;
+	signal inner_intCode		:	std_logic_vector(3 downto 0);
 begin
 	process(clk)
 	begin
@@ -116,6 +123,8 @@ begin
 				inner_ramRead <= ramRead;
 				inner_wbSrc <= wbSrc;
 				inner_wbEN <= wbEN;
+				inner_int <= int;
+				inner_intCode <= intCode;
 			else
 				inner_regA <= (15 downto 0 => '0');
 				inner_regB <= (15 downto 0 => '0');
@@ -135,6 +144,8 @@ begin
 				inner_ramRead <= '0';
 				inner_wbSrc <= '0';
 				inner_wbEN <= '0';
+				inner_int <= '0';
+				inner_intCode <= (3 downto 0 => '0');
 			end if;
 		end if;
 	end process;
@@ -157,6 +168,8 @@ begin
 	ramRead_o <= inner_ramRead;
 	wbSrc_o <= inner_wbSrc;
 	wbEN_o <= inner_wbEN;
+	int_o <= inner_int;
+	intCode_o <= inner_intCode;
 
 end Behavioral;
 

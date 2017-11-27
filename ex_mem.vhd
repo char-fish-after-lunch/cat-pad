@@ -40,6 +40,9 @@ entity ex_mem is port(
 	
 	regB 		:  in std_logic_vector(15 downto 0);
 	ALUres 	:	in std_logic_vector(15 downto 0);
+
+	int		: 	in std_logic;
+	intCode	:	in std_logic_vector(3 downto 0);
 	
 	dstSrc_o		:	out std_logic_vector(3 downto 0);
 	ramWrite_o	:	out std_logic;
@@ -49,6 +52,9 @@ entity ex_mem is port(
 	
 	regB_o 		:  out std_logic_vector(15 downto 0);
 	ALUres_o 	:	out std_logic_vector(15 downto 0)
+
+	int_o		: 	in std_logic;
+	intCode_o	:	in std_logic_vector(3 downto 0);
 );
 end ex_mem;
 
@@ -63,6 +69,8 @@ architecture Behavioral of ex_mem is
 	signal inner_regB 		:  std_logic_vector(15 downto 0) := "0000000000000000";
 	signal inner_ALUres 		:	std_logic_vector(15 downto 0) := "0000000000000000";
 	
+	signal inner_int: 	std_logic;
+	signal inner_intCode	:	std_logic_vector(3 downto 0);
 begin
 	process(clk)
 	begin
@@ -74,6 +82,8 @@ begin
 			inner_wbEN	<=	wbEN;
 			inner_regB	<=	regB;
 			inner_ALUres	<=	ALUres;
+			inner_int	<= int;
+			inner_intCode <= intCode;
 		end if;
 	end process;
 	
@@ -84,6 +94,9 @@ begin
 	wbEN_o		<=	inner_wbEN;
 	regB_o		<=	inner_regB;
 	ALUres_o		<=	inner_ALUres;
+
+	int_o		<=	inner_int;
+	intCode_o	<=	inner_intCode;
 
 end Behavioral;
 

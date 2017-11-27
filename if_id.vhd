@@ -37,14 +37,22 @@ entity if_id is port(
 
 	IFPC : in std_logic_vector(15 downto 0);
 	inst : in std_logic_vector(15 downto 0);
+	int : in std_logic;
+	intCode : in std_logic_vector(3 downto 0);
+
+
 	IFPC_o : out std_logic_vector(15 downto 0);
-	inst_o : out std_logic_vector(15 downto 0)
+	inst_o : out std_logic_vector(15 downto 0);
+	int_o : out std_logic;
+	intCode_o : out std_logic_vector(3 downto 0)
 );
 end if_id;
 
 architecture Behavioral of if_id is
 	signal inner_IFPC : std_logic_vector(15 downto 0);
 	signal inner_inst : std_logic_vector(15 downto 0);
+	signal inner_int : std_logic;
+	signal inner_intCode : std_logic_vector(3 downto 0);
 begin
 
 	process(clk)
@@ -53,15 +61,21 @@ begin
 			if clear = '1' then
 				inner_IFPC <= (15 downto 0 => '0');
 				inner_inst <= (15 downto 0 => '0');
+				inner_int <= '0';
+				inner_intCode <= (3 downto 0 => '0');
 			elsif keep = '0' then
 				inner_IFPC <= IFPC;
 				inner_inst <= inst;
+				inner_int <= int;
+				inner_intCode <= intCode;
 			end if;
 		end if;
 	end process;
 	
 	IFPC_o <= inner_IFPC;
 	inst_o <= inner_inst;
+	int_o <= inner_int;
+	intCode_o <= inner_intCode;
 
 end Behavioral;
 
