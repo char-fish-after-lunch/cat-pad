@@ -89,6 +89,7 @@ architecture Behavioral of cat_pad is
 	signal s_next_pc_out : std_logic_vector(15 downto 0);
 	signal s_pc_out : std_logic_vector(15 downto 0);
     signal s_instr : std_logic_vector(15 downto 0);
+	signal s_raw_instr : std_logic_vector(15 downto 0);
 
     signal s_IFPC_o : std_logic_vector(15 downto 0);
     signal s_inst_o : std_logic_vector(15 downto 0);
@@ -188,6 +189,10 @@ architecture Behavioral of cat_pad is
     signal s_ramData_wb	: std_logic_vector(15 downto 0);
     signal s_ALUres_wb	: std_logic_vector(15 downto 0);
 
+	-- stall unit
+	signal s_stall_set_pc	: std_logic;
+	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
+
 	signal real_clk : std_logic := '0';
 
     signal wrn_bootloader : std_logic;
@@ -250,7 +255,7 @@ begin
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_ram2en, s_ram2oe, s_ram2rw)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_pc_pause, s_id_clear, s_pc_inc)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
@@ -261,7 +266,7 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_ram2en & s_ram2oe & s_ram2rw & s_mem_ram_data(5 downto 0);
+            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_pc_pause & s_id_clear & s_pc_inc & s_mem_ram_data(5 downto 0);
 				--leds <= test_reg_out_1;
 			disp2 <= s_regB(6 downto 0);
             -- signals connect to real CPU
@@ -286,7 +291,7 @@ begin
     u_pc_controller : pc_controller port map(clk => real_clk, next_pc_in => s_next_pc_in, next_pc_out => s_next_pc_out, pc_out => s_pc_out,
 											pc_pause => s_pc_pause);
     
-    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
+    u_inst_fetch : inst_fetch port map(pc => s_pc_out, instr => s_raw_instr, if_addr => s_if_ram_addr, if_data => s_if_res_data);
 
     u_if_id : if_id port map(clk => real_clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
 							clear => s_id_clear);
@@ -349,6 +354,7 @@ begin
         wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, memWbEN => s_wbEN_mem);
 
 	u_stall_unit : stall_unit port map(
+					clk => clk,
 					exeWbEN => s_wbEN_exe,
 					exeDstSrc => s_dstSrc_exe,
 					exeRamRead => s_ramRead_exe,
@@ -361,11 +367,31 @@ begin
 					idClear => s_id_clear,
 					exeClear => s_exe_clear,
 					pcInc => s_pc_inc,
-					ifAddr => s_pc_out
+					ifAddr => s_pc_out,
+					setPC => s_stall_set_pc,
+					setPCVal => s_stall_set_pc_val,
+					ramConflict => s_hasConflict
 				);
-	process(s_next_pc_o, s_next_pc_out, s_pc_inc)
+
+	u_instruction_forward_unit : instruction_forward_unit port map(
+					idRamWrite => s_ramWrite,
+					idRegA => s_regA,
+					idRegB => s_regB,
+					idImme => s_immediate,
+					exeRamWrite => s_ramWrite_exe,
+					exeAluRes => s_ALUres,
+					exeRegB => s_regB_o_exe,
+					address => s_pc_out,
+					originalInstr => s_raw_instr,
+					instr => s_instr 
+				);
+
+	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,
+			s_stall_set_pc_val)
 	begin
-		if s_pc_inc = '1' then
+		if s_stall_set_pc = '1' then
+			s_next_pc_in <= s_stall_set_pc_val;
+		elsif s_pc_inc = '1' then
 			s_next_pc_in <= s_next_pc_out;
 		else
 			s_next_pc_in <= s_next_pc_o;
