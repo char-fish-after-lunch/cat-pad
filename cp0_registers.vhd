@@ -9,13 +9,13 @@ entity cp0_registers is
 		epcIn : in std_logic_vector(15 downto 0);
 		statusIn : in std_logic;
 		trapIn : in std_logic;
-		eret : in std_logic;
+		eretIn : in std_logic;
 
 		cause : out std_logic_vector(15 downto 0);
 		epc : out std_logic_vector(15 downto 0);
-		status :  out std_logic_vector;
-		trap : out std_logic_vector;
-		eret : out std_logic_vector
+		status :  out std_logic;
+		trap : out std_logic;
+		eret : out std_logic
 	);
 end entity;
 

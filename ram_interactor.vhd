@@ -121,7 +121,7 @@ begin
         ram_en_o   => ram2en
     );
 
-	uart_module: uart_module port map(
+	uuart_module: uart_module port map(
 		clk => clk,
 		uart_isRead => uart_isRead,
 		uart_isUsed => uart_isUsed,

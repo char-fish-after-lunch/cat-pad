@@ -114,6 +114,7 @@ architecture Behavioral of cat_pad is
 	signal s_wbSrc : std_logic;
     signal s_wbEN : std_logic;
     signal s_isINT  : std_logic;
+    signal s_isERET  : std_logic;
     
     signal s_regAN : std_logic_vector(3 downto 0);
     signal s_regBN : std_logic_vector(3 downto 0);
@@ -171,6 +172,7 @@ architecture Behavioral of cat_pad is
     signal s_regB_o_exe : std_logic_vector(15 downto 0);
     signal s_ALUres_o 	: std_logic_vector(15 downto 0);
     signal s_EXEPC		: std_logic_vector(15 downto 0);
+	signal s_isERET_exe	: std_logic;
 
 	signal s_willBranch	: std_logic;
 
@@ -179,6 +181,7 @@ architecture Behavioral of cat_pad is
 	signal s_ramRead_mem	: std_logic;
 	signal s_wbSrc_mem		: std_logic;
 	signal s_wbEN_mem		: std_logic;
+	signal s_isERET_mem	: std_logic;
 	
 	signal s_regB_mem 		: std_logic_vector(15 downto 0);
 	signal s_ALUres_mem 	: std_logic_vector(15 downto 0);
@@ -209,6 +212,7 @@ architecture Behavioral of cat_pad is
     signal s_ramData_wb	: std_logic_vector(15 downto 0);
     signal s_ALUres_wb	: std_logic_vector(15 downto 0);
 
+	signal s_isERET_wb	: std_logic;
     signal s_int_wb    : std_logic;
     signal s_intCode_wb    : std_logic_vector(3 downto 0);
     signal s_post_int_wb    : std_logic;
@@ -348,7 +352,7 @@ begin
 
     u_control : control port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl, dstSrc => s_dstSrc,
         immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, isCond => s_isCond, isRelative => s_isRelative,
-        isMFPC => s_isMFPC, ramWrite => s_ramWrite, ramRead => s_ramRead, wbSrc => s_wbSrc, wbEN => s_wbEN, isINT => s_isINT);
+		isMFPC => s_isMFPC, ramWrite => s_ramWrite, ramRead => s_ramRead, wbSrc => s_wbSrc, wbEN => s_wbEN, isINT => s_isINT, isERET => s_isERET);
 
     u_inst_decode : inst_decode port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl,
         immeExt => s_immeExt, regAN => s_regAN, regBN => s_regBN, immediate => s_immediate);
@@ -364,7 +368,9 @@ begin
         IDPC_o => s_IDPC_o, dstSrc_o => s_dstSrc_exe, immeExt_o => s_immeExt_exe, oprSrcB_o => s_oprSrcB_exe, ALUop_o => s_ALUop_exe,
         isBranch_o => s_isBranch_exe, isCond_o => s_isCond_exe, isRelative_o => s_isRelative_exe, isMFPC_o => s_isMFPC_exe,
         ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe, clear => s_exe_clear,
-        isINT => s_isINT, int => s_int_id, intCode => s_intCode_id, int_o => s_int_exe, intCode_o => s_intCode_exe);
+        isINT => s_isINT, int => s_int_id, intCode => s_intCode_id, int_o => s_int_exe, intCode_o => s_intCode_exe,
+		isERET => s_isERET,
+		isERET_o => s_isERET_exe);
 
     
     u_execution : execution port map(regA => s_regA_o, regB => s_regB_o, regAN => s_regAN_o, regBN => s_regBN_o, immediate => s_immediate_o,
@@ -385,6 +391,8 @@ begin
         regB_o => s_regB_mem, ALUres_o => s_ALUres_mem, int => s_post_int_exe, intCode => s_post_intCode_exe,
         int_o => s_int_mem,
         intCode_o => s_intCode_mem,
+		isERET => s_isERET_exe,
+		isERET_o => s_isERET_mem,
         PC => s_IDPC_o,
         PC_o => s_PC_mem);
 
@@ -397,6 +405,8 @@ begin
     u_mem_wb : mem_wb port map(clk => real_clk, dstSrc => s_dstSrc_mem, wbSrc => s_wbSrc_mem, wbEN => s_wbEN_mem,
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb,
+		isERET => s_isERET_mem,
+		isERET_o => s_isERET_wb,
         int => s_post_int_mem,
         intCode => s_post_intCode_mem,
         int_o => s_int_wb, 

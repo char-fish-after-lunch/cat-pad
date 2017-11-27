@@ -13,8 +13,8 @@ entity interrupt_control is
 		cp0Status : in std_logic;
 		cp0Epc : in std_logic_vector(15 downto 0);
 		cp0Cause : in std_logic_vector(15 downto 0);
-		cp0ERet : in std_logic_vector;
-		cp0Trap : in std_logic_vector;
+		cp0ERet : in std_logic;
+		cp0Trap : in std_logic;
 
 		-- external hardware ISRs
 		ps2Request : in std_logic; -- PS/2 ISR
@@ -24,9 +24,9 @@ entity interrupt_control is
 
 		cp0StatusUpdate : out std_logic;
 		cp0EpcUpdate : out std_logic_vector(15 downto 0);
-		cp0CauseUpdate : out std_logic_vector(15 downto 0)
-		cp0ERetUpdate : out std_logic_vector;
-		cp0TrapUpdate : out std_logic_vector;
+		cp0CauseUpdate : out std_logic_vector(15 downto 0);
+		cp0ERetUpdate : out std_logic;
+		cp0TrapUpdate : out std_logic;
 
 		pcSet : out std_logic;
 		pcSetVal : out std_logic_vector(15 downto 0)
@@ -53,7 +53,7 @@ begin
 
 		if ps2Request = '1' then
 			cp0IntEvent := '1';
-			cp0CauseUpdateV(10) := '1' -- 11 for PS/2 ISR
+			cp0CauseUpdateV(10) := '1'; -- 11 for PS/2 ISR
 		end if;
 
 		if wbInt = '1' then
@@ -63,7 +63,7 @@ begin
 
 			if cp0Status = '0' then -- if interrupt allowed
 				cp0IntEvent := '1';
-				cp0CauseUpdateV(to_unsigned(wbIntCode)) := '1'; 
+				cp0CauseUpdateV(to_integer(unsigned(wbIntCode))) := '1'; 
 			end if;
 			
 		elsif wbERet = '1' then
@@ -83,12 +83,12 @@ begin
 				-- pending interrupts exist
 				-- go back to the interrupt handler
 				for i in Cause loop
-					if cp0CauseUpdateV(i) = '1' then 
+					if cp0CauseUpdateV(integer(i)) = '1' then 
 						cp0NextCause := i;
 					end if;
 				end loop;
-				cp0CauseUpdateV(cp0NextCause) := '0';
-				cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(cp0NextCause, 4));
+				cp0CauseUpdateV(integer(cp0NextCause)) := '0';
+				cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(integer(cp0NextCause), 4));
 
 				pcSet <= '1';
 				pcSetVal <= (15 downto 3 => '0') & "101";
@@ -96,12 +96,12 @@ begin
 		elsif cp0Trap = '1' then
 			-- switch to kernel mode
 			for i in Cause loop
-				if cp0CauseUpdateV(i) = '1' then 
+				if cp0CauseUpdateV(integer(i)) = '1' then 
 					cp0NextCause := i;
 				end if;
 			end loop;
-			cp0CauseUpdateV(cp0NextCause) := '0';
-			cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(cp0NextCause, 4));
+			cp0CauseUpdateV(integer(cp0NextCause)) := '0';
+			cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(integer(cp0NextCause), 4));
 
 			pcSet <= '1';
 			pcSetVal <= (15 downto 3 => '0') & "101";
@@ -120,9 +120,9 @@ begin
 			cp0TrapUpdate <= '1';
 		end if;
 	
-		cp0StatusUpdate <= cp0CauseUpdateV;
+		cp0StatusUpdate <= cp0StatusUpdateV;
 		cp0EpcUpdate <= cp0EpcUpdateV;
-		cp0CauseUpdate <= cp0StatusUpdateV;
+		cp0CauseUpdate <= cp0CauseUpdateV;
 
 	end process;
 end behavioral;

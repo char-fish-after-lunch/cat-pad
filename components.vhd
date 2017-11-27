@@ -44,6 +44,7 @@ package components is
         isRelative	:	out std_logic;
 		isMFPC		:	out std_logic;
 		isINT		:	out std_logic;
+		isERET		:	out std_logic;
         ramWrite		:	out std_logic;
         ramRead		:	out std_logic;
         wbSrc		:	out std_logic;
@@ -60,11 +61,13 @@ package components is
         ramRead	:	in std_logic;
         wbSrc		:	in std_logic;
         wbEN		:	in std_logic;
+		isERET		:	in std_logic;
         
         regB 		:  in std_logic_vector(15 downto 0);
 		ALUres 	:	in std_logic_vector(15 downto 0);
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
+		PC			:	in std_logic_vector(15 downto 0);
 
 		int_o		:	out std_logic;
 		intCode_o	:	out std_logic_vector(3 downto 0);
@@ -74,7 +77,9 @@ package components is
         ramRead_o	:	out std_logic;
         wbSrc_o		:	out std_logic;
         wbEN_o		:	out std_logic;
+		isERET_o	:	out std_logic;
         
+		PC_o			:	in std_logic_vector(15 downto 0);
         regB_o 		:  out std_logic_vector(15 downto 0);
         ALUres_o 	:	out std_logic_vector(15 downto 0));
     end component;
@@ -142,6 +147,8 @@ package components is
 		isCond		:	in std_logic;
 		isRelative	:	in std_logic;
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
+		isERET		:	in std_logic;
 		ramWrite		:	in std_logic;
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
@@ -169,7 +176,10 @@ package components is
 		ramWrite_o		:	out std_logic;
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
-		wbEN_o			:	out std_logic);
+		wbEN_o			:	out std_logic;
+		isINT_o			:	out std_logic;
+		isERET_o		:	out std_logic
+	);
     end component;
 
     component if_id port(
@@ -247,6 +257,7 @@ package components is
 		dstSrc	:	in std_logic_vector(3 downto 0);
 		wbSrc		:	in std_logic;
 		wbEN		:	in std_logic;
+		isERET	: in std_logic;
 		
 		dstSrc_o		:	out std_logic_vector(3 downto 0);
 		wbSrc_o		:	out std_logic;
@@ -254,6 +265,7 @@ package components is
 
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
+		isERET_o	: out std_logic;
 		
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);

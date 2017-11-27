@@ -60,7 +60,7 @@ end mem_access;
 architecture Behavioral of mem_access is
 
 begin
-	process(ram_Write, ramRead, ram_addr, ram_data_in, ram_return, int, intCode)
+	process(ramWrite, ramRead, ram_addr, ram_data_in, ram_return, int, intCode)
 	begin
 		if int = '1' then
 			ramWrite_o <= '0';

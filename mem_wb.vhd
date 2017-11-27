@@ -40,6 +40,7 @@ entity mem_wb is port(
 
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
+		isERET		:	in std_logic;
 		
 		dstSrc_o		:	out std_logic_vector(3 downto 0);
 		wbSrc_o		:	out std_logic;
@@ -51,6 +52,7 @@ entity mem_wb is port(
 		ramData_o	: out std_logic_vector(15 downto 0);
 		ALUres_o		: out std_logic_vector(15 downto 0);
 
+		isERET_o		:	out std_logic;
 
 		int_o			:	out std_logic;
 		intCode_o		:	out std_logic_vector(3 downto 0)
@@ -65,6 +67,7 @@ architecture Behavioral of mem_wb is
 	signal inner_ramData	:  std_logic_vector(15 downto 0);
 	signal inner_ALUres	:  std_logic_vector(15 downto 0);
 
+	signal inner_isERET	: std_logic;
 	signal inner_int	: std_logic;
 	signal inner_intCode 	: std_logic_vector(3 downto 0);
 	
@@ -80,6 +83,7 @@ begin
 				inner_ALUres <= ALUres;
 				inner_int	<= int;
 				inner_intCode	<= intCode;
+				inner_isERET	<= isERET;
 			else
 				inner_dstSrc <= (others => '0');
 				inner_wbSrc <= '0';
@@ -88,7 +92,8 @@ begin
 				inner_ALUres <= (others => '0');
 
 				inner_int <= '0';
-				inner_int_Code <= (others => '0');
+				inner_intCode <= (others => '0');
+				inner_isERET <= '0';
 			end if;
 		end if;
 	end process;
@@ -101,6 +106,7 @@ begin
 
 	int_o	<= inner_int;
 	intCode_o	<= inner_intCode;
+	isERET_o	<= inner_isERET;
 
 end Behavioral;
 
