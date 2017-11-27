@@ -101,14 +101,9 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1511536197" xil_pn:in_ck="8241927924023320161" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1511536197">
+    <transform xil_pn:end_ts="1511783210" xil_pn:in_ck="-103482909726640820" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1511783210">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputAdded"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="alu.vhd"/>
       <outfile xil_pn:name="branch_judger.vhd"/>
       <outfile xil_pn:name="cat_pad.vhd"/>
@@ -122,10 +117,15 @@
       <outfile xil_pn:name="if_id.vhd"/>
       <outfile xil_pn:name="inst_decode.vhd"/>
       <outfile xil_pn:name="inst_fetch.vhd"/>
+      <outfile xil_pn:name="instruction_forward_unit.vhd"/>
       <outfile xil_pn:name="mem_access.vhd"/>
       <outfile xil_pn:name="mem_wb.vhd"/>
       <outfile xil_pn:name="pc_controller.vhd"/>
       <outfile xil_pn:name="ram_interactor.vhd"/>
+      <outfile xil_pn:name="ram_io/bootloader.vhd"/>
+      <outfile xil_pn:name="ram_io/io_components.vhd"/>
+      <outfile xil_pn:name="ram_io/ram_module.vhd"/>
+      <outfile xil_pn:name="ram_io/uart_module.vhd"/>
       <outfile xil_pn:name="registers.vhd"/>
       <outfile xil_pn:name="stall_unit.vhd"/>
       <outfile xil_pn:name="test_basic_frame.vhd"/>
@@ -134,11 +134,11 @@
       <outfile xil_pn:name="test_forward_unit.vhd"/>
       <outfile xil_pn:name="write_back.vhd"/>
     </transform>
-    <transform xil_pn:end_ts="1511535491" xil_pn:name="TRAN_xawsToSimhdl" xil_pn:prop_ck="4056651547700801462" xil_pn:start_ts="1511535491">
+    <transform xil_pn:end_ts="1511783010" xil_pn:name="TRAN_xawsToSimhdl" xil_pn:prop_ck="8461603023773276622" xil_pn:start_ts="1511783010">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1511535491" xil_pn:name="TRAN_schematicsToHdlSim" xil_pn:prop_ck="-5196860696025608392" xil_pn:start_ts="1511535491">
+    <transform xil_pn:end_ts="1511783010" xil_pn:name="TRAN_schematicsToHdlSim" xil_pn:prop_ck="8229772507277053776" xil_pn:start_ts="1511783010">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
@@ -146,14 +146,9 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1511536197" xil_pn:in_ck="8241927924023320161" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1511536197">
+    <transform xil_pn:end_ts="1511783210" xil_pn:in_ck="-103482909726640820" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1511783210">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="alu.vhd"/>
       <outfile xil_pn:name="branch_judger.vhd"/>
       <outfile xil_pn:name="cat_pad.vhd"/>
@@ -167,10 +162,15 @@
       <outfile xil_pn:name="if_id.vhd"/>
       <outfile xil_pn:name="inst_decode.vhd"/>
       <outfile xil_pn:name="inst_fetch.vhd"/>
+      <outfile xil_pn:name="instruction_forward_unit.vhd"/>
       <outfile xil_pn:name="mem_access.vhd"/>
       <outfile xil_pn:name="mem_wb.vhd"/>
       <outfile xil_pn:name="pc_controller.vhd"/>
       <outfile xil_pn:name="ram_interactor.vhd"/>
+      <outfile xil_pn:name="ram_io/bootloader.vhd"/>
+      <outfile xil_pn:name="ram_io/io_components.vhd"/>
+      <outfile xil_pn:name="ram_io/ram_module.vhd"/>
+      <outfile xil_pn:name="ram_io/uart_module.vhd"/>
       <outfile xil_pn:name="registers.vhd"/>
       <outfile xil_pn:name="stall_unit.vhd"/>
       <outfile xil_pn:name="test_basic_frame.vhd"/>
@@ -179,24 +179,18 @@
       <outfile xil_pn:name="test_forward_unit.vhd"/>
       <outfile xil_pn:name="write_back.vhd"/>
     </transform>
-    <transform xil_pn:end_ts="1511536200" xil_pn:in_ck="8241927924023320161" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="9016334096459499393" xil_pn:start_ts="1511536197">
-      <status xil_pn:value="SuccessfullyRun"/>
+    <transform xil_pn:end_ts="1511783213" xil_pn:in_ck="-103482909726640820" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-6080656031999986639" xil_pn:start_ts="1511783210">
+      <status xil_pn:value="FailedRun"/>
       <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputRemoved"/>
-      <outfile xil_pn:name="test_execution_isim_beh.exe"/>
     </transform>
     <transform xil_pn:end_ts="1511536200" xil_pn:in_ck="8128366932270093060" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="408712169555769358" xil_pn:start_ts="1511536200">
-      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="AbortedRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="OutOfDateForProperties"/>
       <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
+      <status xil_pn:value="OutOfDateForced"/>
       <status xil_pn:value="InputRemoved"/>
-      <status xil_pn:value="OutputRemoved"/>
     </transform>
     <transform xil_pn:end_ts="1511671291" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1511671291">
       <status xil_pn:value="SuccessfullyRun"/>

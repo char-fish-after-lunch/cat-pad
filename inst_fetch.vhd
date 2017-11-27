@@ -34,7 +34,7 @@ entity inst_fetch is port(
 		instr: out std_logic_vector(15 downto 0);
 
 		if_addr: out std_logic_vector(15 downto 0);
-		if_data: in std_logic_vector(15 downto 0)
+		if_data: in std_logic_vector(15 downto 0);
 
 		int_o: out std_logic;
 		intCode_o: out std_logic_vector(3 downto 0)

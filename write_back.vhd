@@ -42,7 +42,7 @@ entity write_back is port(
 		
 		writeData : out std_logic_vector(15 downto 0);
 		writeDst : out std_logic_vector(3 downto 0);
-		isWriting : out std_logic
+		isWriting : out std_logic;
 
 		int_o		: out std_logic;
 		intCode_o	: out std_logic_vector(3 downto 0)
@@ -57,7 +57,7 @@ begin
 	begin
 		if int = '1' then
 			writeData <= (others => '0');
-			writeDst <= (othes => '0');
+			writeDst <= (others => '0');
 			isWriting <= '0';
 
 			int_o <= '1';

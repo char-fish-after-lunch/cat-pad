@@ -205,7 +205,7 @@ package components is
 		pc: in std_logic_vector(15 downto 0);
 		instr: out std_logic_vector(15 downto 0);
 		if_addr: out std_logic_vector(15 downto 0);
-		if_data: in std_logic_vector(15 downto 0)
+		if_data: in std_logic_vector(15 downto 0);
 
 		int_o	: out std_logic;
 		intCode_o	: out std_logic_vector(3 downto 0)
@@ -231,7 +231,7 @@ package components is
 		
 		-- result get from ram dispatcher
 		ram_return	 : in std_logic_vector(15 downto 0);
-		ram_return_o : out std_logic_vector(15 downto 0)
+		ram_return_o : out std_logic_vector(15 downto 0);
 
 
 		int_o		: out std_logic;
@@ -345,7 +345,7 @@ package components is
 		
 		writeData : out std_logic_vector(15 downto 0);
 		writeDst : out std_logic_vector(3 downto 0);
-		isWriting : out std_logic
+		isWriting : out std_logic;
 
 		int_o	:	out std_logic;
 		intCode_o	:	out std_logic_vector(3 downto 0)
@@ -475,7 +475,7 @@ package components is
 
 		cp0StatusUpdate : out std_logic;
 		cp0EpcUpdate : out std_logic_vector(15 downto 0);
-		cp0CauseUpdate : out std_logic_vector(15 downto 0)
+		cp0CauseUpdate : out std_logic_vector(15 downto 0);
 		cp0ERetUpdate : out std_logic;
 		cp0TrapUpdate : out std_logic;
 

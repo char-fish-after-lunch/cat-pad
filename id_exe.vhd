@@ -74,7 +74,7 @@ entity id_exe is port(
 		ramWrite_o		:	out std_logic;
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
-		wbEN_o			:	out std_logic
+		wbEN_o			:	out std_logic;
 		int_o			:	out std_logic;
 		intCode_o		:	out std_logic_vector(3 downto 0)
 		

@@ -48,7 +48,7 @@ entity mem_access is port(
 		
 		-- result get from ram dispatcher
 		ram_return	 : in std_logic_vector(15 downto 0);
-		ram_return_o : out std_logic_vector(15 downto 0)
+		ram_return_o : out std_logic_vector(15 downto 0);
 
 		int_o		: out std_logic;
 		intCode_o	: out std_logic_vector(3 downto 0)
