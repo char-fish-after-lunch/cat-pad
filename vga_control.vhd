@@ -34,7 +34,7 @@ use ieee.std_logic_arith.all;
 entity vga_control is port(
         clk_in : in std_logic;
         rst : in std_logic;
-        ramWrite : in std_logic;
+        ramWrite : in std_logic; --input shi neng duan
 
         out_red : out std_logic_vector(2 downto 0);
         out_green : out std_logic_vector(2 downto 0);
@@ -43,6 +43,7 @@ entity vga_control is port(
         romAddr : out std_logic_vector(17 downto 0);
         romData : in std_logic_vector(15 downto 0); --rgb that only 8 downto 0 is useful
         vgaRead : out std_logic;
+        vgaWrite : out std_logic; --output as shi neng duan
 
         ramWriAddrIn : in std_logic_vector(17 downto 0); --video card function 
         ramWriDataIn : in std_logic_vector(15 downto 0); --in
@@ -149,42 +150,32 @@ begin
             vs <= vs_t;
         end if;
     end process;
-
-    process(clk, rst)
-    begin
-        if rst = '0' then
-            vgaRead <= '0';
-            readData <= '0';
-        elsif clk'event and clk = '1' then
-            vgaRead <= '1';
-            readData <= '1';
-        elsif clk'event and clk = '0' then
-            vgaRead <= '0';
-            readData <= '0';
-        end if;
-    end process;
     
     process(clk, rst, x, y) --control the rgb
     begin
         if rst = '0' then
+            vgaRead <= '0';
             r_t <= "000";
             g_t <= "000";
             b_t <= "000";
         elsif clk'event and clk = '1' then
             if x >= 0 and x < 640 and y >= 0 and y < 480 then
                 if x >= 64 and x < 576 and y >= 0 and y < 480 then
+                    vgaRead <= '1';
                     romAddr(17 downto 9) <= conv_std_logic_vector(x-64, 9);
                     romAddr(8 downto 0) <= conv_std_logic_vector(y, 9);
                     r_t <= romData(8 downto 6);
                     g_t <= romData(5 downto 3);
                     b_t <= romData(2 downto 0);
                 else
+                    vgaRead <= '0';
                     romAddr(17 downto 0) <= (others => '0');
                     r_t <= (others => '0');
                     g_t <= (others => '0');
                     b_t <= (others => '0');
                 end if;
             else
+                vgaRead <= '0';
                 r_t <= (others => '0');
                 g_t <= (others => '0');
                 b_t <= (others => '0');
@@ -210,15 +201,14 @@ begin
     process(clk, rst, ramWriAddrIn, ramWriDataIn, ramWrite, readData, something_save) --when some data
     begin
         if rst = '0' then
-            --shi neng wei ling
+            vgaWrite <= '0'; --shi neng wei ling
             ramWriAddrOut <= (others => '0');
             ramWriDataOut <= (others => '0');
             tmp_Addr <= (others => '0');
             tmp_Data <= (others => '0');
             something_save <= '0';
         elsif clk'event and clk = '1' then  --if the state is read
-            --if readData = '1' then 
-            -- shi neng zhi ling
+            vgaWrite <= '0';
             ramWriAddrOut <= (others => '0');
             ramWriDataOut <= (others => '0');
             if ramWrite = '1' then --if need to write, then save it
@@ -228,25 +218,25 @@ begin
             end if;
         elsif clk'event and clk = '0' then -- if the state is write
             if ramWrite = '1' and something_save = '0' then
-                -- shineng!!
+                vgaWrite <= '1';
                 ramWriAddrOut <= ramWriAddrIn;
                 ramWriDataOut <= ramWriDataIn;
             elsif ramWrite = '1' and something_save = '1' then
-                -- shineng!!
+                vgaWrite <= '1';
                 ramWriAddrOut <= tmp_Addr;
                 ramWriDataOut <= tmp_Data;
                 tmp_Addr <= ramWriAddrIn;
                 tmp_Data <= ramWriDataIn;
                 something_save <= '1';
             elsif ramWrite = '0' and something_save = '1' then
-                -- shineng!!
+                vgaWrite <= '1';
                 ramWriAddrOut <= tmp_Addr;
                 ramWriDataOut <= tmp_Data;
                 tmp_Addr <= (others => '0');
                 tmp_Data <= (others => '0');
                 something_save <= '0';
             else
-                --shi neng zhi ling
+                vgaWrite <= '0';
                 ramWriAddrOut <= (others => '0');
                 ramWriDataOut <= (others => '0');
             end if;
