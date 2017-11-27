@@ -32,6 +32,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity ram_interactor is port(
 		clk : in std_logic;
+    	clk_11m : in std_logic;
 		
 		if_ram_addr	  : in std_logic_vector(15 downto 0);
 		mem_ram_addr  : in std_logic_vector(15 downto 0);
@@ -122,7 +123,7 @@ begin
     );
 
 	uart_module: uart_module port map(
-		clk => clk,
+		clk => clk_11m,
 		uart_isRead => uart_isRead,
 		uart_isUsed => uart_isUsed,
 		uart_data => uart_data,

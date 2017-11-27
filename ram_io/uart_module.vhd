@@ -47,10 +47,98 @@ entity uart_module is port(
 end uart_module;
 
 architecture Behavioral of uart_module is
+	signal can_read : STD_LOGIC := '0';
+	signal can_write : STD_LOGIC := '0';
+	type uart_procedure is (read_1, read_2, write_1, write_2, write_3, idling);
+	signal state : uart_procedure := idling;
+
+	signal res_data : STD_LOGIC_VECTOR(15 downto 0) := "0000000000000000";
+
+	signal t_put_data : STD_LOGIC_VECTOR(15 downto 0) := "ZZZZZZZZZZZZZZZZ";
+	signal t_rdn : STD_LOGIC := '1';
+	signal t_wrn : STD_LOGIC := '1';
 
 begin
-	rdn <= '1';
-	wrn <= '1';
-	uart_res <= (others => '0');
+
+	put_data <= t_put_data;
+	rdn <= t_rdn;
+	wrn <= t_wrn;
+
+	process(uart_isUsed, state, clk, tsre, tbre)
+	begin
+	
+		if (rising_edge(clk)) then
+		case state is
+			when read_1 =>
+				t_rdn <= '0';
+				res_data <= put_data;
+			 	state <= read_2;
+
+			when read_2 =>
+				t_rdn <= '1';
+			 	state <= idling;
+
+			when write_1 =>
+				t_wrn <= '0';
+				t_put_data <= uart_data;
+				state <= write_2;
+				
+			when write_2 =>
+				state <= write_3;
+				t_wrn <= '1';
+
+			when write_3 => 
+				if (tsre = '1') then
+					state <= idling;
+				end if;
+
+			when idling =>
+				t_rdn <= '1';
+				t_wrn <= '1';
+				t_put_data <= (others => 'Z');
+				if (uart_isUsed = '1') then
+					if (uart_isRead = '1') then
+						if (state = idling) then
+							state <= read_1;
+						end if;
+					else 
+						if (state = idling) then
+							state <= write_1;
+						end if;
+					end if;
+				else
+					state <= idling;
+				end if;
+				
+		end case;
+		end if;
+	end process;
+
+	process(state, clk, put_data, data_ready)
+	begin
+		if (state = idling and data_ready = '1') then
+			can_read <= '1';
+		else
+			can_read <= '0';
+		end if;
+
+		if (state = idling) then
+			can_write <= '1';
+		end if;
+
+	end process;
+
+	process(isData, put_data, state)
+	begin
+		if (state = read_1 or state = read_2 or state = idling) then
+			if (isData = '1') then
+				uart_res <= res_data;
+			else
+				uart_res <= "00000000000000" & can_read & can_write;
+			end if;
+		else
+			uart_res <= (others => '0');
+		end if;
+	end process;
 end Behavioral;
 

@@ -232,7 +232,7 @@ package components is
 
     component ram_interactor port(
 		clk : in std_logic;
-		
+		clk_11m : in std_logic;
 		if_ram_addr	  : in std_logic_vector(15 downto 0);
 		mem_ram_addr  : in std_logic_vector(15 downto 0);
 		mem_ram_data  : in std_logic_vector(15 downto 0);

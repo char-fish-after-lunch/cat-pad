@@ -35,6 +35,7 @@ entity cat_pad is port(
     rst: in std_logic;
     clk: in std_logic;
     manual_clk : in STD_LOGIC;
+    clk_11m : in std_logic;
     
     input : in  STD_LOGIC_VECTOR (15 downto 0);
     leds : out  STD_LOGIC_VECTOR (15 downto 0);
@@ -253,7 +254,7 @@ begin
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
-			real_clk <= manual_clk;
+			real_clk <= clk_11m;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
@@ -334,7 +335,7 @@ begin
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb);
 		
-    u_ram_interactor: ram_interactor port map(clk => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => clk_11m, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
