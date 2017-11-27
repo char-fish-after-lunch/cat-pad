@@ -31,6 +31,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity ex_mem is port(
 	clk : in std_logic;
+
+	clear	:	in std_logic;
 	
 	dstSrc	:	in std_logic_vector(3 downto 0);
 	ramWrite	:	in std_logic;
@@ -78,15 +80,27 @@ begin
 	process(clk)
 	begin
 		if (rising_edge(clk)) then
-			inner_dstSrc <= dstSrc;
-			inner_ramWrite	<=	ramWrite;
-			inner_ramRead	<=	ramRead;
-			inner_wbSrc	<=	wbSrc;
-			inner_wbEN	<=	wbEN;
-			inner_regB	<=	regB;
-			inner_ALUres	<=	ALUres;
-			inner_int	<= int;
-			inner_intCode <= intCode;
+			if clear = '0' then
+				inner_dstSrc <= dstSrc;
+				inner_ramWrite	<=	ramWrite;
+				inner_ramRead	<=	ramRead;
+				inner_wbSrc	<=	wbSrc;
+				inner_wbEN	<=	wbEN;
+				inner_regB	<=	regB;
+				inner_ALUres	<=	ALUres;
+				inner_int	<= int;
+				inner_intCode <= intCode;
+			else
+				inner_dstSrc <= (others => '0');
+				inner_ramWrite <= '0';
+				inner_ramRead <= '0';
+				inner_wbSrc <= '0';
+				inner_wbEN <= '0';
+				inner_regB <= (others => '0');
+				inner_ALUres <= (others => '0');
+				inner_int <= '0';
+				inner_intCode<= "0000";
+			end if;
 		end if;
 	end process;
 	

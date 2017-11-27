@@ -51,7 +51,9 @@ package components is
     end component;
 
     component ex_mem port(
-        clk : in std_logic;
+		clk : in std_logic;
+		
+		clear	:	in std_logic;
         
         dstSrc	:	in std_logic_vector(3 downto 0);
         ramWrite	:	in std_logic;
@@ -239,6 +241,8 @@ package components is
     
     component mem_wb port(
 		clk : in std_logic;
+
+		clear : in std_logic;
 
 		dstSrc	:	in std_logic_vector(3 downto 0);
 		wbSrc		:	in std_logic;

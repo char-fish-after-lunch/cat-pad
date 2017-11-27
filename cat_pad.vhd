@@ -186,6 +186,7 @@ architecture Behavioral of cat_pad is
     signal s_intCode_mem    : std_logic_vector(3 downto 0);
     signal s_post_int_mem   : std_logic;
     signal s_post_intCode_mem   : std_logic_vector(3 downto 0);
+    signal s_mem_clear      : std_logic;
     
 	-- ram interactor
     signal s_if_ram_addr    : std_logic_vector(15 downto 0);
@@ -195,6 +196,7 @@ architecture Behavioral of cat_pad is
     signal s_if_res_data    : std_logic_vector(15 downto 0);
     signal s_ramWrite_ram	: std_logic;
     signal s_ramRead_ram	: std_logic;
+    signal s_wb_clear       : std_logic;
 
     signal s_ram_data : std_logic_vector(15 downto 0);
 
@@ -268,6 +270,13 @@ architecture Behavioral of cat_pad is
     signal s_ps2_request : std_logic;
     signal s_ram_lock_mem : std_logic;
     signal s_pipeline_clear : std_logic;
+
+    signal s_cp0_set_pc : std_logic;
+    signal s_cp0_set_pc_val : std_logic_vector(15 downto 0);
+
+    signal s_stall_id_clear: std_logic;
+    signal s_stall_id_keep: std_logic;
+    signal s_stall_exe_clear: std_logic;
 begin
 
 	u_bootloader : bootloader port map(
@@ -416,9 +425,9 @@ begin
 					exeBranchJudge => s_willBranch,
 					exeBranchTo => s_next_pc_o,
 					pcPause => s_pc_pause,
-					idKeep => s_id_keep,
-					idClear => s_id_clear,
-					exeClear => s_exe_clear,
+					idKeep => s_stall_id_keep,
+					idClear => s_stall_id_clear,
+					exeClear => s_stall_exe_clear,
 					pcInc => s_pc_inc,
 					ifAddr => s_pc_out,
 					setPC => s_stall_set_pc,
@@ -471,14 +480,16 @@ begin
         cp0CauseUpdate => s_cp0_cause_update,
         cp0ERetUpdate => s_cp0_eret_update,
         cp0TrapUpdate => s_cp0_trap_update,
-        pcSet => s_pc_set,
-        pcSetVal => s_pc_set_val
+        pcSet => s_cp0_set_pc,
+        pcSetVal => s_cp0_set_pc_val
     );
 
 	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,
-			s_stall_set_pc_val)
-	begin
-		if s_stall_set_pc = '1' then
+			s_stall_set_pc_val, s_cp0_set_pc, s_cp0_set_pc_val)
+    begin
+        if s_cp0_set_pc = '1' then
+            s_next_pc_in <= s_cp0_set_pc_val;
+		elsif s_stall_set_pc = '1' then
 			s_next_pc_in <= s_stall_set_pc_val;
 		elsif s_pc_inc = '1' then
 			s_next_pc_in <= s_next_pc_out;
@@ -504,6 +515,31 @@ begin
             when "1001" => disp1 <= "1111011";
             when others => disp1 <= "1111111";
         end case;
+    end process;
+
+    process(s_pipeline_clear, s_stall_id_clear, s_stall_exe_clear,
+        s_stall_id_keep)
+    begin
+        s_id_clear <= '0';
+        s_exe_clear <= '0';
+        s_mem_clear <= '0';
+        s_wb_clear <= '0';
+        if s_pipeline_clear = '1' then
+            s_id_clear <= '1';
+            s_exe_clear <= '1';
+            s_mem_clear <= '1';
+            s_wb_clear <= '1';
+        else
+            if s_stall_id_clear = '1' then
+                s_id_clear <= '1';
+            end if;
+            if s_stall_exe_clear = '1' then
+                s_exe_clear <= '1';
+            end if;
+            if s_stall_id_keep = '1' then
+                s_id_keep <= '1';
+            end if;
+        end if;
     end process;
 
     s_ps2_request <= '0';
