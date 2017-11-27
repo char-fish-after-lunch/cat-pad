@@ -61,7 +61,7 @@ begin
 		end if;
     end process;
     
-    process(clk, rst) --行区间扫描
+    process(clk, rst, x) --������ɨ��
     begin
         if rst = '0' then
 			x <= 0;
@@ -74,11 +74,10 @@ begin
 		end if;
     end process;
 
-    process(clk, rst) --场区间扫描
+    process(clk, rst, y, x) --������ɨ��
     begin
         if rst = '0' then
 			y <= 0; 
-			y <= 0;
         elsif clk'event and clk = '1' then
             if x = 799 then
                 if y = 524 then
@@ -90,7 +89,7 @@ begin
         end if;
     end process;
 
-    process(clk, rst) --设置行同步信号
+    process(clk, rst, x) --������ͬ���ź�
     begin
         if rst = '0' then
             hs_t <= '1';
@@ -103,7 +102,7 @@ begin
         end if;
     end process;
 
-    process(clk, rst) --设置场同步信号
+    process(clk, rst, y) --���ó�ͬ���ź�
     begin
         if rst = '0' then
             vs_t <= '1';
@@ -116,7 +115,7 @@ begin
         end if;
     end process;
 
-    process(clk, rst) --行信号输出
+    process(clk, rst, hs_t) --���ź����
     begin
         if rst = '0' then
             hs <= '0';
@@ -125,7 +124,7 @@ begin
         end if;
     end process;
 
-    process(clk, rst) --场信号输出
+    process(clk, rst, vs_t) --���ź����
     begin
         if rst = '0' then
             vs <= '0';
@@ -142,16 +141,39 @@ begin
             b_t <= "000";
             test_t <= "000";
         elsif clk'event and clk = '1' then
-            if x < 20 and y < 20 then
-                r_t <= "010";
-                g_t <= "101";
-                b_t <= "000";
-                test_t <= "110";
-            else
+            if x > 0 and x < 20 and y > 0 and y < 20 then
                 r_t <= "111";
                 g_t <= "111";
-                b_t <= "010";
+                b_t <= "111";
+			elsif x > 620 and x < 640 and y > 0 and y < 20 then
+				r_t <= "111";
+                g_t <= "000";
+                b_t <= "000";
+			elsif x > 620 and x < 640 and y > 460 and y < 480 then
+				r_t <= "000";
+                g_t <= "111";
+                b_t <= "000";
+            elsif x > 0 and x < 20 and y > 460 and y < 480 then
+                r_t <= "000";
+                g_t <= "000";
+                b_t <= "111";
+            elsif x > 310 and x < 330 and y > 0 and y < 480 then
+                r_t <= "111";
+                g_t <= "111";
+                b_t <= "111";
+            elsif x > 80 and x < 120 and y > 40 and y < 80 then
+                r_t <= "111";
+                g_t <= "111";
+                b_t <= "111";
+            elsif x > 0 and x < 640 and y > 0 and y < 480 then
+                r_t <= "000";
+                g_t <= "111";
+                b_t <= "000";
                 test_t <= "100";
+            else
+                r_t <= (others => '0');
+                g_t <= (others => '0');
+                b_t <= (others => '0');
             end if;
         end if;
     end process;
