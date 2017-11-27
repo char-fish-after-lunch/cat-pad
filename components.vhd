@@ -230,6 +230,8 @@ package components is
 		ramWrite	:	in std_logic;
 		ramRead	:	in std_logic;
 
+		ramLock		: in std_logic;
+
 		int		:	in std_logic;
 		intCode	:	in std_logic_vector(3 downto 0);
 		

@@ -39,6 +39,7 @@ entity mem_access is port(
 		
 		ramWrite	:	in std_logic;
 		ramRead	:	in std_logic;
+		ramLock	:	in std_logic;
 		
 		-- signals sen to ram dispatcher
 		ramWrite_o	:	out std_logic;
@@ -60,9 +61,10 @@ end mem_access;
 architecture Behavioral of mem_access is
 
 begin
-	process(ramWrite, ramRead, ram_addr, ram_data_in, ram_return, int, intCode)
+	process(ramWrite, ramRead, ram_addr, ram_data_in, ram_return, int, intCode,
+			ramLock)
 	begin
-		if int = '1' then
+		if int = '1' or ramLock = '1' then
 			ramWrite_o <= '0';
 			ramRead_o <= '0';
 			ram_addr_o <= (others => '0');

@@ -400,7 +400,8 @@ begin
         ramRead => s_ramRead_mem, ramWrite_o => s_ramWrite_ram, ramRead_o => s_ramRead_ram, ram_data_o => s_mem_ram_data,
         ram_addr_o => s_mem_ram_addr, ram_return => s_res_data, ram_return_o => s_ram_data,
         int => s_int_mem, intCode => s_intCode_mem,
-        int_o => s_post_int_mem, intcode_o => s_post_intCode_mem);
+        int_o => s_post_int_mem, intcode_o => s_post_intCode_mem,
+		ramLock => s_ram_lock_mem);
 		
     u_mem_wb : mem_wb port map(clk => real_clk, dstSrc => s_dstSrc_mem, wbSrc => s_wbSrc_mem, wbEN => s_wbEN_mem,
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
