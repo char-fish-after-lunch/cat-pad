@@ -541,6 +541,7 @@ begin
         s_exe_clear <= '0';
         s_mem_clear <= '0';
         s_wb_clear <= '0';
+		s_id_keep <= '0';
         if s_pipeline_clear = '1' then
             s_id_clear <= '1';
             s_exe_clear <= '1';

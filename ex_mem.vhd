@@ -80,6 +80,7 @@ architecture Behavioral of ex_mem is
 	signal inner_int: 	std_logic;
 	signal inner_intCode	:	std_logic_vector(3 downto 0);
 	signal inner_isERET	:	std_logic;
+	signal inner_PC		:	std_logic_vector(15 downto 0);
 begin
 	process(clk)
 	begin
@@ -95,6 +96,7 @@ begin
 				inner_int	<= int;
 				inner_intCode <= intCode;
 				inner_isERET <= isERET;
+				inner_PC <= PC;
 			else
 				inner_dstSrc <= (others => '0');
 				inner_ramWrite <= '0';
@@ -106,6 +108,7 @@ begin
 				inner_int <= '0';
 				inner_intCode<= "0000";
 				inner_isERET <= '0';
+				inner_PC <= (others => '0');
 			end if;
 		end if;
 	end process;
@@ -122,7 +125,7 @@ begin
 	intCode_o	<=	inner_intCode;
 	isERET_o	<=	inner_isERET;
 
-	PC_o <= PC;
+	PC_o <= inner_PC;
 
 end Behavioral;
 

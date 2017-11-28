@@ -35,15 +35,22 @@ end interrupt_control;
 
 architecture behavioral of interrupt_control is
 begin
-	process(wbInt, wbIntCode, cp0Cause, cp0Epc, cp0Status, memAddress)
+	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memAddress, cp0Trap, cp0ERet, ps2Request)
 		type Cause is range 0 to 10;
 
-		variable cp0IntEvent : std_logic := '0';
-		variable cp0CauseUpdateV : std_logic_vector(15 downto 0) := cp0Cause;
-		variable cp0EpcUpdateV : std_logic_vector(15 downto 0) := cp0Epc;
-		variable cp0StatusUpdateV : std_logic := cp0Status;	
-		variable cp0NextCause : Cause := 0;
+		variable cp0IntEvent : std_logic;
+		variable cp0CauseUpdateV : std_logic_vector(15 downto 0);
+		variable cp0EpcUpdateV : std_logic_vector(15 downto 0);
+		variable cp0StatusUpdateV : std_logic;	
+		variable cp0NextCause : Cause;
 	begin
+		cp0IntEvent := '0';
+		cp0CauseUpdateV := cp0Cause;
+		cp0EpcUpdateV := cp0Epc;
+		cp0StatusUpdateV := cp0Status;
+		cp0NextCause := 0;
+
+
 		memRamLock <= '0';
 		pipelineClear <= '0';
 		cp0ERetUpdate <= '0';
@@ -67,6 +74,7 @@ begin
 			end if;
 			
 		elsif wbERet = '1' then
+			cp0IntEvent := '1';
 			cp0ERetUpdate <= '1';	
 			-- we assume that eret and int cannot be 1 at the same time
 		end if;
@@ -74,7 +82,7 @@ begin
 		if cp0ERet = '1' then
 			-- switch to user mode
 			
-			if cp0CauseUpdateV(11 downto 0) = (10 downto 0 => '0') then
+			if cp0CauseUpdateV(10 downto 0) = (10 downto 0 => '0') then
 
 				cp0StatusUpdateV := '0'; -- allow interrupt
 				pcSet <= '1';
@@ -111,13 +119,15 @@ begin
 
 
 
-		if cp0IntEvent = '1' and cp0StatusUpdateV = '0' then
-			-- this means that the CP0 running state would be changed (switched
-			-- from the user mode to the kernel mode)
+		if cp0IntEvent = '1' then
 			memRamLock <= '1';
 			pipelineClear <= '1';
-			cp0EpcUpdateV := memAddress;
-			cp0TrapUpdate <= '1';
+			if cp0StatusUpdateV = '0' then
+			-- this means that the CP0 running state would be changed (switched
+			-- from the user mode to the kernel mode)
+				cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(memAddress)) - 1, 16));
+				cp0TrapUpdate <= '1';
+			end if;
 		end if;
 	
 		cp0StatusUpdate <= cp0StatusUpdateV;
