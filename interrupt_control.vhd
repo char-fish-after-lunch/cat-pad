@@ -8,7 +8,17 @@ entity interrupt_control is
 		wbInt: in std_logic; -- whether there is an interrupt in WB
 		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
 		wbERet : in std_logic; -- whether the instruction is an eret
-		memAddress : in std_logic_vector(15 downto 0); -- the address of the next instruction
+		
+		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
+		exePC : in std_logic_vector(15 downto 0);
+		idPC  : in std_logic_vector(15 downto 0);
+		ifPC  : in std_logic_vector(15 downto 0);		
+
+		wbBubble	: in std_logic;
+		memBubble	: in std_logic;
+		exeBubble	: in std_logic;
+		idBubble	: in std_logic;
+		
 
 		cp0Status : in std_logic;
 		cp0Epc : in std_logic_vector(15 downto 0);
@@ -35,7 +45,8 @@ end interrupt_control;
 
 architecture behavioral of interrupt_control is
 begin
-	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memAddress, cp0Trap, cp0ERet, ps2Request)
+	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memPC, exePC, idPC, ifPC, cp0Trap, cp0ERet, 
+			ps2Request, idBubble, exeBubble, memBubble, wbBubble)
 		type Cause is range 0 to 10;
 
 		variable cp0IntEvent : std_logic;
@@ -59,8 +70,11 @@ begin
 
 
 		if ps2Request = '1' then
-			cp0IntEvent := '1';
 			cp0CauseUpdateV(10) := '1'; -- 11 for PS/2 ISR
+			if cp0ERet = '0' and cp0Trap = '0' and cp0Status = '0' then
+				-- no switching bewteen the user mode and the kernel mode
+				cp0IntEvent := '1';
+			end if;
 		end if;
 
 		if wbInt = '1' then
@@ -68,9 +82,9 @@ begin
 			-- keep the address of the current address and the next address
 			-- and prevents the next instruction from writing RAM (for it is now in the MEM stage)
 
-			if cp0Status = '0' then -- if interrupt allowed
+			cp0CauseUpdateV(to_integer(unsigned(wbIntCode))) := '1'; 
+			if cp0ERet = '0' and cp0Trap = '0' and cp0Status = '0' then -- if interrupt allowed
 				cp0IntEvent := '1';
-				cp0CauseUpdateV(to_integer(unsigned(wbIntCode))) := '1'; 
 			end if;
 			
 		elsif wbERet = '1' then
@@ -125,7 +139,15 @@ begin
 			if cp0StatusUpdateV = '0' then
 			-- this means that the CP0 running state would be changed (switched
 			-- from the user mode to the kernel mode)
-				cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(memAddress)) - 1, 16));
+				if wbBubble = '0' or memBubble = '0' then -- if there is an instruction in WB or MEM
+					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(memPC)) - 1, 16));
+				elsif exeBubble = '0' then
+					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(exePC)) - 1, 16));
+				elsif idBubble = '0' then
+					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(idPC)) - 1, 16));
+				else
+					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(ifPC)) - 1, 16));
+				end if;
 				cp0TrapUpdate <= '1';
 			end if;
 		end if;

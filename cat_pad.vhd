@@ -157,6 +157,11 @@ architecture Behavioral of cat_pad is
     signal s_post_int_exe   : std_logic;
     signal s_post_intCode_exe   : std_logic_vector(3 downto 0);
 
+	signal s_bubble_id	: std_logic;
+	signal s_bubble_exe	: std_logic;
+	signal s_bubble_mem	: std_logic;
+	signal s_bubble_wb	: std_logic;
+
     -- exe 
 	signal s_exe_clear: std_logic;
     signal s_ALUres		: std_logic_vector(15 downto 0);
@@ -217,6 +222,7 @@ architecture Behavioral of cat_pad is
     signal s_intCode_wb    : std_logic_vector(3 downto 0);
     signal s_post_int_wb    : std_logic;
     signal s_post_intCode_wb    : std_logic_vector(3 downto 0);
+	signal s_PC_wb			: std_logic_vector(15 downto 0);
 	-- stall unit
 	signal s_stall_set_pc	: std_logic;
 	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
@@ -348,7 +354,8 @@ begin
         int_o => s_int_if, intCode_o => s_intCode_if);
 
     u_if_id : if_id port map(clk => real_clk, IFPC => s_next_pc_out, inst => s_instr, IFPC_o => s_IFPC_o, inst_o => s_inst_o, keep => s_id_keep,
-							clear => s_id_clear, int => s_int_if, intCode => s_intCode_if, int_o => s_int_id, intCode_o => s_intCode_id);
+							clear => s_id_clear, int => s_int_if, intCode => s_intCode_if, int_o => s_int_id, intCode_o => s_intCode_id,
+						bubble_o => s_bubble_id);
 
     u_control : control port map(inst => s_inst_o, regSrcA => s_regSrcA, regSrcB => s_regSrcB, immeCtrl => s_immeCtrl, dstSrc => s_dstSrc,
         immeExt => s_immeExt, oprSrcB => s_oprSrcB, ALUop => s_ALUop, isBranch => s_isBranch, isCond => s_isCond, isRelative => s_isRelative,
@@ -370,7 +377,9 @@ begin
         ramWrite_o => s_ramWrite_exe, ramRead_o => s_ramRead_exe, wbSrc_o => s_wbSrc_exe, wbEN_o => s_wbEN_exe, clear => s_exe_clear,
         isINT => s_isINT, int => s_int_id, intCode => s_intCode_id, int_o => s_int_exe, intCode_o => s_intCode_exe,
 		isERET => s_isERET,
-		isERET_o => s_isERET_exe);
+		isERET_o => s_isERET_exe,
+		bubble => s_bubble_id,
+		bubble_o => s_bubble_exe);
 
     
     u_execution : execution port map(regA => s_regA_o, regB => s_regB_o, regAN => s_regAN_o, regBN => s_regBN_o, immediate => s_immediate_o,
@@ -395,7 +404,10 @@ begin
 		isERET_o => s_isERET_mem,
         PC => s_IDPC_o,
         PC_o => s_PC_mem,
-		clear => s_mem_clear);
+		clear => s_mem_clear,
+		bubble => s_bubble_exe,
+		bubble_o => s_bubble_mem
+	);
 
     u_mem_access : mem_access port map(ram_addr => s_ALUres_mem, ram_data_in => s_regB_mem, ramWrite => s_ramWrite_mem,
         ramRead => s_ramRead_mem, ramWrite_o => s_ramWrite_ram, ramRead_o => s_ramRead_ram, ram_data_o => s_mem_ram_data,
@@ -413,7 +425,12 @@ begin
         intCode => s_post_intCode_mem,
         int_o => s_int_wb, 
         intCode_o => s_intCode_wb,
-		clear => s_wb_clear);
+		clear => s_wb_clear,
+		bubble => s_bubble_mem,
+		bubble_o => s_bubble_wb,
+		PC => s_PC_mem,
+		PC_o => s_PC_wb
+	);
 		
     u_ram_interactor: ram_interactor port map(clk => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
@@ -483,7 +500,10 @@ begin
         wbInt => s_int_wb,
         wbIntCode => s_intCode_wb,
         wbERet => s_isERET_wb,
-        memAddress => s_PC_mem, -- it seems that this is the shifted PC
+        memPC => s_PC_mem, -- it seems that this is the shifted PC
+		exePC => s_IDPC_o,
+		idPC => s_IFPC_o,
+		ifPC => s_pc_out,
         cp0Status => s_cp0_status,
         cp0Epc => s_cp0_epc,
         cp0Cause => s_cp0_cause,
@@ -498,7 +518,12 @@ begin
         cp0ERetUpdate => s_cp0_eret_update,
         cp0TrapUpdate => s_cp0_trap_update,
         pcSet => s_cp0_set_pc,
-        pcSetVal => s_cp0_set_pc_val
+        pcSetVal => s_cp0_set_pc_val,
+
+		wbBubble => s_bubble_wb,
+		memBubble => s_bubble_mem,
+		exeBubble => s_bubble_exe,
+		idBubble => s_bubble_id
     );
 
 	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,

@@ -19,7 +19,7 @@ interrupt_control.vhd
 mem_access.vhd
 mem_wb.vhd
 pc_controller.vhd
-ram_interactor.vhd
+fake_ram_interactor.vhd
 registers.vhd
 stall_unit.vhd
 test_basic_frame.vhd

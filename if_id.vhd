@@ -44,7 +44,8 @@ entity if_id is port(
 	IFPC_o : out std_logic_vector(15 downto 0);
 	inst_o : out std_logic_vector(15 downto 0);
 	int_o : out std_logic;
-	intCode_o : out std_logic_vector(3 downto 0)
+	intCode_o : out std_logic_vector(3 downto 0);
+	bubble_o : out std_logic 
 );
 end if_id;
 
@@ -53,13 +54,15 @@ architecture Behavioral of if_id is
 	signal inner_inst : std_logic_vector(15 downto 0);
 	signal inner_int : std_logic;
 	signal inner_intCode : std_logic_vector(3 downto 0);
+	signal inner_bubble : std_logic := '1';
 begin
 
 	process(clk)
 	begin
 		if (rising_edge(clk)) then
 			if clear = '1' then
-				inner_IFPC <= (15 downto 0 => '0');
+				inner_IFPC <= IFPC; -- do not clear PC
+				inner_bubble <= '1'; -- is a bubble
 				inner_inst <= (15 downto 0 => '0');
 				inner_int <= '0';
 				inner_intCode <= (3 downto 0 => '0');
@@ -68,6 +71,7 @@ begin
 				inner_inst <= inst;
 				inner_int <= int;
 				inner_intCode <= intCode;
+				inner_bubble <= '0';
 			end if;
 		end if;
 	end process;
@@ -76,6 +80,7 @@ begin
 	inst_o <= inner_inst;
 	int_o <= inner_int;
 	intCode_o <= inner_intCode;
+	bubble_o <= inner_bubble;
 
 end Behavioral;
 

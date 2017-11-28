@@ -69,6 +69,9 @@ package components is
 		intCode		:	in std_logic_vector(3 downto 0);
 		PC			:	in std_logic_vector(15 downto 0);
 
+		bubble		:	in std_logic;
+		bubble_o	:	out std_logic;
+
 		int_o		:	out std_logic;
 		intCode_o	:	out std_logic_vector(3 downto 0);
         
@@ -153,6 +156,10 @@ package components is
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
 		wbEN			:	in std_logic;
+
+		bubble			:	in std_logic;
+
+		bubble_o		:	out std_logic;
 		
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
@@ -192,6 +199,8 @@ package components is
         inst : in std_logic_vector(15 downto 0);
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
+
+		bubble_o	:	out std_logic;
 
 		int_o		:	out std_logic;
 		intCode_o	:	out std_logic_vector(3 downto 0);
@@ -260,6 +269,12 @@ package components is
 		wbSrc		:	in std_logic;
 		wbEN		:	in std_logic;
 		isERET	: in std_logic;
+
+		bubble	:	in std_logic;
+		bubble_o	:	out std_logic;
+		
+		PC		:	in std_logic_vector(15 downto 0);
+		PC_o	:	out std_logic_vector(15 downto 0);
 		
 		dstSrc_o		:	out std_logic_vector(3 downto 0);
 		wbSrc_o		:	out std_logic;
@@ -473,7 +488,16 @@ package components is
 		wbInt: in std_logic; -- whether there is an interrupt in WB
 		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
 		wbERet : in std_logic; -- whether the instruction is an eret
-		memAddress : in std_logic_vector(15 downto 0); -- the address of the next instruction
+	
+		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
+		exePC : in std_logic_vector(15 downto 0);
+		idPC  : in std_logic_vector(15 downto 0);
+		ifPC  : in std_logic_vector(15 downto 0);		
+
+		wbBubble	: in std_logic;
+		memBubble	: in std_logic;
+		exeBubble	: in std_logic;
+		idBubble	: in std_logic;
 
 		cp0Status : in std_logic;
 		cp0Epc : in std_logic_vector(15 downto 0);

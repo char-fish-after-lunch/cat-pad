@@ -45,6 +45,8 @@ entity ex_mem is port(
 	regB 		:  in std_logic_vector(15 downto 0);
 	ALUres 	:	in std_logic_vector(15 downto 0);
 
+	bubble		:	in std_logic;
+
 	int		: 	in std_logic;
 	intCode	:	in std_logic_vector(3 downto 0);
 	
@@ -61,6 +63,8 @@ entity ex_mem is port(
 
 	isERET_o	:	out std_logic;
 
+	bubble_o	:	out std_logic;
+
 	int_o		: 	out std_logic;
 	intCode_o	:	out std_logic_vector(3 downto 0)
 );
@@ -76,6 +80,7 @@ architecture Behavioral of ex_mem is
 	
 	signal inner_regB 		:  std_logic_vector(15 downto 0) := "0000000000000000";
 	signal inner_ALUres 		:	std_logic_vector(15 downto 0) := "0000000000000000";
+	signal inner_bubble		:  std_logic := '1';
 	
 	signal inner_int: 	std_logic;
 	signal inner_intCode	:	std_logic_vector(3 downto 0);
@@ -97,6 +102,7 @@ begin
 				inner_intCode <= intCode;
 				inner_isERET <= isERET;
 				inner_PC <= PC;
+				inner_bubble <= bubble;
 			else
 				inner_dstSrc <= (others => '0');
 				inner_ramWrite <= '0';
@@ -108,7 +114,8 @@ begin
 				inner_int <= '0';
 				inner_intCode<= "0000";
 				inner_isERET <= '0';
-				inner_PC <= (others => '0');
+				inner_PC <= PC;
+				inner_bubble <= '1';
 			end if;
 		end if;
 	end process;
@@ -126,6 +133,7 @@ begin
 	isERET_o	<=	inner_isERET;
 
 	PC_o <= inner_PC;
+	bubble_o <= inner_bubble;
 
 end Behavioral;
 
