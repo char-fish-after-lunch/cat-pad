@@ -109,13 +109,13 @@ begin
 				dstSrc		<= "0" & inst(7 downto 5);
 				oprSrcB		<= '1';
 				ramCtrl		:= "01";
-				wbCtrl		:= "10";
+				wbCtrl		:= "01";
 			when INSTR_H_LW_SP =>
 				regSrcA		<= "1001";
 				dstSrc		<= "0" & inst(10 downto 8);
 				oprSrcB		<= '1';
 				ramCtrl		:= "01";
-				wbCtrl		:= "10";
+				wbCtrl		:= "01";
 			when INSTR_H_NOP =>
 			-- does nothing for NOP
 			when INSTR_H_SW =>

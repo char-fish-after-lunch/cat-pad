@@ -222,6 +222,8 @@ architecture Behavioral of cat_pad is
 		test_reg_out_1 : std_logic_vector(15 downto 0);
     signal
 		test_reg_out_2 : std_logic_vector(15 downto 0);
+    signal
+		s_test_log : std_logic_vector(15 downto 0);
 
     signal s_hasConflict : std_logic;
 	 
@@ -253,23 +255,23 @@ begin
 		  res_log => res_log
     ); 
 	 
-	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
+	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_ALU_oprB, s_ALU_oprA, s_fwdSrcB, s_regB_mem, s_id_clear,
-           s_immediate_o, rdn_pad, test_reg_out_2)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
+           s_ramWrite_ram, s_test_log, s_ramRead_ram)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
-			real_clk <= manual_clk;
+			real_clk <= clk_11m;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_ALU_oprA(3 downto 0) & s_ALU_oprB(3 downto 0) & s_ALUres(3 downto 0) & s_immediate_o(3 downto 0);
+            leds <= test_reg_out_1(3 downto 0) & s_writeData(3 downto 0) & s_res_data(3 downto 0) & s_test_log(3 downto 0);
 				--leds <= test_reg_out_1;
-			disp2 <= s_mem_ram_addr(6 downto 0);
+			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -345,7 +347,7 @@ begin
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
-        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict);
+        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log);
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN);

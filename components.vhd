@@ -263,7 +263,9 @@ package components is
 		tsre : in  STD_LOGIC;
 		data_ready : in  STD_LOGIC;
 		
-		hasConflict : out STD_LOGIC);
+		hasConflict : out STD_LOGIC;
+		
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0));
     end component;
 
     component registers port(

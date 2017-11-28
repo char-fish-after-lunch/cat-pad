@@ -42,7 +42,9 @@ entity uart_module is port(
 	wrn : out  STD_LOGIC;
 	tbre : in  STD_LOGIC;
 	tsre : in  STD_LOGIC;
-	data_ready : in  STD_LOGIC
+	data_ready : in  STD_LOGIC;
+
+	test_log : out STD_LOGIC_VECTOR(15 downto 0)
 );
 end uart_module;
 
@@ -57,6 +59,7 @@ architecture Behavioral of uart_module is
 
 	signal res_data : STD_LOGIC_VECTOR(15 downto 0) := "0000000000000000";
 
+	signal t_uart_res : STD_LOGIC_VECTOR(15 downto 0) := "0000000000000000";
 	signal t_put_data : STD_LOGIC_VECTOR(15 downto 0) := "ZZZZZZZZZZZZZZZZ";
 	signal t_rdn : STD_LOGIC := '1';
 	signal t_wrn : STD_LOGIC := '1';
@@ -104,7 +107,7 @@ begin
 	-- end process;
 
 
-	process(state, pro_state, tsre, uart_data, isData, data_ready, put_data)
+	process(state, pro_state, tsre, tbre, uart_data, isData, data_ready, put_data)
 		variable v_can_write : STD_LOGIC := '1';
 	begin
 		t_rdn <= '1';
@@ -131,7 +134,7 @@ begin
 				end if;
 		end case;
 
-		if (tsre = '1' and v_can_write = '0') then
+		if (tsre = '1' and tbre = '1' and v_can_write = '0') then
 			v_can_write := '1';
 		end if;
 
@@ -164,17 +167,22 @@ begin
 	begin
 		if (state = read_uart) then
 			if (isData = '1') then
-				uart_res <= res_data;
+				t_uart_res <= res_data;
 			else
-				uart_res <= "00000000000000" & can_read & can_write;
+				t_uart_res <= "00000000000000" & can_read & can_write;
+				-- uart_res <= "0000000000000011";
 			end if;
 		else
 			if (isData = '0') then
-				uart_res <= "00000000000000" & can_read & can_write;
+				t_uart_res <= "00000000000000" & can_read & can_write;
+				-- uart_res <= "0000000000000011";
 			else
-				uart_res <= (others => '0');
+				t_uart_res <= (others => '0');
 			end if;
 		end if;
 	end process;
+	
+	uart_res <= t_uart_res;
+	test_log <= t_uart_res;
 end Behavioral;
 
