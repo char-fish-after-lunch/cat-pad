@@ -46,6 +46,9 @@ entity control is port(
 	isMFPC		:	out std_logic;
 	isINT		:	out std_logic;
 	isERET		:	out std_logic;
+	isMFEPC		:	out std_logic;
+	isMFCS		:	out std_logic;
+	isMTEPC		:	out std_logic;
 	ramWrite		:	out std_logic;
 	ramRead		:	out std_logic;
 	wbSrc		:	out std_logic;
@@ -75,6 +78,9 @@ begin
 		isMFPC		<= '0';
 		isINT		<= '0';
 		isERET		<= '0';
+		isMFCS		<= '0';
+		isMFEPC		<= '0';
+		isMTEPC		<= '0';
 		case instrType is
 			when INSTR_H_ADDIU =>
 				regSrcA		<= "0" & inst(10 downto 8);
@@ -252,6 +258,24 @@ begin
 						dstSrc		<= "1000";
 						ALUop		<= "1001";
 						wbCtrl		:= "11";
+					when "11111111" =>
+						-- MFCS
+						dstSrc		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
+						isMFCS		<= '1';
+					when "11111110" => 
+						-- MFEPC
+						dstSrc		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
+						isMFEPC		<= '1';
+
+					when "11111100" =>
+						-- MTEPC
+						regSrcA		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						isMTEPC		<= '1';	
 					when others =>
 				end case;
 			when INSTR_H_GROUP5 =>

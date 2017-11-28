@@ -8,6 +8,8 @@ entity interrupt_control is
 		wbInt: in std_logic; -- whether there is an interrupt in WB
 		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
 		wbERet : in std_logic; -- whether the instruction is an eret
+		wbIsMTEPC : in std_logic;
+		wbALUres : in std_logic_vector(15 downto 0);
 		
 		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
 		exePC : in std_logic_vector(15 downto 0);
@@ -46,8 +48,9 @@ end interrupt_control;
 architecture behavioral of interrupt_control is
 begin
 	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memPC, exePC, idPC, ifPC, cp0Trap, cp0ERet, 
-			ps2Request, idBubble, exeBubble, memBubble, wbBubble)
-		type Cause is range 0 to 10;
+			ps2Request, idBubble, exeBubble, memBubble, wbBubble,
+			wbIsMTEPC, wbALUres)
+			type Cause is range 0 to 10;
 
 		variable cp0IntEvent : std_logic;
 		variable cp0CauseUpdateV : std_logic_vector(15 downto 0);
@@ -67,6 +70,10 @@ begin
 		cp0ERetUpdate <= '0';
 		cp0TrapUpdate <= '0';
 		pcSet <= '0';
+
+		if wbIsMTEPC = '1' and cp0Status = '1' then
+			cp0EpcUpdateV := wbALUres;
+		end if;
 
 
 		if ps2Request = '1' then

@@ -62,6 +62,12 @@ entity execution is port(
 		mem_aluRes	: in std_logic_vector(15 downto 0);
 		wb_ramRes	: in std_logic_vector(15 downto 0);
 		wb_aluRes	: in std_logic_vector(15 downto 0);
+
+		isMFEPC		: in std_logic;
+		isMFCS		: in std_logic;
+		cp0EpcSrc	: in std_logic_vector(1 downto 0);
+		cp0Epc		: in std_logic_vector(15 downto 0);
+		cp0Cause	: in std_logic_vector(15 downto 0);
 		
 		-- send to forward unit to detect conflicts
 		regA_fwd 		:  out std_logic_vector(3 downto 0);
@@ -87,23 +93,7 @@ begin
 	
 	shifted_PC <= PC + immediate;
 	
-	process(isMFPC, ALUres, PC)
-	begin
-		int_o <= '0';
-		if int = '1' then
-			int_o <= int;
-			intCode_o <= intCode;
-			ALUres_o <= (others => '0');
-		elsif isInt = '1' then
-			int_o <= '1';
-			intCode_o <= immediate(3 downto 0);
-		elsif (isMFPC = '1') then
-			ALUres_o <= PC;
-		else
-			ALUres_o <= ALUres;
-		end if;
-	end process;
-	
+
 	process(fwdSrcA, mem_aluRes, wb_ramRes, wb_aluRes, regA)
 	begin
 		case fwdSrcA is
@@ -115,7 +105,8 @@ begin
 		end case;
 	end process;
 	
-	process(fwdSrcB, mem_aluRes, wb_ramRes, wb_aluRes, oprSrcB, regB, immediate)
+	process(fwdSrcB, mem_aluRes, wb_ramRes, wb_aluRes, oprSrcB, regB, immediate, 
+		isMFPC, ALUres, PC, isMFEPC, isMFCS, cp0EpcSrc, cp0Epc, cp0Cause, int, intCode)
 	begin
 		case fwdSrcB is
 			when fwd_original =>
@@ -134,6 +125,31 @@ begin
 					ALU_oprB <= regB;
 				end if;
 		end case;
+
+		int_o <= '0';
+		if int = '1' then
+			int_o <= int;
+			intCode_o <= intCode;
+			ALUres_o <= (others => '0');
+		elsif isInt = '1' then
+			int_o <= '1';
+			intCode_o <= immediate(3 downto 0);
+		elsif (isMFPC = '1') then
+			ALUres_o <= PC;
+		elsif isMFEPC = '1' then
+			case cp0EpcSrc is
+				when fwd_original => ALUres_o <= cp0Epc;
+				when fwd_alu_res  => ALUres_o <= mem_aluRes;
+				when fwd_wb_ram   => ALUres_o <= wb_ramRes;
+				when fwd_wb_alu   => ALUres_o <= wb_aluRes;
+				when others => ALUres_o <= cp0Epc;
+			end case;
+		elsif isMFCS = '1' then
+			ALUres_o <= (15 downto 4 => '0') & cp0Cause(14 downto 11);
+		else
+			ALUres_o <= ALUres;
+		end if;
+	
 	end process;
 	
 

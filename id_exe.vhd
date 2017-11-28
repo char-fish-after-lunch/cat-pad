@@ -56,7 +56,13 @@ entity id_exe is port(
 		bubble		:	in std_logic;
 		isINT		:	in std_logic;
 		isERET		:	in std_logic;
+		isMTEPC		:	in std_logic;
+		isMFEPC		:	in std_logic;
+		isMFCS		:	in std_logic;
 
+		isMTEPC_o		:	out std_logic;
+		isMFEPC_o		:	out std_logic;
+		isMFCS_o		:	out std_logic;
 		
 		regA_o 			: out std_logic_vector(15 downto 0);
 		regB_o 			: out std_logic_vector(15 downto 0);
@@ -109,6 +115,9 @@ architecture Behavioral of id_exe is
 	signal inner_bubble			:	std_logic := '1';
 	signal inner_isINT			:	std_logic;
 	signal inner_isERET			:	std_logic;
+	signal inner_isMFEPC		:	std_logic;
+	signal inner_isMTEPC		:	std_logic;
+	signal inner_isMFCS			:	std_logic;
 begin
 	process(clk)
 	begin
@@ -137,6 +146,9 @@ begin
 				inner_isINT	<= isINT;
 				inner_isERET	<= isERET;
 				inner_bubble <= bubble;
+				inner_isMFEPC <= isMFEPC;
+				inner_isMTEPC <= isMTEPC;
+				inner_isMFCS <= isMFCS;
 			else
 				inner_regA <= (15 downto 0 => '0');
 				inner_regB <= (15 downto 0 => '0');
@@ -161,6 +173,9 @@ begin
 				inner_isINT <= '0';
 				inner_isERET <= '0';
 				inner_bubble <= '1';
+				inner_isMFEPC <= '0';
+				inner_isMTEPC <= '0';
+				inner_isMFCS <= '0';
 			end if;
 		end if;
 	end process;
@@ -188,6 +203,9 @@ begin
 	isINT_o <= inner_isINT;
 	isERET_o <= inner_isERET;
 	bubble_o <= inner_bubble;
+	isMFEPC_o <= inner_isMFEPC;
+	isMTEPC_o <= inner_isMTEPC;
+	isMFCS_o <= inner_isMFCS;
 
 end Behavioral;
 

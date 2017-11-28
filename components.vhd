@@ -45,6 +45,9 @@ package components is
 		isMFPC		:	out std_logic;
 		isINT		:	out std_logic;
 		isERET		:	out std_logic;
+		isMFEPC		:	out std_logic;
+		isMFCS		:	out std_logic;
+		isMTEPC		:	out std_logic;
         ramWrite		:	out std_logic;
         ramRead		:	out std_logic;
         wbSrc		:	out std_logic;
@@ -62,6 +65,8 @@ package components is
         wbSrc		:	in std_logic;
         wbEN		:	in std_logic;
 		isERET		:	in std_logic;
+
+		isMTEPC		:	in std_logic;
         
         regB 		:  in std_logic_vector(15 downto 0);
 		ALUres 	:	in std_logic_vector(15 downto 0);
@@ -81,6 +86,7 @@ package components is
         wbSrc_o		:	out std_logic;
         wbEN_o		:	out std_logic;
 		isERET_o	:	out std_logic;
+		isMTEPC_o		:	out std_logic;
         
 		PC_o			:	out std_logic_vector(15 downto 0);
         regB_o 		:  out std_logic_vector(15 downto 0);
@@ -99,6 +105,13 @@ package components is
 		isMFPC		:	in std_logic;
 		isINT		:	in std_logic;
 
+		isMFEPC		:	in std_logic;
+		isMFCS		:	in std_logic;
+		
+		cp0EpcSrc	:	in std_logic_vector(1 downto 0);
+		cp0Epc		:	in std_logic_vector(15 downto 0);
+		cp0Cause	:	in std_logic_vector(15 downto 0);
+		
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
 		
@@ -152,6 +165,9 @@ package components is
 		isMFPC		:	in std_logic;
 		isINT		:	in std_logic;
 		isERET		:	in std_logic;
+		isMFCS		:	in std_logic;
+		isMFEPC		:	in std_logic;
+		isMTEPC		:	in std_logic;
 		ramWrite		:	in std_logic;
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
@@ -184,6 +200,9 @@ package components is
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
 		wbEN_o			:	out std_logic;
+		isMFCS_o		:	out std_logic;
+		isMFEPC_o		:	out std_logic;
+		isMTEPC_o		:	out std_logic;
 		isINT_o			:	out std_logic;
 		isERET_o		:	out std_logic
 	);
@@ -269,6 +288,7 @@ package components is
 		wbSrc		:	in std_logic;
 		wbEN		:	in std_logic;
 		isERET	: in std_logic;
+		isMTEPC	: in std_logic;
 
 		bubble	:	in std_logic;
 		bubble_o	:	out std_logic;
@@ -286,6 +306,7 @@ package components is
 		
 		int			:	in std_logic;
 		intCode		:	in std_logic_vector(3 downto 0);
+		isMTEPC_o	: out std_logic;
 
 		int_o		:	out std_logic;
 		intCode_o	:	out std_logic_vector(3 downto 0);
@@ -395,6 +416,10 @@ package components is
 		wbSrc		: in std_logic;
 		--add one to check if it is reading from ram
 
+		memIsMTEPC	: in std_logic;
+		wbIsMTEPC	: in std_logic;
+
+		epcSrc		: out std_logic_vector(1 downto 0);
 		srcA	: out std_logic_vector(1 downto 0);
 		srcB	: out std_logic_vector(1 downto 0)
 	);
@@ -488,6 +513,8 @@ package components is
 		wbInt: in std_logic; -- whether there is an interrupt in WB
 		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
 		wbERet : in std_logic; -- whether the instruction is an eret
+		wbIsMTEPC : in std_logic;
+		wbALUres : in std_logic_vector(15 downto 0);
 	
 		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
 		exePC : in std_logic_vector(15 downto 0);

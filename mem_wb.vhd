@@ -52,6 +52,10 @@ entity mem_wb is port(
 		PC		: in std_logic_vector(15 downto 0);
 		PC_o	: out std_logic_vector(15 downto 0);
 
+		isMTEPC	: in std_logic;
+
+		isMTEPC_o : out std_logic;
+
 		bubble	: in std_logic;
 		bubble_o	: out std_logic;
 		
@@ -79,6 +83,7 @@ architecture Behavioral of mem_wb is
 
 	signal inner_bubble	: std_logic := '1';
 	signal inner_PC		: std_logic_vector(15 downto 0);
+	signal inner_isMTEPC	: std_logic;
 	
 begin
 	process(clk)
@@ -95,6 +100,7 @@ begin
 				inner_isERET	<= isERET;
 				inner_PC		<= PC;
 				inner_bubble	<= bubble;
+				inner_isMTEPC	<= isMTEPC;
 			else
 				inner_dstSrc <= (others => '0');
 				inner_wbSrc <= '0';
@@ -107,6 +113,7 @@ begin
 				inner_isERET <= '0';
 				inner_PC	<= PC;
 				inner_bubble	<= '1';
+				inner_isMTEPC	<= '0';
 			end if;
 		end if;
 	end process;
@@ -123,6 +130,7 @@ begin
 
 	bubble_o	<= inner_bubble;
 	PC_o		<= inner_PC;
+	isMTEPC_o	<= inner_isMTEPC;
 
 end Behavioral;
 
