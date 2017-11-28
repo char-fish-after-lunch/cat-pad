@@ -549,4 +549,15 @@ package components is
 	);
 	end component;
 
+	component ps2_controller port(
+		clk	: in std_logic;
+		ps2_clk	: inout std_logic;
+		ps2_data : inout std_logic;
+
+		data_request : out std_logic;
+		data : out std_logic_vector(7 downto 0)
+	);
+	end component;
+
+
 end components;
