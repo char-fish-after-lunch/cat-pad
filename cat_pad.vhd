@@ -255,8 +255,8 @@ begin
 	 
 	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, test_reg_out_1, s_pc_pause, s_id_clear, s_pc_inc,
-           wrn_pad, rdn_pad, test_reg_out_2)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_ALU_oprB, s_ALU_oprA, s_fwdSrcB, s_regB_mem, s_id_clear,
+           s_immediate_o, rdn_pad, test_reg_out_2)
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
@@ -267,7 +267,7 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_mem_ram_addr(15 downto 8) & test_reg_out_1(3 downto 0) & test_reg_out_2(3 downto 0);
+            leds <= s_ALU_oprA(3 downto 0) & s_ALU_oprB(3 downto 0) & s_ALUres(3 downto 0) & s_immediate_o(3 downto 0);
 				--leds <= test_reg_out_1;
 			disp2 <= s_mem_ram_addr(6 downto 0);
             -- signals connect to real CPU

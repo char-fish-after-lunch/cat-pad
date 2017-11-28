@@ -49,8 +49,11 @@ end uart_module;
 architecture Behavioral of uart_module is
 	signal can_read : STD_LOGIC := '0';
 	signal can_write : STD_LOGIC := '0';
-	type uart_procedure is (read_1, read_2, write_1, write_2, write_3, idling);
-	signal state : uart_procedure := idling;
+	type uart_state is (unused, read_uart, write_uart);
+	type uart_procedure is (prepare, done, idling);
+	signal state : uart_state := unused;
+	signal pro_state : uart_procedure := idling;
+
 
 	signal res_data : STD_LOGIC_VECTOR(15 downto 0) := "0000000000000000";
 
@@ -60,93 +63,118 @@ architecture Behavioral of uart_module is
 
 begin
 
-	put_data <= t_put_data;
-	rdn <= t_rdn;
-	wrn <= t_wrn;
-
-	process(uart_isUsed, state, clk, tsre, tbre)
-	begin
 	
-		if (falling_edge(clk)) then
-		case state is
-			when read_1 =>
-				t_rdn <= '0';
-				res_data <= put_data;
-			 	state <= read_2;
-
-			when read_2 =>
-				t_rdn <= '1';
-			 	state <= idling;
-
-			when write_1 =>
-				t_wrn <= '0';
-				t_put_data <= uart_data;
-				state <= write_2;
-				
-			when write_2 =>
-				state <= write_3;
-				t_wrn <= '1';
-
-			when write_3 => 
-				if (tsre = '1') then
-					state <= idling;
-				end if;
-
-			when idling =>
-				t_rdn <= '1';
-				t_wrn <= '1';
-				t_put_data <= (others => 'Z');
-				if (uart_isUsed = '1') then
-					if (uart_isRead = '1') then
-						if (isData = '1') then
-							state <= read_1;
-						end if;
-					else 
-						if (isData = '1') then
-							state <= write_1;
-						end if;
-					end if;
+	process(clk, uart_isRead, uart_isUsed, isData)
+	begin
+		if (uart_isUsed = '1') then
+			if (uart_isRead = '1') then
+				if (isData = '1') then
+					state <= read_uart;
 				else
-					state <= idling;
+					state <= unused;
 				end if;
-				
-		end case;
+			else
+				if (isData = '1') then
+					state <= write_uart;
+				else			
+					state <= unused;
+				end if;
+			end if;
+		else
+			state <= unused;
+		end if;
+
+		-- when the clk falls down, the state goes to the next state
+		if (clk = '1') then
+			pro_state <= prepare;
+		else
+			pro_state <= done;
 		end if;
 	end process;
 
-	process(state, put_data, data_ready)
+	-- process(clk)
+	-- begin
+	-- 	if (clk = '0') then
+			rdn <= t_rdn;
+			wrn <= t_wrn;
+	-- 	else
+	-- 		rdn <= '1';
+	-- 		wrn <= '1';
+	-- 	end if;
+	-- end process;
+
+
+	process(state, pro_state, tsre, uart_data, isData, data_ready, put_data)
+		variable v_can_write : STD_LOGIC := '1';
 	begin
-		if (state = idling and data_ready = '1') then
+		t_rdn <= '1';
+		t_wrn <= '1';
+		t_put_data <= (others => 'Z');
+
+		case state is
+			when unused =>
+			when read_uart =>
+				if (pro_state = prepare) then
+					t_rdn <= '0';
+					res_data <= put_data;
+				else 
+					t_rdn <= '1';
+				end if;
+			when write_uart =>
+				if (pro_state = prepare) then
+					v_can_write := '0';
+					t_wrn <= '1';
+					t_put_data <= uart_data;
+				else 
+					t_wrn <= '0';
+					t_put_data <= uart_data;
+				end if;
+		end case;
+
+		if (tsre = '1' and v_can_write = '0') then
+			v_can_write := '1';
+		end if;
+
+		can_write <= v_can_write;
+		
+	end process;
+
+
+
+	process(state, t_put_data)
+	begin
+		if (state = write_uart) then
+			put_data <= t_put_data;
+		else
+			put_data <= (others => 'Z');
+		end if;
+	end process;
+
+
+	process(state, data_ready)
+	begin
+		if (data_ready = '1') then
 			can_read <= '1';
 		else
 			can_read <= '0';
 		end if;
-
-		if (state = idling) then
-			can_write <= '1';
-		else
-			can_write <= '0';
-		end if;
-
 	end process;
 
-	process(isData, put_data, state, can_read, can_write)
+	process(isData, put_data, state, can_read, can_write, res_data)
 	begin
-		-- if (state = read_1 or state = read_2 or state = idling) then
-		-- 	if (isData = '1') then
-		-- 		uart_res <= res_data;
-		-- 	else
-		-- 		uart_res <= "00000000000000" & can_read & can_write;
-		-- 	end if;
-		-- else
-		-- 	if (isData = '0') then
-		-- 		uart_res <= "00000000000000" & can_read & can_write;
-		-- 	else
-		-- 		uart_res <= (others => '0');
-		-- 	end if;
-
-		-- end if;
-		uart_res <= "00000000000000" & can_read & can_write;
+		if (state = read_uart) then
+			if (isData = '1') then
+				uart_res <= res_data;
+			else
+				uart_res <= "00000000000000" & can_read & can_write;
+			end if;
+		else
+			if (isData = '0') then
+				uart_res <= "00000000000000" & can_read & can_write;
+			else
+				uart_res <= (others => '0');
+			end if;
+		end if;
 	end process;
 end Behavioral;
 
