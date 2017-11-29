@@ -107,7 +107,7 @@ begin
 	-- end process;
 
 
-	process(state, pro_state, tsre, tbre, uart_data, isData, data_ready, put_data)
+	process(state, pro_state, tsre, tbre, uart_data, isData, data_ready, put_data, data_ready)
 		variable v_can_write : STD_LOGIC := '1';
 	begin
 		t_rdn <= '1';
@@ -118,8 +118,12 @@ begin
 			when unused =>
 			when read_uart =>
 				if (pro_state = prepare) then
-					t_rdn <= '0';
-					res_data <= put_data;
+					if (data_ready = '1') then 
+						t_rdn <= '0';
+						res_data <= put_data;
+					else
+						t_rdn <= '1';
+					end if;
 				else 
 					t_rdn <= '1';
 				end if;

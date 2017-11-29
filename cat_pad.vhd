@@ -258,18 +258,54 @@ begin
 	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
 		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
-           s_ramWrite_ram, s_test_log, s_ramRead_ram)
+           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC)
+        variable tmp1 : std_logic := '0';
+        variable tmp2 : std_logic := '0';
+        variable tmp3 : std_logic := '0';
+        variable tmp4 : std_logic := '0';
+        variable tmp5 : std_logic := '0';
+        variable tmp6 : std_logic := '0';
+        variable tmp7 : std_logic := '0';
+        variable tmp8 : std_logic := '0';
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
-			real_clk <= clk_11m;
+            if (input = "1111111111111111") then
+                real_clk <= manual_clk;
+            else 
+	    		real_clk <= clk_11m;
+            end if;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= test_reg_out_1(3 downto 0) & s_writeData(3 downto 0) & s_res_data(3 downto 0) & s_test_log(3 downto 0);
+            if (s_EXEPC > "0000000111010000") then
+                tmp1 := '1';
+            end if;
+            if (s_EXEPC > "0000000111011000") then
+                tmp2 := '1';
+            end if;
+            if (s_EXEPC > "0000000111100000") then
+                tmp3 := '1';
+            end if;
+            if (s_EXEPC > "0000000111101000") then
+                tmp4 := '1';
+            end if;
+            if (s_EXEPC > "0000000111110000") then
+                tmp5 := '1';
+            end if;
+            if (s_EXEPC > "0000001000000000") then
+                tmp6 := '1';
+            end if;
+            if (s_EXEPC > "0000001000001000") then
+                tmp7 := '1';
+            end if;
+            if (s_EXEPC > "0000001000010000") then
+                tmp8 := '1';
+            end if;
+            leds <= tmp1 & tmp2 & tmp3 & tmp4 & tmp5 & tmp6 & tmp7 & tmp8 & "00000000";
 				--leds <= test_reg_out_1;
 			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU

@@ -124,7 +124,7 @@ begin
 	end process;
 
 	test_reg_out_1 <= r0;
-	test_reg_out_2 <= r6;
+	test_reg_out_2 <= r1;
 
 end Behavioral;
 
