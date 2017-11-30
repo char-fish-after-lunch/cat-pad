@@ -23,6 +23,7 @@ package consts is
 		constant ALU_O_A : std_logic_vector(3 downto 0) := "1001";
 		constant ALU_O_B : std_logic_vector(3 downto 0) := "1010";
 		constant ALU_GR  : std_logic_vector(3 downto 0) := "1011";
+		constant ALU_GR_S	: std_logic_vector(3 downto 0) := "1100";
 
 		constant IMME_8B  : std_logic_vector(2 downto 0) := "000";
 		constant IMME_4B  : std_logic_vector(2 downto 0) := "001";
@@ -33,6 +34,7 @@ package consts is
 		constant reg_IH  : std_logic_vector(3 downto 0) := "1000";
 		constant reg_SP  : std_logic_vector(3 downto 0) := "1001";
 		constant reg_T   : std_logic_vector(3 downto 0) := "1010";
+		constant reg_O	: std_logic_vector(3 downto 0) := "1111";
 		
 		constant fwd_original  : std_logic_vector(1 downto 0) := "00";
 		constant fwd_alu_res   : std_logic_vector(1 downto 0) := "01";

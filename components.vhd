@@ -326,7 +326,7 @@ package components is
 
     component ram_interactor port(
 		clk : in std_logic;
-		
+		clk_11m : in std_logic;
 		if_ram_addr	  : in std_logic_vector(15 downto 0);
 		mem_ram_addr  : in std_logic_vector(15 downto 0);
 		mem_ram_data  : in std_logic_vector(15 downto 0);
@@ -357,7 +357,9 @@ package components is
 		tsre : in  STD_LOGIC;
 		data_ready : in  STD_LOGIC;
 		
-		hasConflict : out STD_LOGIC);
+		hasConflict : out STD_LOGIC;
+		
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0));
     end component;
 
     component registers port(
