@@ -88,7 +88,6 @@ begin
 	out_PC <= PC;
 	regA_fwd <= regAN;
 	regB_fwd <= regBN;
-	regB_o <= regB;
 	B_ALU_res <= ALUres;
 	
 	shifted_PC <= PC + immediate;
@@ -114,16 +113,36 @@ begin
 					ALU_oprB <= immediate;
 				else
 					ALU_oprB <= regB;
-				end if;
-			when fwd_alu_res  => ALU_oprB <= mem_aluRes;
-			when fwd_wb_ram   => ALU_oprB <= wb_ramRes;
-			when fwd_wb_alu   => ALU_oprB <= wb_aluRes;
+				end if;	
+				regB_o <= regB;
+			when fwd_alu_res  => 
+				if (oprSrcB = '1') then
+					ALU_oprB <= immediate;
+				else
+					ALU_oprB <= mem_aluRes;
+				end if;	
+				regB_o <= mem_aluRes;
+			when fwd_wb_ram   => 
+				if (oprSrcB = '1') then
+					ALU_oprB <= immediate;
+				else
+					ALU_oprB <= wb_ramRes;
+				end if;	
+				regB_o <= wb_ramRes;
+			when fwd_wb_alu   =>
+				if (oprSrcB = '1') then
+					ALU_oprB <= immediate;
+				else
+					ALU_oprB <= wb_aluRes;
+				end if;	
+				regB_o <= wb_aluRes;
 			when others => 
 				if (oprSrcB = '1') then
 					ALU_oprB <= immediate;
 				else
 					ALU_oprB <= regB;
 				end if;
+				regB_o <= regB;
 		end case;
 
 		int_o <= '0';

@@ -80,7 +80,7 @@ begin
 		ram_en_o <= '1';
 		ram_oe_o <= '1';
 		ram_rw_o <= '1';
-
+		put_data_o <= (others => 'Z');
 		case state is
 			when unused =>
 			when read_ram =>

@@ -40,7 +40,8 @@ package io_components is
         wrn : out  STD_LOGIC;
         tbre : in  STD_LOGIC;
         tsre : in  STD_LOGIC;
-        data_ready : in  STD_LOGIC
+        data_ready : in  STD_LOGIC;
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0)
     );
     end component;
 

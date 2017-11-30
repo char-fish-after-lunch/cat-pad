@@ -60,7 +60,7 @@ entity bootloader is port(
 end bootloader;
 
 architecture Behavioral of bootloader is
-	signal tot_loaded : std_logic_vector(7 downto 0) := "00000000";
+	signal tot_loaded : std_logic_vector(9 downto 0) := "0000000000";
 	signal temp_data : STD_LOGIC_VECTOR (15 downto 0) := "0000000000000000";
 
     type bootloader_states is(
@@ -101,8 +101,8 @@ begin
 		else
 			if (rising_edge(slowed_clk)) then
 				if (state = write2) then
-					if (tot_loaded /= "11111111") then
-						tot_loaded <= tot_loaded + "00000001";
+					if (tot_loaded /= "1111111111") then
+						tot_loaded <= tot_loaded + "0000000001";
 					end if;
 				end if;
 				state <= next_state;
@@ -129,7 +129,7 @@ begin
 		when write1 =>
 		 	next_state <= write2;
 		when write2 =>
-			if (tot_loaded = "11111111") then
+			if (tot_loaded = "1111111111") then
 				next_state <= done;
 			else
 				next_state <= waiting;
@@ -182,7 +182,7 @@ begin
 				
 			when read3 =>
 				flashOE <= '0';
-				flash_addr <= "00000000000000" & tot_loaded;
+				flash_addr <= "000000000000" & tot_loaded;
 				flash_data <= (others => 'Z');
 				
 			when read4 =>
@@ -193,7 +193,7 @@ begin
 				flashCE <= '1';
 				flash_data <= (others => 'Z');
 				ram1en <= '0';
-				ram1addr <= "0000000000" & tot_loaded;
+				ram1addr <= "00000000" & tot_loaded;
 				ram1data <= temp_data;
 
 			when write2 =>
@@ -201,7 +201,7 @@ begin
 				flash_data <= (others => 'Z'); 
 				
 				ram1en <= '0';
-				ram1addr <= "0000000000" & tot_loaded;
+				ram1addr <= "00000000" & tot_loaded;
 				ram1data <= temp_data;
 				ram1rw <= '0';
 
@@ -209,7 +209,7 @@ begin
 				isBooted <= '1';
 							
 			end case;
-			res_log <= temp_data(7 downto 0) & tot_loaded;
+			res_log <= temp_data(7 downto 0) & tot_loaded(7 downto 0);
 		end if;
 	end process;
 

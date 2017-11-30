@@ -60,3 +60,6 @@ test_basic_frame
 
 fake_ram_interactor.vhd
 
+*.bit
+*.xml
+*_pad.txt
