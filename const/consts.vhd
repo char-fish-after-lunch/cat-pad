@@ -33,6 +33,7 @@ package consts is
 		constant reg_IH  : std_logic_vector(3 downto 0) := "1000";
 		constant reg_SP  : std_logic_vector(3 downto 0) := "1001";
 		constant reg_T   : std_logic_vector(3 downto 0) := "1010";
+		constant reg_O	: std_logic_vector(3 downto 0) := "1111";
 		
 		constant fwd_original  : std_logic_vector(1 downto 0) := "00";
 		constant fwd_alu_res   : std_logic_vector(1 downto 0) := "01";

@@ -59,3 +59,6 @@ planAhead*
 test_basic_frame
 
 
+*.bit
+*.xml
+*_pad.txt

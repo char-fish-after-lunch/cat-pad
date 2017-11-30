@@ -60,10 +60,10 @@ begin
 		variable wbCtrl : std_logic_vector(1 downto 0) := "00";
 	begin
 
-		regSrcA		<= "0000";
-		regSrcB		<= "0000";
+		regSrcA		<= reg_O;
+		regSrcB		<= reg_O;
 		immeCtrl	<= "000";
-		dstSrc		<= "0000";
+		dstSrc		<= reg_O; -- by default, use register O
 		immeExt		<= '1';
 		oprSrcB		<= '0';
 		ALUop		<= "0000";
@@ -78,9 +78,9 @@ begin
 				oprSrcB		<= '1';
 				wbCtrl		:= "11";
 			when INSTR_H_ADDIU3 =>
-				regSrcA		<= "0" & inst(7 downto 5);
+				regSrcA		<= "0" & inst(10 downto 8);
 				immeCtrl	<= "001";
-				dstSrc		<= "0" & inst(10 downto 8);
+				dstSrc		<= "0" & inst(7 downto 5);
 				oprSrcB		<= '1';
 				wbCtrl		:= "11";
 			when INSTR_H_B =>
@@ -109,13 +109,13 @@ begin
 				dstSrc		<= "0" & inst(7 downto 5);
 				oprSrcB		<= '1';
 				ramCtrl		:= "01";
-				wbCtrl		:= "10";
+				wbCtrl		:= "01";
 			when INSTR_H_LW_SP =>
 				regSrcA		<= "1001";
 				dstSrc		<= "0" & inst(10 downto 8);
 				oprSrcB		<= '1';
 				ramCtrl		:= "01";
-				wbCtrl		:= "10";
+				wbCtrl		:= "01";
 			when INSTR_H_NOP =>
 			-- does nothing for NOP
 			when INSTR_H_SW =>
@@ -174,7 +174,7 @@ begin
 						dstSrc		<= "0" & inst(7 downto 5);
 						ALUop		<= "0100";
 						wbCtrl		:= "11";
-					when "00010" =>
+					when "00011" =>
 						-- SLTU
 						regSrcA		<= "0" & inst(10 downto 8);
 						regSrcB		<= "0" & inst(7 downto 5);
@@ -199,7 +199,6 @@ begin
 						branch		:= "111";
 					when "011" =>
 						-- ADDSP
-						wbCtrl		:= "11";
 						regSrcA		<= "1001";
 						dstSrc		<= "1001";
 						oprSrcB		<= '1';
@@ -207,9 +206,8 @@ begin
 					when "001" =>
 						-- BTNEZ
 						regSrcA		<= "1010";
-						dstSrc		<= "0" & inst(4 downto 2);
-						ALUop		<= "0111";
-						branch		:= "110";
+						ALUop		<= "1000";
+						branch		:= "111";
 					when others =>
 				end case;
 			when INSTR_H_GROUP3 =>
@@ -231,7 +229,7 @@ begin
 				end case;
 			when INSTR_H_GROUP4 =>
 				case inst(7 downto 0) is
-					when "01000000" =>
+					when "00000000" =>
 						-- MFIH
 						regSrcA		<= "1000";
 						dstSrc		<= "0" & inst(10 downto 8);
