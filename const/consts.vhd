@@ -54,6 +54,8 @@ package consts is
 		constant INSTR_H_NOP	: std_logic_vector(4 downto 0) := "00001";
 		constant INSTR_H_SW	: std_logic_vector(4 downto 0) := "11011";
 		constant INSTR_H_SW_SP	: std_logic_vector(4 downto 0) := "11010";
+		constant INSTR_H_INT	: std_logic_vector(4 downto 0) := "11111";
+		constant INSTR_H_ERET	: std_logic_vector(4 downto 0) := "00011";
 
 		constant INSTR_H_GROUP1	: std_logic_vector(4 downto 0) := "11101";
 		constant INSTR_H_GROUP2	: std_logic_vector(4 downto 0) := "01100";

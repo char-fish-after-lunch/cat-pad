@@ -42,7 +42,12 @@ package components is
         isBranch		:	out std_logic;
         isCond		:	out std_logic;
         isRelative	:	out std_logic;
-        isMFPC		:	out std_logic;
+		isMFPC		:	out std_logic;
+		isINT		:	out std_logic;
+		isERET		:	out std_logic;
+		isMFEPC		:	out std_logic;
+		isMFCS		:	out std_logic;
+		isMTEPC		:	out std_logic;
         ramWrite		:	out std_logic;
         ramRead		:	out std_logic;
         wbSrc		:	out std_logic;
@@ -50,23 +55,40 @@ package components is
     end component;
 
     component ex_mem port(
-        clk : in std_logic;
+		clk : in std_logic;
+		
+		clear	:	in std_logic;
         
         dstSrc	:	in std_logic_vector(3 downto 0);
         ramWrite	:	in std_logic;
         ramRead	:	in std_logic;
         wbSrc		:	in std_logic;
         wbEN		:	in std_logic;
+		isERET		:	in std_logic;
+
+		isMTEPC		:	in std_logic;
         
         regB 		:  in std_logic_vector(15 downto 0);
-        ALUres 	:	in std_logic_vector(15 downto 0);
+		ALUres 	:	in std_logic_vector(15 downto 0);
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+		PC			:	in std_logic_vector(15 downto 0);
+
+		bubble		:	in std_logic;
+		bubble_o	:	out std_logic;
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
         
         dstSrc_o		:	out std_logic_vector(3 downto 0);
         ramWrite_o	:	out std_logic;
         ramRead_o	:	out std_logic;
         wbSrc_o		:	out std_logic;
         wbEN_o		:	out std_logic;
+		isERET_o	:	out std_logic;
+		isMTEPC_o		:	out std_logic;
         
+		PC_o			:	out std_logic_vector(15 downto 0);
         regB_o 		:  out std_logic_vector(15 downto 0);
         ALUres_o 	:	out std_logic_vector(15 downto 0));
     end component;
@@ -81,6 +103,17 @@ package components is
 		oprSrcB		:	in std_logic;
 		ALUres		:	in std_logic_vector(15 downto 0);
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
+
+		isMFEPC		:	in std_logic;
+		isMFCS		:	in std_logic;
+		
+		cp0EpcSrc	:	in std_logic_vector(1 downto 0);
+		cp0Epc		:	in std_logic_vector(15 downto 0);
+		cp0Cause	:	in std_logic_vector(15 downto 0);
+		
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
 		
 		-- send to ALU
 		ALU_oprA 		:  out std_logic_vector(15 downto 0);
@@ -105,7 +138,10 @@ package components is
 		
 		regB_o 		:  out std_logic_vector(15 downto 0);
 		ALUres_o 	:	out std_logic_vector(15 downto 0);
-		out_PC		:	out std_logic_vector(15 downto 0));
+		out_PC		:	out std_logic_vector(15 downto 0);
+		int_o			:	out std_logic;
+		intCode_o		:	out std_logic_vector(3 downto 0)
+	);
     end component;
 
 
@@ -127,11 +163,25 @@ package components is
 		isCond		:	in std_logic;
 		isRelative	:	in std_logic;
 		isMFPC		:	in std_logic;
+		isINT		:	in std_logic;
+		isERET		:	in std_logic;
+		isMFCS		:	in std_logic;
+		isMFEPC		:	in std_logic;
+		isMTEPC		:	in std_logic;
 		ramWrite		:	in std_logic;
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
 		wbEN			:	in std_logic;
+
+		bubble			:	in std_logic;
+
+		bubble_o		:	out std_logic;
 		
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
 		regA_o 			: out std_logic_vector(15 downto 0);
 		regB_o 			: out std_logic_vector(15 downto 0);
 		regAN_o 			: out std_logic_vector(3 downto 0);
@@ -149,7 +199,13 @@ package components is
 		ramWrite_o		:	out std_logic;
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
-		wbEN_o			:	out std_logic);
+		wbEN_o			:	out std_logic;
+		isMFCS_o		:	out std_logic;
+		isMFEPC_o		:	out std_logic;
+		isMTEPC_o		:	out std_logic;
+		isINT_o			:	out std_logic;
+		isERET_o		:	out std_logic
+	);
     end component;
 
     component if_id port(
@@ -160,6 +216,13 @@ package components is
 
         IFPC : in std_logic_vector(15 downto 0);
         inst : in std_logic_vector(15 downto 0);
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+
+		bubble_o	:	out std_logic;
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
         IFPC_o : out std_logic_vector(15 downto 0);
         inst_o : out std_logic_vector(15 downto 0));
     end component;
@@ -180,7 +243,11 @@ package components is
 		pc: in std_logic_vector(15 downto 0);
 		instr: out std_logic_vector(15 downto 0);
 		if_addr: out std_logic_vector(15 downto 0);
-		if_data: in std_logic_vector(15 downto 0));
+		if_data: in std_logic_vector(15 downto 0);
+
+		int_o	: out std_logic;
+		intCode_o	: out std_logic_vector(3 downto 0)
+	);
     end component;
     
 
@@ -190,6 +257,11 @@ package components is
 		
 		ramWrite	:	in std_logic;
 		ramRead	:	in std_logic;
+
+		ramLock		: in std_logic;
+
+		int		:	in std_logic;
+		intCode	:	in std_logic_vector(3 downto 0);
 		
 		-- signals sen to ram dispatcher
 		ramWrite_o	:	out std_logic;
@@ -199,15 +271,30 @@ package components is
 		
 		-- result get from ram dispatcher
 		ram_return	 : in std_logic_vector(15 downto 0);
-		ram_return_o : out std_logic_vector(15 downto 0));
+		ram_return_o : out std_logic_vector(15 downto 0);
+
+
+		int_o		: out std_logic;
+		intCode_o	: out std_logic_vector(3 downto 0)
+	);
     end component;
     
     component mem_wb port(
 		clk : in std_logic;
 
+		clear : in std_logic;
+
 		dstSrc	:	in std_logic_vector(3 downto 0);
 		wbSrc		:	in std_logic;
 		wbEN		:	in std_logic;
+		isERET	: in std_logic;
+		isMTEPC	: in std_logic;
+
+		bubble	:	in std_logic;
+		bubble_o	:	out std_logic;
+		
+		PC		:	in std_logic_vector(15 downto 0);
+		PC_o	:	out std_logic_vector(15 downto 0);
 		
 		dstSrc_o		:	out std_logic_vector(3 downto 0);
 		wbSrc_o		:	out std_logic;
@@ -215,7 +302,14 @@ package components is
 
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
+		isERET_o	: out std_logic;
 		
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+		isMTEPC_o	: out std_logic;
+
+		int_o		:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0);
 		ramData_o	: out std_logic_vector(15 downto 0);
 		ALUres_o		: out std_logic_vector(15 downto 0));
     end component;
@@ -295,13 +389,20 @@ package components is
 		dstSrc	:	in std_logic_vector(3 downto 0);
 		wbSrc	:	in std_logic;
 		wbEN	:	in std_logic;
+		int		:	in std_logic;
+		intCode	:	in std_logic_vector(3 downto 0);
 		
 		ramData	: in std_logic_vector(15 downto 0);
 		ALUres	: in std_logic_vector(15 downto 0);
 		
 		writeData : out std_logic_vector(15 downto 0);
 		writeDst : out std_logic_vector(3 downto 0);
-		isWriting : out std_logic);
+		isWriting : out std_logic;
+
+		int_o	:	out std_logic;
+		intCode_o	:	out std_logic_vector(3 downto 0)
+	);
+
     end component;
 
 
@@ -317,6 +418,10 @@ package components is
 		wbSrc		: in std_logic;
 		--add one to check if it is reading from ram
 
+		memIsMTEPC	: in std_logic;
+		wbIsMTEPC	: in std_logic;
+
+		epcSrc		: out std_logic_vector(1 downto 0);
 		srcA	: out std_logic_vector(1 downto 0);
 		srcB	: out std_logic_vector(1 downto 0)
 	);
@@ -387,6 +492,62 @@ package components is
 		originalInstr: in std_logic_vector(15 downto 0);
 
 		instr: out std_logic_vector(15 downto 0)
+	);
+	end component;
+
+	component cp0_registers port (
+		clk : in std_logic;
+		causeIn : in std_logic_vector(15 downto 0);
+		epcIn : in std_logic_vector(15 downto 0);
+		statusIn : in std_logic;
+		trapIn : in std_logic;
+		eretIn : in std_logic;
+
+		cause : out std_logic_vector(15 downto 0);
+		epc : out std_logic_vector(15 downto 0);
+		status :  out std_logic;
+		trap : out std_logic;
+		eret : out std_logic
+	);
+	end component;
+
+	component interrupt_control port (
+		wbInt: in std_logic; -- whether there is an interrupt in WB
+		wbIntCode: in std_logic_vector(3 downto 0); -- interrupt code in WB
+		wbERet : in std_logic; -- whether the instruction is an eret
+		wbIsMTEPC : in std_logic;
+		wbALUres : in std_logic_vector(15 downto 0);
+	
+		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
+		exePC : in std_logic_vector(15 downto 0);
+		idPC  : in std_logic_vector(15 downto 0);
+		ifPC  : in std_logic_vector(15 downto 0);		
+
+		wbBubble	: in std_logic;
+		memBubble	: in std_logic;
+		exeBubble	: in std_logic;
+		idBubble	: in std_logic;
+
+		cp0Status : in std_logic;
+		cp0Epc : in std_logic_vector(15 downto 0);
+		cp0Cause : in std_logic_vector(15 downto 0);
+		cp0ERet : in std_logic;
+		cp0Trap : in std_logic;
+
+		-- external hardware ISRs
+		ps2Request : in std_logic; -- PS/2 ISR
+		
+		memRamLock: out std_logic;
+		pipelineClear: out std_logic; -- whether clear the whole pipeline
+
+		cp0StatusUpdate : out std_logic;
+		cp0EpcUpdate : out std_logic_vector(15 downto 0);
+		cp0CauseUpdate : out std_logic_vector(15 downto 0);
+		cp0ERetUpdate : out std_logic;
+		cp0TrapUpdate : out std_logic;
+
+		pcSet : out std_logic;
+		pcSetVal : out std_logic_vector(15 downto 0)
 	);
 	end component;
 

@@ -58,6 +58,7 @@ planAhead*
 
 test_basic_frame
 
+fake_ram_interactor.vhd
 
 *.bit
 *.xml

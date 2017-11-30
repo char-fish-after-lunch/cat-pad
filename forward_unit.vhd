@@ -40,6 +40,13 @@ entity forward_unit is port(
 		ramRead		: in std_logic;
 		oprSrcB		: in std_logic;
 		wbSrc		: in std_logic;
+		
+		memIsMTEPC	: in std_logic;
+		wbIsMTEPC	: in std_logic;
+
+		epcSrc			: out std_logic_vector(1 downto 0);
+
+		
 		--add one to check if it is reading from ram
 
 		srcA	: out std_logic_vector(1 downto 0);
@@ -50,37 +57,49 @@ end forward_unit;
 architecture Behavioral of forward_unit is
 
 begin
-	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB, wbSrc, wbEN, memWbEN)
+	process(regReadSrcA, regReadSrcB, memDst, wbDst, ramRead, oprSrcB, wbSrc, wbEN, memWbEN,
+		memIsMTEPC, wbIsMTEPC)
 	begin
-	if(regReadSrcA = memDst and ramRead = '0' and memWbEN = '1') then
-		srcA <= fwd_alu_res;
-		--use data from mem
-	elsif(regReadSrcA = wbDst and wbEN = '1') then
-		if (wbSrc = '1') then
-			srcA <= fwd_wb_alu;
+
+		if memIsMTEPC = '1' then
+			epcSrc <= fwd_alu_res;
+		elsif wbIsMTEPC = '1' then
+			if wbSrc = '1' then
+				epcSrc <= fwd_wb_alu;
+			else
+				epcSrc <= fwd_wb_ram;
+			end if;
 		else
-			srcA <= fwd_wb_ram;
+			epcSrc <= fwd_original;
 		end if;
-		--use data from wb
-	else
-		srcA <= fwd_original;
-		--else use register or imm
-	end if; 
+		if(regReadSrcA = memDst and ramRead = '0' and memWbEN = '1') then
+			srcA <= fwd_alu_res;
+			--use data from mem
+		elsif(regReadSrcA = wbDst and wbEN = '1') then
+			if (wbSrc = '1') then
+				srcA <= fwd_wb_alu;
+			else
+				srcA <= fwd_wb_ram;
+			end if;
+			--use data from wb
+		else
+			srcA <= fwd_original;
+			--else use register or imm
+		end if; 
 
 	if(regReadSrcB = memDst and ramRead = '0' and memWbEN = '1') then
 		srcB <= fwd_alu_res;
 		--use data from mem
 	elsif(regReadSrcB = wbDst and wbEN = '1') then
-		if (wbSrc = '1') then
-			srcB <= fwd_wb_alu;
+      if (wbSrc = '1') then
+        srcB <= fwd_wb_alu;
+			else
+				srcB <= fwd_wb_ram;
+			end if;
 		else
-			srcB <= fwd_wb_ram;
+			srcB <= fwd_original;
+			--else use register or imm
 		end if;
-		--use data from wb
-	else
-		srcB <= fwd_original;
-		--else use register or imm
-	end if;
 	end process;
 end Behavioral;
 

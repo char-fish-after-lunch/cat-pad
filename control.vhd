@@ -44,6 +44,11 @@ entity control is port(
 	isCond		:	out std_logic;
 	isRelative	:	out std_logic;
 	isMFPC		:	out std_logic;
+	isINT		:	out std_logic;
+	isERET		:	out std_logic;
+	isMFEPC		:	out std_logic;
+	isMFCS		:	out std_logic;
+	isMTEPC		:	out std_logic;
 	ramWrite		:	out std_logic;
 	ramRead		:	out std_logic;
 	wbSrc		:	out std_logic;
@@ -71,6 +76,11 @@ begin
 		ramCtrl		:= "00";
 		wbCtrl		:= "00";
 		isMFPC		<= '0';
+		isINT		<= '0';
+		isERET		<= '0';
+		isMFCS		<= '0';
+		isMFEPC		<= '0';
+		isMTEPC		<= '0';
 		case instrType is
 			when INSTR_H_ADDIU =>
 				regSrcA		<= "0" & inst(10 downto 8);
@@ -129,6 +139,11 @@ begin
 				regSrcB		<= "0" & inst(10 downto 8);
 				oprSrcB		<= '1';
 				ramCtrl		:= "10";
+			when INSTR_H_INT =>
+				immeCtrl	<= "001";
+				isINT		<= '1';
+			when INSTR_H_ERET => 
+				isERET		<= '1';
 			when INSTR_H_GROUP1 =>
 				case inst(4 downto 0) is
 					when "01100" =>
@@ -241,6 +256,24 @@ begin
 						dstSrc		<= "1000";
 						ALUop		<= "1001";
 						wbCtrl		:= "11";
+					when "11111111" =>
+						-- MFCS
+						dstSrc		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
+						isMFCS		<= '1';
+					when "11111110" => 
+						-- MFEPC
+						dstSrc		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
+						isMFEPC		<= '1';
+
+					when "11111100" =>
+						-- MTEPC
+						regSrcA		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						isMTEPC		<= '1';	
 					when others =>
 				end case;
 			when INSTR_H_GROUP5 =>
@@ -269,7 +302,6 @@ begin
 						oprSrcB		<= '1';
 						ALUop		<= "0101";
 						wbCtrl		:= "11";
-
 					when others =>
 				end case;
 			when others=>

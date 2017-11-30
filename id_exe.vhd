@@ -51,6 +51,18 @@ entity id_exe is port(
 		ramRead		:	in std_logic;
 		wbSrc			:	in std_logic;
 		wbEN			:	in std_logic;
+		int			:	in std_logic;
+		intCode		:	in std_logic_vector(3 downto 0);
+		bubble		:	in std_logic;
+		isINT		:	in std_logic;
+		isERET		:	in std_logic;
+		isMTEPC		:	in std_logic;
+		isMFEPC		:	in std_logic;
+		isMFCS		:	in std_logic;
+
+		isMTEPC_o		:	out std_logic;
+		isMFEPC_o		:	out std_logic;
+		isMFCS_o		:	out std_logic;
 		
 		regA_o 			: out std_logic_vector(15 downto 0);
 		regB_o 			: out std_logic_vector(15 downto 0);
@@ -66,11 +78,16 @@ entity id_exe is port(
 		isCond_o			:	out std_logic;
 		isRelative_o	:	out std_logic;
 		isMFPC_o			:	out std_logic;
+		isINT_o				:	out std_logic;
+		isERET_o			:	out std_logic;
 		ramWrite_o		:	out std_logic;
 		ramRead_o		:	out std_logic;
 		wbSrc_o			:	out std_logic;
-		wbEN_o			:	out std_logic
-		
+		wbEN_o			:	out std_logic;
+		bubble_o		:	out std_logic;
+		int_o			:	out std_logic;
+		intCode_o		:	out std_logic_vector(3 downto 0)
+	
 	);
 end id_exe;
 
@@ -93,6 +110,14 @@ architecture Behavioral of id_exe is
 	signal inner_ramRead		:	std_logic;
 	signal inner_wbSrc			:	std_logic;
 	signal inner_wbEN			:	std_logic;
+	signal inner_int			:	std_logic;
+	signal inner_intCode		:	std_logic_vector(3 downto 0);
+	signal inner_bubble			:	std_logic := '1';
+	signal inner_isINT			:	std_logic;
+	signal inner_isERET			:	std_logic;
+	signal inner_isMFEPC		:	std_logic;
+	signal inner_isMTEPC		:	std_logic;
+	signal inner_isMFCS			:	std_logic;
 begin
 	process(clk)
 	begin
@@ -116,13 +141,21 @@ begin
 				inner_ramRead <= ramRead;
 				inner_wbSrc <= wbSrc;
 				inner_wbEN <= wbEN;
+				inner_int <= int;
+				inner_intCode <= intCode;
+				inner_isINT	<= isINT;
+				inner_isERET	<= isERET;
+				inner_bubble <= bubble;
+				inner_isMFEPC <= isMFEPC;
+				inner_isMTEPC <= isMTEPC;
+				inner_isMFCS <= isMFCS;
 			else
 				inner_regA <= (15 downto 0 => '0');
 				inner_regB <= (15 downto 0 => '0');
 				inner_regAN <= "0000";
 				inner_regBN <= "0000";
 				inner_immediate <= (15 downto 0 => '0');
-				inner_IDPC <= (15 downto 0 => '0');
+				inner_IDPC <= IDPC;
 				inner_dstSrc <= "0000";
 				inner_immeExt <= '0';
 				inner_oprSrcB <= '0';
@@ -135,6 +168,14 @@ begin
 				inner_ramRead <= '0';
 				inner_wbSrc <= '0';
 				inner_wbEN <= '0';
+				inner_int <= '0';
+				inner_intCode <= (3 downto 0 => '0');
+				inner_isINT <= '0';
+				inner_isERET <= '0';
+				inner_bubble <= '1';
+				inner_isMFEPC <= '0';
+				inner_isMTEPC <= '0';
+				inner_isMFCS <= '0';
 			end if;
 		end if;
 	end process;
@@ -157,6 +198,14 @@ begin
 	ramRead_o <= inner_ramRead;
 	wbSrc_o <= inner_wbSrc;
 	wbEN_o <= inner_wbEN;
+	int_o <= inner_int;
+	intCode_o <= inner_intCode;
+	isINT_o <= inner_isINT;
+	isERET_o <= inner_isERET;
+	bubble_o <= inner_bubble;
+	isMFEPC_o <= inner_isMFEPC;
+	isMTEPC_o <= inner_isMTEPC;
+	isMFCS_o <= inner_isMFCS;
 
 end Behavioral;
 

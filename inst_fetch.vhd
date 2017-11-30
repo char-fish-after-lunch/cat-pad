@@ -34,7 +34,10 @@ entity inst_fetch is port(
 		instr: out std_logic_vector(15 downto 0);
 
 		if_addr: out std_logic_vector(15 downto 0);
-		if_data: in std_logic_vector(15 downto 0)
+		if_data: in std_logic_vector(15 downto 0);
+
+		int_o: out std_logic;
+		intCode_o: out std_logic_vector(3 downto 0)
 	);
 end inst_fetch;
 
@@ -43,5 +46,7 @@ architecture Behavioral of inst_fetch is
 begin
 	if_addr <= pc;
 	instr <= if_data;
+	int_o <= '0';
+	intCode_o <= (others => '0');
 end Behavioral;
 

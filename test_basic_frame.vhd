@@ -110,8 +110,10 @@ begin
 	process
 	begin
 		clk <= '1';
+		manual_clk <= '1';
         wait for 1 ns;
         clk <= '0';
+		manual_clk <= '0';
         wait for 1 ns;
 	end process;
 end Behavioral;
