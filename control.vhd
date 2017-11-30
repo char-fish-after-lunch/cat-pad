@@ -189,12 +189,19 @@ begin
 						dstSrc		<= "0" & inst(7 downto 5);
 						ALUop		<= "0100";
 						wbCtrl		:= "11";
-					when "00010" =>
+					when "00011" =>
 						-- SLTU
 						regSrcA		<= "0" & inst(10 downto 8);
 						regSrcB		<= "0" & inst(7 downto 5);
 						dstSrc		<= "1010";
 						ALUop		<= "1011";
+						wbCtrl		:= "11";
+					when "00010" =>
+						-- SLT
+						regSrcA		<= "0" & inst(10 downto 8);
+						regSrcB		<= "0" & inst(7 downto 5);
+						dstSrc		<= "1010";
+						ALUop		<= "1100";
 						wbCtrl		:= "11";
 					when "00110" =>
 						-- SRLV
@@ -225,6 +232,12 @@ begin
 						dstSrc		<= "0" & inst(4 downto 2);
 						ALUop		<= "0111";
 						branch		:= "110";
+					when "100" =>
+						-- MTSP
+						regSrcA		<= "0" & inst(7 downto 5);
+						dstSrc		<= "1001";
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
 					when others =>
 				end case;
 			when INSTR_H_GROUP3 =>
