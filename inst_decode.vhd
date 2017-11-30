@@ -67,7 +67,7 @@ begin
 					immediate <= "0000000000001000";
 				else
 					immediate(2 downto 0) <= inst(4 downto 2);
-					immediate(15 downto 3) <= (others => inst(4));
+					immediate(15 downto 3) <= (others => '0');
 				end if;
 			when imme_11b => 
 				immediate(10 downto 0) <= inst(10 downto 0);

@@ -1,7 +1,7 @@
 Release 14.7 - par P.20131013 (nt64)
 Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-Sun Nov 26 20:46:29 2017
+Wed Nov 29 22:38:26 2017
 
 
 INFO: The IO information is provided in three file formats as part of the Place and Route (PAR) process.  These formats are:
@@ -45,7 +45,7 @@ Pinout by Pin Number:
 |B5        |              |DIFFSI   |IP_L22N_0                |UNUSED   |           |0             |          |         |           |         |       |          |           |                |
 |B6        |              |DIFFM    |IO_L20P_0                |UNUSED   |           |0             |          |         |           |         |       |          |           |                |
 |B7        |              |         |VCCAUX                   |         |           |              |          |         |           |         |2.5    |          |           |                |
-|B8        |              |DIFFMI   |IP_L13P_0/GCLK8          |UNUSED   |           |0             |          |         |           |         |       |          |           |                |
+|B8        |clk_11m       |IBUF     |IP_L13P_0/GCLK8          |INPUT    |LVCMOS25*  |0             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |B9        |clk           |IBUF     |IP_L13N_0/GCLK9          |INPUT    |LVCMOS25*  |0             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |B10       |disp2<0>      |IOB      |IO_L12P_0/GCLK6          |OUTPUT   |LVCMOS25*  |0             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
 |B11       |leds<3>       |IOB      |IO/VREF_0                |OUTPUT   |LVCMOS25*  |0             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
@@ -219,7 +219,7 @@ Pinout by Pin Number:
 |M3        |flash_addr<13>|IOB      |IO_L18N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
 |M4        |flash_addr<12>|IOB      |IO_L18P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
 |M5        |flash_addr<11>|IOB      |IO_L19P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
-|M6        |flash_addr<10>|IOB      |IO_L19N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
+|M6        |flash_addr<10>|IOB      |IO_L19N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
 |M7        |              |         |GND                      |         |           |              |          |         |           |         |       |          |           |                |
 |M8        |              |         |VCCO_2                   |         |           |2             |          |         |           |         |2.50   |          |           |                |
 |M9        |ram2rw        |IOB      |IO_L12N_2/D6/GCLK13      |OUTPUT   |LVCMOS25*  |2             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
@@ -235,7 +235,7 @@ Pinout by Pin Number:
 |N1        |input<10>     |IBUF     |IP                       |INPUT    |LVCMOS25*  |3             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |N2        |input<9>      |IBUF     |IP                       |INPUT    |LVCMOS25*  |3             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |N3        |              |         |VCCO_3                   |         |           |3             |          |         |           |         |2.50   |          |           |                |
-|N4        |flash_addr<9> |IOB      |IO_L20P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
+|N4        |flash_addr<9> |IOB      |IO_L20P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
 |N5        |flash_addr<8> |IOB      |IO_L20N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
 |N6        |              |         |VCCINT                   |         |           |              |          |         |           |         |1.2    |          |           |                |
 |N7        |              |DIFFM    |IO_L07P_2                |UNUSED   |           |2             |          |         |           |         |       |          |           |                |

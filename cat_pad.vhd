@@ -35,6 +35,7 @@ entity cat_pad is port(
     rst: in std_logic;
     clk: in std_logic;
     manual_clk : in STD_LOGIC;
+    clk_11m : in std_logic;
     
     input : in  STD_LOGIC_VECTOR (15 downto 0);
     leds : out  STD_LOGIC_VECTOR (15 downto 0);
@@ -266,6 +267,8 @@ architecture Behavioral of cat_pad is
 		test_reg_out_1 : std_logic_vector(15 downto 0);
     signal
 		test_reg_out_2 : std_logic_vector(15 downto 0);
+    signal
+		s_test_log : std_logic_vector(15 downto 0);
 
     signal s_hasConflict : std_logic;
 	 
@@ -322,22 +325,59 @@ begin
 		  res_log => res_log
     ); 
 	 
-	 process(clk, manual_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
+	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_mem_ram_data, s_ramRead_ram, s_ramWrite_ram, s_pc_pause, s_id_clear, s_pc_inc)
+		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
+           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC)
+        variable tmp1 : std_logic := '0';
+        variable tmp2 : std_logic := '0';
+        variable tmp3 : std_logic := '0';
+        variable tmp4 : std_logic := '0';
+        variable tmp5 : std_logic := '0';
+        variable tmp6 : std_logic := '0';
+        variable tmp7 : std_logic := '0';
+        variable tmp8 : std_logic := '0';
 	 begin
 		-- if not bootloaded, all clock is blocked
 		if (isBootloaded = '1') then
-			real_clk <= manual_clk;
+            if (input = "1111111111111111") then
+                real_clk <= manual_clk;
+            else 
+	    		real_clk <= clk_11m;
+            end if;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= s_mem_ram_addr(3 downto 0) & s_ramRead_ram & s_ramWrite_ram & s_hasConflict & s_pc_pause & s_id_clear & s_pc_inc & s_mem_ram_data(5 downto 0);
+            if (s_EXEPC > "0000000111010000") then
+                tmp1 := '1';
+            end if;
+            if (s_EXEPC > "0000000111011000") then
+                tmp2 := '1';
+            end if;
+            if (s_EXEPC > "0000000111100000") then
+                tmp3 := '1';
+            end if;
+            if (s_EXEPC > "0000000111101000") then
+                tmp4 := '1';
+            end if;
+            if (s_EXEPC > "0000000111110000") then
+                tmp5 := '1';
+            end if;
+            if (s_EXEPC > "0000001000000000") then
+                tmp6 := '1';
+            end if;
+            if (s_EXEPC > "0000001000001000") then
+                tmp7 := '1';
+            end if;
+            if (s_EXEPC > "0000001000010000") then
+                tmp8 := '1';
+            end if;
+            leds <= tmp1 & tmp2 & tmp3 & tmp4 & tmp5 & tmp6 & tmp7 & tmp8 & "00000000";
 				--leds <= test_reg_out_1;
-			disp2 <= s_regB(6 downto 0);
+			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -468,11 +508,11 @@ begin
 		isMTEPC_o => s_isMTEPC_wb
 	);
 		
-    u_ram_interactor: ram_interactor port map(clk => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
-        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict);
+        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log);
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN, 
@@ -490,7 +530,7 @@ begin
 	);
 
 	u_stall_unit : stall_unit port map(
-					clk => clk,
+					clk => real_clk,
 					exeWbEN => s_wbEN_exe,
 					exeDstSrc => s_dstSrc_exe,
 					exeRamRead => s_ramRead_exe,

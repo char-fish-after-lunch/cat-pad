@@ -87,19 +87,15 @@ begin
 			--else use register or imm
 		end if; 
 
-		if(oprSrcB = '1') then
-			srcB <= fwd_original;
-			--never use register
-		elsif(regReadSrcB = memDst and ramRead = '0' and memWbEN = '1') then
-			srcB <= fwd_alu_res;
-			--use data from mem
-		elsif(regReadSrcB = wbDst and wbEN = '1') then
-			if (wbSrc = '1') then
-				srcB <= fwd_wb_alu;
+	if(regReadSrcB = memDst and ramRead = '0' and memWbEN = '1') then
+		srcB <= fwd_alu_res;
+		--use data from mem
+	elsif(regReadSrcB = wbDst and wbEN = '1') then
+      if (wbSrc = '1') then
+        srcB <= fwd_wb_alu;
 			else
 				srcB <= fwd_wb_ram;
 			end if;
-			--use data from wb
 		else
 			srcB <= fwd_original;
 			--else use register or imm

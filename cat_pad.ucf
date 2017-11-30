@@ -129,7 +129,6 @@ NET "tbre" LOC = D14;
 NET "tsre" LOC = N9;
 NET "wrn" LOC = U5;
 
-# PlanAhead Generated physical constraints 
 
 NET "flash_addr[22]" LOC = K4;
 NET "flash_addr[21]" LOC = K5;
@@ -175,3 +174,7 @@ NET "flashOE" LOC = E1;
 NET "flashRP" LOC = D1;
 NET "flashVpen" LOC = C2;
 NET "flashWE" LOC = D4;
+
+# PlanAhead Generated physical constraints 
+
+NET "clk_11m" LOC = B8;
