@@ -59,7 +59,7 @@ end vga_control;
 
 architecture Behavioral of vga_control is
     -- some tmp signal
-    signal clk, clk_60 : std_logic := '0';
+    signal clk : std_logic := '0';
     signal r_t, g_t, b_t : std_logic_vector (2 downto 0);
     signal hs_t,vs_t : std_logic;
     signal x, y : integer range 0 to 1000;
