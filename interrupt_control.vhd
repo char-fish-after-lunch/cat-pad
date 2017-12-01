@@ -77,7 +77,7 @@ begin
 
 
 		if ps2Request = '1' then
-			cp0CauseUpdateV(10) := '1'; -- 11 for PS/2 ISR
+			cp0CauseUpdateV(10) := '1'; -- 10 for PS/2 ISR
 			if cp0ERet = '0' and cp0Trap = '0' and cp0Status = '0' then
 				-- no switching bewteen the user mode and the kernel mode
 				cp0IntEvent := '1';

@@ -4,106 +4,63 @@
     B START
     NOP
 DELINT:
+    ; handles interrupts (including synchronous interrupts and asynchronous ISRs)
     NOP
     NOP
     NOP
+
+    ; store R6 to the stack before using it
+    SW_SP R6 0xffff  
+
     LI R6 0x00bf
     SLL R6 R6 0x0000
-    ADDIU R6 0x0010
-    SW R6 R0 0x0000
+
+    ADDIU R6 0x0010 ; the bottom of the stack R6=0xbf10
+    SW R6 R0 0x0000 ; used to store the registers that might change in the interrupt handler
     SW R6 R1 0x0001
     SW R6 R2 0x0002
     SW R6 R4 0x0004
     SW R6 R5 0x0005
-    LW_SP R1 0x0000
-    ADDSP 0x0001
-    LI R0 0x00ff
-    AND R1 R0
-    LW_SP R2 0x0000
-    ADDSP 0x0001
-    ADDSP 0xffff
-    SW_SP R3 0x0000
-    ADDSP 0xffff
-    SW_SP R7 0x0000
-    LI R3 0x000f
-    MFPC R7
-    ADDIU R7 0x0003
+
+    ; cause of the interrupt
+    MFCS R0
+
+    CMPI R0 0x000a  ; PS/2 ISR
+    BTNEZ DELINT_PS2
     NOP
-    B TESTW
-    NOP
-    LI R6 0x00bf
-    SLL R6 R6 0x0000
-    SW R6 R3 0x0000
-    NOP
-    LI R6 0x00bf
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0010
-    LI R0 0x0000
-    CMP R0 R1
-    BTNEZ L2
-    NOP
-    LW R6 R4 0x0007
-L2:
-    LI R0 0x0020
-    CMP R0 R1
-    BTNEZ L3
-    NOP
-    LW R6 R4 0x0008
-L3:
-    LI R0 0x0010
-    CMP R0 R1
-    BTNEZ L4
-    NOP
-    LW R6 R4 0x0009
-L4:
-    NOP
-    LW R6 R5 0x0006
-    SLT R4 R5
-    BTNEZ L5
-    NOP
-    SW R6 R4 0x0006
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTW
-    NOP
-    LI R6 0x00bf
-    SLL R6 R6 0x0000
-    SW R6 R1 0x0000
-    NOP
-L5:
-    NOP
-    LI R3 0x000f
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTW
-    NOP
-    LI R6 0x00bf
-    SLL R6 R6 0x0000
-    SW R6 R3 0x0000
-    NOP
-    ADDIU3 R2 R6 0x0000
-    MFIH R3
-    LI R0 0x0080
-    SLL R0 R0 0x0000
-    OR R3 R0
-    LI R7 0x00bf
-    SLL R7 R7 0x0000
-    ADDIU R7 0x0010
-    LW R7 R0 0x0000
-    LW R7 R1 0x0001
-    LW R7 R2 0x0002
-    LW R7 R4 0x0004
-    LW R7 R5 0x0005
-    LW_SP R7 0x0000
-    ADDSP 0x0001
-    ADDSP 0x0001
-    NOP
-    MTIH R3
-    JR R6
-    LW_SP R3 0x00ff
-    NOP
+
+    ; TODO: other interrupt types
+
+DELINT_PS2:
+    ; handles PS/2 ISR 
+
+    LI R1 0x00bf
+    SLL R1 0x0000
+    ADDIU R1 0x0004
+    ; R1=0xbf04, address of PS/2 data
+
+    LW R1 R2 0x0000
+    ; load the data to R2
+
+    ; TODO: do something with R2 (possibly feed it to VGA or store
+    ; it in a buffer for further processing)
+
+    B DELINT_FINISH
+
+DELINT_FINISH:
+    ; restore R0-R5
+    LW R6 R0 0x0000
+    LW R6 R1 0x0001
+    LW R6 R2 0x0002
+    LW R6 R4 0x0004
+    LW R6 R5 0x0005
+
+
+    ; restore R6
+    LW_SP R6 0xffff
+
+    ERET
+
 START:
     LI R0 0x0007
     MTIH R0
