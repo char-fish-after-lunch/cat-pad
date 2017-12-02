@@ -63,3 +63,5 @@ fake_ram_interactor.vhd
 *.bit
 *.xml
 *_pad.txt
+
+netgen/

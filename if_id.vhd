@@ -63,7 +63,7 @@ begin
 			if clear = '1' then
 				inner_IFPC <= IFPC; -- do not clear PC
 				inner_bubble <= '1'; -- is a bubble
-				inner_inst <= (15 downto 0 => '0');
+				inner_inst <= "0000100000000000";
 				inner_int <= '0';
 				inner_intCode <= (3 downto 0 => '0');
 			elsif keep = '0' then

@@ -175,6 +175,18 @@ NET "flashRP" LOC = D1;
 NET "flashVpen" LOC = C2;
 NET "flashWE" LOC = D4;
 
-# PlanAhead Generated physical constraints 
 
 NET "clk_11m" LOC = B8;
+
+# PlanAhead Generated physical constraints 
+
+NET "ps2_clk" LOC = U6;
+
+NET "ps2_clk" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "ps2_data" LOC = V6;
+
+# PlanAhead Generated IO constraints 
+
+NET "ps2_data" IOSTANDARD = LVCMOS25;
+NET "manual_clk" IOSTANDARD = LVCMOS25;
+NET "ram1oe" IOSTANDARD = LVCMOS25;

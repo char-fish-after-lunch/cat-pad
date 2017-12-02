@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
 use work.components.ALL;
 use work.consts.ALL;
 
@@ -60,6 +61,12 @@ entity cat_pad is port(
     tbre : in  STD_LOGIC;
     tsre : in  STD_LOGIC;
     data_ready : in  STD_LOGIC;
+	 
+	 
+	 -- PS/2
+	 
+	 ps2_data: in std_logic;
+	 ps2_clk: in std_logic;
     
     flashByte : out std_logic;
     flashVpen : out std_logic;
@@ -290,7 +297,6 @@ architecture Behavioral of cat_pad is
     signal s_cp0_trap: std_logic;
     signal s_cp0_eret: std_logic;
 
-    signal s_ps2_request : std_logic;
     signal s_ram_lock_mem : std_logic;
     signal s_pipeline_clear : std_logic;
 
@@ -300,6 +306,11 @@ architecture Behavioral of cat_pad is
     signal s_stall_id_clear: std_logic;
     signal s_stall_id_keep: std_logic;
     signal s_stall_exe_clear: std_logic;
+	 
+	 
+	 --- PS/2
+	 signal s_ps2_request: std_logic;
+	 signal s_ps2_data_o: std_logic_vector(7 downto 0);
 begin
 
 	u_bootloader : bootloader port map(
@@ -328,7 +339,7 @@ begin
 	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
 		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
-           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC)
+           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC, ps2_clk)
         variable tmp1 : std_logic := '0';
         variable tmp2 : std_logic := '0';
         variable tmp3 : std_logic := '0';
@@ -337,8 +348,12 @@ begin
         variable tmp6 : std_logic := '0';
         variable tmp7 : std_logic := '0';
         variable tmp8 : std_logic := '0';
+		  variable ps2_counter : std_logic_vector(7 downto 0) := "00000000";
 	 begin
 		-- if not bootloaded, all clock is blocked
+		if(rising_edge(ps2_clk)) then
+			ps2_counter := std_logic_vector(to_unsigned(to_integer(unsigned(ps2_counter)) + 1, 8));
+		end if;
 		if (isBootloaded = '1') then
             if (input = "1111111111111111") then
                 real_clk <= manual_clk;
@@ -351,31 +366,7 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            if (s_EXEPC > "0000000111010000") then
-                tmp1 := '1';
-            end if;
-            if (s_EXEPC > "0000000111011000") then
-                tmp2 := '1';
-            end if;
-            if (s_EXEPC > "0000000111100000") then
-                tmp3 := '1';
-            end if;
-            if (s_EXEPC > "0000000111101000") then
-                tmp4 := '1';
-            end if;
-            if (s_EXEPC > "0000000111110000") then
-                tmp5 := '1';
-            end if;
-            if (s_EXEPC > "0000001000000000") then
-                tmp6 := '1';
-            end if;
-            if (s_EXEPC > "0000001000001000") then
-                tmp7 := '1';
-            end if;
-            if (s_EXEPC > "0000001000010000") then
-                tmp8 := '1';
-            end if;
-            leds <= tmp1 & tmp2 & tmp3 & tmp4 & tmp5 & tmp6 & tmp7 & tmp8 & "00000000";
+            leds <= tmp1 & tmp2 & tmp3 & ps2_data & ps2_clk & s_ps2_request & s_cp0_set_pc & s_cp0_status & ps2_counter;
 				--leds <= test_reg_out_1;
 			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU
@@ -512,7 +503,8 @@ begin
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
-        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log);
+        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log,
+		  ps2_data => s_ps2_data_o);
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN, 
@@ -563,7 +555,7 @@ begin
                 );
     
     u_cp0_registers : cp0_registers port map(
-        clk => clk,
+        clk => real_clk,
         causeIn => s_cp0_cause_update,
         epcIn => s_cp0_epc_update,
         statusIn => s_cp0_status_update,
@@ -607,6 +599,14 @@ begin
 		exeBubble => s_bubble_exe,
 		idBubble => s_bubble_id
     );
+	 
+	 u_ps2_controller : ps2_controller port map (
+		clk => real_clk,
+		ps2_clk => ps2_clk,
+		ps2_data => ps2_data,
+		data_request => s_ps2_request,
+		data => s_ps2_data_o
+	 );
 
 	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,
 			s_stall_set_pc_val, s_cp0_set_pc, s_cp0_set_pc_val)
@@ -665,8 +665,6 @@ begin
             end if;
         end if;
     end process;
-
-    s_ps2_request <= '0';
 
     
 
