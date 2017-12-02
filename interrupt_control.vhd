@@ -108,6 +108,7 @@ begin
 				cp0StatusUpdateV := '0'; -- allow interrupt
 				pcSet <= '1';
 				pcSetVal <= cp0Epc;
+				pipelineClear <= '1'; -- note that now a new instruction we do not expect is in IF
 			else
 				-- pending interrupts exist
 				-- go back to the interrupt handler
@@ -119,6 +120,8 @@ begin
 				cp0CauseUpdateV(integer(cp0NextCause)) := '0';
 				cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(integer(cp0NextCause), 4));
 
+
+				pipelineClear <= '1'; -- note that now a new instruction we do not expect is in IF
 				pcSet <= '1';
 				pcSetVal <= (15 downto 3 => '0') & "101";
 			end if;
@@ -129,6 +132,7 @@ begin
 					cp0NextCause := i;
 				end if;
 			end loop;
+			pipelineClear <= '1';
 			cp0CauseUpdateV(integer(cp0NextCause)) := '0';
 			cp0CauseUpdateV(14 downto 11) := std_logic_vector(to_unsigned(integer(cp0NextCause), 4));
 

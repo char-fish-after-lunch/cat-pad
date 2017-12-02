@@ -70,9 +70,10 @@ begin
 			ram_addr_o <= (others => '0');
 			ram_data_o <= (others => '0');
 			ram_return_o <= (others => '0');
-
-			int_o <= '1';
-			intCode_o <= intCode;
+			if int = '1' then
+				int_o <= '1';
+				intCode_o <= intCode;
+			end if;
 		else
 			ramWrite_o <= ramWrite;
 			ramRead_o <= ramRead;

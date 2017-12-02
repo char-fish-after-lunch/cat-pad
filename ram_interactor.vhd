@@ -42,6 +42,8 @@ entity ram_interactor is port(
 		ramWrite :	in std_logic;
 		ramRead	 :	in std_logic;
 		
+		ps2_data	:	in std_logic_vector(7 downto 0);
+		
 		res_data : out std_logic_vector(15 downto 0);
 		if_res_data : out std_logic_vector(15 downto 0);
 
@@ -91,6 +93,7 @@ architecture Behavioral of ram_interactor is
 	signal uart_data : STD_LOGIC_VECTOR(15 downto 0);
 	signal uart_res : STD_LOGIC_VECTOR(15 downto 0);
 	signal uart_isData : STD_LOGIC;
+	
 
 begin
 	ram1_module: ram_module port map (
@@ -143,6 +146,8 @@ begin
 	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res, ram2_res)
 		variable if_area : STD_LOGIC;
 		variable mem_area : STD_LOGIC;
+		variable if_sp : std_logic;
+		variable mem_sp : std_logic;
 	begin
 
 		-- signal initialize: everything is disabled
@@ -160,6 +165,9 @@ begin
 		uart_isUsed <= '0';
 		uart_data <= "0000000000000000";
 		uart_isData <= '0';
+		
+		if_sp := '0';
+		mem_sp := '0';
 
 		if (if_ram_addr < "1000000000000000" or if_ram_addr = "1011111100000000" 
 			or if_ram_addr = "1011111100000001" ) then
@@ -179,7 +187,17 @@ begin
 			-- data, use ram2
 		end if;
 		
-		if (if_area = mem_area and (ramRead = '1' or ramWrite = '1')) then
+		if if_ram_addr = "1011111100000100" then
+			if_res_data <= (15 downto 8 => '0') & ps2_data;
+			if_sp := '1';
+		end if;
+		
+		if mem_ram_addr = "1011111100000100" then
+			res_data <= (15 downto 8 => '0') & ps2_data;
+			mem_sp := '1';
+		end if;
+		
+		if (if_sp = '0' and mem_sp = '0' and if_area = mem_area and (ramRead = '1' or ramWrite = '1')) then
 			hasConflict <= '1';
 			-- when conflict happens, IF should be paused, MEM uses ram
 			if (mem_area = '1') then
@@ -230,68 +248,76 @@ begin
 			end if;
 		else
 			hasConflict <= '0';
-			if (if_area = '1') then
-				-- we assume that IF will never fetch instructions from uart 
-				ram1_get_addr <= if_ram_addr;
-				ram1_isRead <= '1';
-				ram1_isUsed <= '1';
-				if_res_data <= ram1_res;
-			else
-				ram2_get_addr <= if_ram_addr;
-				ram2_isRead <= '1';
-				ram2_isUsed <= '1';
-				if_res_data <= ram2_res;
-			end if;
-
-			if (ramRead = '1' or ramWrite = '1') then
-				if (mem_area = '1') then
-					if (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
-						-- uart
-						if (ramRead = '1') then 
-							uart_isRead <= '1';
-							uart_isUsed <= '1';
-							res_data <= uart_res;
-						elsif (ramWrite = '1') then
-							uart_isRead <= '0';
-							uart_isUsed <= '1';
-							uart_data <= mem_ram_data;
-						end if;
-
-						if (mem_ram_addr = "1011111100000000") then
-							uart_isData <= '1';
-						else
-							uart_isData <= '0';
-						end if;
+			if if_sp = '0' then
+				if (if_area = '1') then
+					-- we assume that IF will never fetch instructions from uart 
+					if if_ram_addr = "1011111100000100" then
+						-- PS/2
+						if_res_data <= (15 downto 8 => '0') & ps2_data;
 					else
-						-- ram1
-						if (ramRead = '1') then 
-							ram1_get_addr <= mem_ram_addr;
-							ram1_isRead <= '1';
-							ram1_isUsed <= '1';
-							res_data <= ram1_res;
-						elsif (ramWrite = '1') then
-							ram1_get_addr <= mem_ram_addr;
-							ram1_isRead <= '0';
-							ram1_isUsed <= '1';
-							ram1_write_data <= mem_ram_data;
-						end if;
+						ram1_get_addr <= if_ram_addr;
+						ram1_isRead <= '1';
+						ram1_isUsed <= '1';
+						if_res_data <= ram1_res;
 					end if;
 				else
-					-- ram2
-					if (ramRead = '1') then 
-						ram2_get_addr <= mem_ram_addr;
-						ram2_isRead <= '1';
-						ram2_isUsed <= '1';
-						res_data <= ram2_res;
-					elsif (ramWrite = '1') then
-						ram2_get_addr <= mem_ram_addr;
-						ram2_isRead <= '0';
-						ram2_isUsed <= '1';
-						ram2_write_data <= mem_ram_data;
-					end if;
+					ram2_get_addr <= if_ram_addr;
+					ram2_isRead <= '1';
+					ram2_isUsed <= '1';
+					if_res_data <= ram2_res;
 				end if;
 			end if;
 			
+			if mem_sp = '0' then
+				if (ramRead = '1' or ramWrite = '1') then
+					if (mem_area = '1') then
+						if (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
+							-- uart
+							if (ramRead = '1') then 
+								uart_isRead <= '1';
+								uart_isUsed <= '1';
+								res_data <= uart_res;
+							elsif (ramWrite = '1') then
+								uart_isRead <= '0';
+								uart_isUsed <= '1';
+								uart_data <= mem_ram_data;
+							end if;
+
+							if (mem_ram_addr = "1011111100000000") then
+								uart_isData <= '1';
+							else
+								uart_isData <= '0';
+							end if;
+						else
+							-- ram1
+							if (ramRead = '1') then 
+								ram1_get_addr <= mem_ram_addr;
+								ram1_isRead <= '1';
+								ram1_isUsed <= '1';
+								res_data <= ram1_res;
+							elsif (ramWrite = '1') then
+								ram1_get_addr <= mem_ram_addr;
+								ram1_isRead <= '0';
+								ram1_isUsed <= '1';
+								ram1_write_data <= mem_ram_data;
+							end if;
+						end if;
+					else
+						-- ram2
+						if (ramRead = '1') then 
+							ram2_get_addr <= mem_ram_addr;
+							ram2_isRead <= '1';
+							ram2_isUsed <= '1';
+							res_data <= ram2_res;
+						elsif (ramWrite = '1') then
+							ram2_get_addr <= mem_ram_addr;
+							ram2_isRead <= '0';
+							ram2_isUsed <= '1';
+							ram2_write_data <= mem_ram_data;
+						end if;
+					end if;
+				end if;
+			end if;
 		end if;
 
 
