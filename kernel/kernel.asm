@@ -15,10 +15,13 @@ DELINT:
     LI R6 0x00bf
     SLL R6 R6 0x0000
 
+
     ADDIU R6 0x0010 ; the bottom of the stack R6=0xbf10
+
     SW R6 R0 0x0000 ; used to store the registers that might change in the interrupt handler
     SW R6 R1 0x0001
     SW R6 R2 0x0002
+    SW R6 R3 0x0003
     SW R6 R4 0x0004
     SW R6 R5 0x0005
 
@@ -26,7 +29,9 @@ DELINT:
     MFCS R0
 
     CMPI R0 0x000a  ; PS/2 ISR
-    BTNEZ DELINT_PS2
+    BTEQZ DELINT_PS2
+    NOP
+    B DELINT_FINISH
     NOP
 
     ; TODO: other interrupt types
@@ -35,23 +40,30 @@ DELINT_PS2:
     ; handles PS/2 ISR 
 
     LI R1 0x00bf
-    SLL R1 0x0000
+    SLL R1 R1 0x0000
     ADDIU R1 0x0004
     ; R1=0xbf04, address of PS/2 data
 
     LW R1 R2 0x0000
     ; load the data to R2
 
+    LI R3 0x00bf
+    SLL R3 R3 0x0000
+
+    SW R3 R2 0x0000 ; write to the port
+
     ; TODO: do something with R2 (possibly feed it to VGA or store
     ; it in a buffer for further processing)
 
     B DELINT_FINISH
+    NOP
 
 DELINT_FINISH:
     ; restore R0-R5
     LW R6 R0 0x0000
     LW R6 R1 0x0001
     LW R6 R2 0x0002
+    LW R6 R3 0x0003
     LW R6 R4 0x0004
     LW R6 R5 0x0005
 
