@@ -175,6 +175,19 @@ NET "flashRP" LOC = D1;
 NET "flashVpen" LOC = C2;
 NET "flashWE" LOC = D4;
 
-# PlanAhead Generated physical constraints 
 
 NET "clk_11m" LOC = B8;
+
+# PlanAhead Generated physical constraints 
+
+NET "vga_blue[2]" LOC = B6;
+NET "vga_blue[1]" LOC = A6;
+NET "vga_blue[0]" LOC = D5;
+NET "vga_green[2]" LOC = C5;
+NET "vga_green[1]" LOC = C4;
+NET "vga_green[0]" LOC = B4;
+NET "vga_red[2]" LOC = A4;
+NET "vga_red[1]" LOC = C3;
+NET "vga_red[0]" LOC = A7;
+NET "vga_hs" LOC = D6;
+NET "vga_vs" LOC = E6;

@@ -31,7 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity ram_module is port(
 	clk : in STD_LOGIC;
-	ram_addr : in STD_LOGIC_VECTOR (15 downto 0);
+	ram_addr : in STD_LOGIC_VECTOR (17 downto 0);
 	ram_data : in STD_LOGIC_VECTOR (15 downto 0);
 	ram_res  : out STD_LOGIC_VECTOR (15 downto 0);
 	ram_isRead : in STD_LOGIC;
@@ -86,13 +86,13 @@ begin
 			when read_ram =>
 				if (pro_state = prepare) then 
 					put_data_o <= (others => 'Z');
-					ram_addr_o <= "00" & ram_addr;
+					ram_addr_o <= ram_addr;
 					ram_oe_o <= '0';
 					ram_en_o <= '0';
 					temp_data <= put_data_o;
 				else
 					put_data_o <= (others => 'Z');
-					ram_addr_o <= "00" & ram_addr;
+					ram_addr_o <= ram_addr;
 					ram_oe_o <= '0';
 					ram_en_o <= '0';
 					temp_data <= put_data_o;
@@ -102,12 +102,12 @@ begin
 				if (pro_state = prepare) then
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
-					ram_addr_o <= "00" & ram_addr;
+					ram_addr_o <= ram_addr;
 					ram_rw_o <= '0';
 				else
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
-					ram_addr_o <= "00" & ram_addr;
+					ram_addr_o <= ram_addr;
 					ram_rw_o <= '1';
 				end if;
 		end case;

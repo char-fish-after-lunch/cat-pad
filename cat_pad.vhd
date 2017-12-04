@@ -75,7 +75,14 @@ entity cat_pad is port(
     test_regSrcA : out  STD_LOGIC_VECTOR (3 downto 0);
     test_regSrcB : out  STD_LOGIC_VECTOR (3 downto 0);
     test_regA : out  STD_LOGIC_VECTOR (15 downto 0);
-    test_regB : out  STD_LOGIC_VECTOR (15 downto 0)
+    test_regB : out  STD_LOGIC_VECTOR (15 downto 0);
+
+    vga_red : out std_logic_vector(2 downto 0);
+    vga_green : out std_logic_vector(2 downto 0);
+    vga_blue : out std_logic_vector(2 downto 0);
+
+    vga_hs : out std_logic;
+    vga_vs : out std_logic
 );
 end cat_pad;
 
@@ -508,11 +515,26 @@ begin
 		isMTEPC_o => s_isMTEPC_wb
 	);
 		
-    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => real_clk, clk_50m => clk,
+        if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
-        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log);
+        tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log,
+        vga_blue => vga_blue, vga_green => vga_green, vga_red => vga_red, vga_hs => vga_hs, vga_vs => vga_vs);
+
+        -- 		vga_clk : out std_logic;
+		-- vga_addr : in std_logic_vector(17 downto 0);
+		-- vga_data : out std_logic_vector(15 downto 0);
+
+		-- vga_red : out std_logic_vector(2 downto 0);
+		-- vga_green : out std_logic_vector(2 downto 0);
+		-- vga_blue : out std_logic_vector(2 downto 0);
+
+		-- vga_hs : out std_logic;
+		-- vga_vs : out std_logic;
+
+
     
     u_write_back : write_back port map(dstSrc => s_dstSrc_wb, wbSrc => s_wbSrc_wb, wbEN => s_wbEN_wb, ramData => s_ramData_wb,
         ALUres => s_ALUres_wb, writeData => s_writeData, writeDst => s_writeSrc, isWriting => s_writeEN, 

@@ -326,14 +326,16 @@ package components is
 
     component ram_interactor port(
 		clk : in std_logic;
-		clk_11m : in std_logic;
+    	clk_11m : in std_logic;
+		clk_50m : in std_logic;
+		
 		if_ram_addr	  : in std_logic_vector(15 downto 0);
 		mem_ram_addr  : in std_logic_vector(15 downto 0);
 		mem_ram_data  : in std_logic_vector(15 downto 0);
 		
 		-- signals from mem
-		ramWrite	:	in std_logic;
-		ramRead	:	in std_logic;
+		ramWrite :	in std_logic;
+		ramRead	 :	in std_logic;
 		
 		res_data : out std_logic_vector(15 downto 0);
 		if_res_data : out std_logic_vector(15 downto 0);
@@ -356,10 +358,20 @@ package components is
 		tbre : in  STD_LOGIC;
 		tsre : in  STD_LOGIC;
 		data_ready : in  STD_LOGIC;
-		
+
+		-- VGA related
+
+		vga_red : out std_logic_vector(2 downto 0);
+		vga_green : out std_logic_vector(2 downto 0);
+		vga_blue : out std_logic_vector(2 downto 0);
+
+		vga_hs : out std_logic;
+		vga_vs : out std_logic;
+
+
 		hasConflict : out STD_LOGIC;
-		
-    	test_log : out STD_LOGIC_VECTOR(15 downto 0));
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0)
+		);
     end component;
 
     component registers port(
@@ -548,6 +560,30 @@ package components is
 
 		pcSet : out std_logic;
 		pcSetVal : out std_logic_vector(15 downto 0)
+	);
+	end component;
+
+	component display_controller is port(
+		clk_50m : in std_logic;
+		
+		ram2addr : out  std_logic_vector (17 downto 0);
+		ram2data : inout  std_logic_vector (15 downto 0);
+		ram2oe : out  std_logic;
+		ram2rw : out  std_logic;
+		ram2en : out  std_logic;
+
+		vga_red : out std_logic_vector(2 downto 0);
+		vga_green : out std_logic_vector(2 downto 0);
+		vga_blue : out std_logic_vector(2 downto 0);
+
+		vga_hs : out std_logic;
+		vga_vs : out std_logic;
+
+		ascii_input : in std_logic_vector(6 downto 0);
+		ascii_place_x : in std_logic_vector(8 downto 0);
+		ascii_place_y : in std_logic_vector(8 downto 0);
+		is_idle : out std_logic;
+		start_signal : in std_logic
 	);
 	end component;
 
