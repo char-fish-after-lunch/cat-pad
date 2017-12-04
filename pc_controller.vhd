@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity pc_controller is port(
 	clk : in std_logic;
+
 	-- pause : in std_logic;
 	next_pc_in : in std_logic_vector(15 downto 0);
 	pc_pause : in std_logic;

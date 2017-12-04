@@ -337,6 +337,8 @@ package components is
 		ramWrite :	in std_logic;
 		ramRead	 :	in std_logic;
 		
+		ps2_data	:	in std_logic_vector(7 downto 0);
+		
 		res_data : out std_logic_vector(15 downto 0);
 		if_res_data : out std_logic_vector(15 downto 0);
 
@@ -586,5 +588,16 @@ package components is
 		start_signal : in std_logic
 	);
 	end component;
+
+	component ps2_controller port(
+		clk	: in std_logic;
+		ps2_clk	: in std_logic;
+		ps2_data : in std_logic;
+
+		data_request : out std_logic;
+		data : out std_logic_vector(7 downto 0)
+	);
+	end component;
+
 
 end components;

@@ -191,3 +191,13 @@ NET "vga_red[1]" LOC = C3;
 NET "vga_red[0]" LOC = A7;
 NET "vga_hs" LOC = D6;
 NET "vga_vs" LOC = E6;
+NET "ps2_clk" LOC = U6;
+
+NET "ps2_clk" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "ps2_data" LOC = V6;
+
+# PlanAhead Generated IO constraints 
+
+NET "ps2_data" IOSTANDARD = LVCMOS25;
+NET "manual_clk" IOSTANDARD = LVCMOS25;
+NET "ram1oe" IOSTANDARD = LVCMOS25;

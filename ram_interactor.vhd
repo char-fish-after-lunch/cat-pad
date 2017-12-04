@@ -44,6 +44,8 @@ entity ram_interactor is port(
 		ramWrite :	in std_logic;
 		ramRead	 :	in std_logic;
 		
+		ps2_data	:	in std_logic_vector(7 downto 0);
+		
 		res_data : out std_logic_vector(15 downto 0);
 		if_res_data : out std_logic_vector(15 downto 0);
 
@@ -94,6 +96,7 @@ architecture Behavioral of ram_interactor is
 	signal uart_data : STD_LOGIC_VECTOR(15 downto 0);
 	signal uart_res : STD_LOGIC_VECTOR(15 downto 0);
 	signal uart_isData : STD_LOGIC;
+	
 
 	signal s_ascii_input : std_logic_vector(6 downto 0);
 	signal s_ascii_place_x : std_logic_vector(8 downto 0);
@@ -156,8 +159,7 @@ begin
 		start_signal => s_start_signal
 	);
 
-	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res, s_is_idle)
-
+	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res)
 	begin
 		-- signal initialize: everything is disabled
 		ram1_get_addr <= "000000000000000000";
@@ -175,7 +177,13 @@ begin
 		if (ramRead = '1' or ramWrite = '1') then
 			hasConflict <= '1';
 			-- when conflict happens, IF should be paused, MEM uses ram
-			if (mem_ram_addr(15 downto 2) = "10111111000010") then
+			
+			if mem_ram_addr = "1011111100000100" then
+				if (ramRead = '1') then
+					res_data <= (15 downto 8 => '0') & ps2_data;
+				end if;
+
+			elsif (mem_ram_addr(15 downto 2) = "10111111000010") then
 				if (mem_ram_addr = "1011111100001000") then
 					if (ramWrite = '1') then
 						s_ascii_input <= mem_ram_data(6 downto 0);
