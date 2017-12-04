@@ -346,7 +346,7 @@ begin
 	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
 		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
-           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC, ps2_clk)
+           s_ramWrite_ram, s_test_log, s_ramRead_ram, input, s_EXEPC, ps2_clk, s_pc_out)
         variable tmp1 : std_logic := '0';
         variable tmp2 : std_logic := '0';
         variable tmp3 : std_logic := '0';
@@ -373,7 +373,8 @@ begin
             ram1en <= ram1en_pad;
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
-            leds <= tmp1 & tmp2 & tmp3 & ps2_data & ps2_clk & s_ps2_request & s_cp0_set_pc & s_cp0_status & ps2_counter;
+            -- leds <= tmp1 & tmp2 & tmp3 & ps2_data & ps2_clk & s_ps2_request & s_cp0_set_pc & s_cp0_status & ps2_counter;
+            leds <= s_pc_out(14 downto 0) & s_hasConflict;
 				--leds <= test_reg_out_1;
 			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU
@@ -387,7 +388,7 @@ begin
             ram1rw <= ram1rw_bootloader;
             
 			disp2 <= bootloader_state;
-			leds <= "0000000000000000";
+			leds <= "0101010101010101";
 		end if;
 	 end process;
 
@@ -513,7 +514,7 @@ begin
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
         tbre => tbre, tsre => tsre, data_ready => data_ready, hasConflict => s_hasConflict, test_log => s_test_log,
         vga_blue => vga_blue, vga_green => vga_green, vga_red => vga_red, vga_hs => vga_hs, vga_vs => vga_vs,
-		ps2_data => s_ps2_data_o);
+		ps2_data => s_ps2_data_o, isBootloaded => isBootloaded);
         -- 		vga_clk : out std_logic;
 		-- vga_addr : in std_logic_vector(17 downto 0);
 		-- vga_data : out std_logic_vector(15 downto 0);

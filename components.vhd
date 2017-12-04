@@ -372,7 +372,9 @@ package components is
 
 
 		hasConflict : out STD_LOGIC;
-    	test_log : out STD_LOGIC_VECTOR(15 downto 0)
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0);
+
+		isBootloaded : in std_logic
 		);
     end component;
 

@@ -78,7 +78,8 @@ entity ram_interactor is port(
 
 
 		hasConflict : out STD_LOGIC;
-    	test_log : out STD_LOGIC_VECTOR(15 downto 0)
+    	test_log : out STD_LOGIC_VECTOR(15 downto 0);
+		isBootloaded : in std_logic
 	);
 end ram_interactor;
 
@@ -159,7 +160,7 @@ begin
 		start_signal => s_start_signal
 	);
 
-	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res)
+	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res, isBootloaded)
 	begin
 		-- signal initialize: everything is disabled
 		ram1_get_addr <= "000000000000000000";
@@ -173,90 +174,93 @@ begin
 		uart_isData <= '0';
 
 		s_start_signal <= '0';
+
+		if (isBootloaded = '1') then
 		
-		if (ramRead = '1' or ramWrite = '1') then
-			hasConflict <= '1';
-			-- when conflict happens, IF should be paused, MEM uses ram
-			
-			if mem_ram_addr = "1011111100000100" then
-				if (ramRead = '1') then
-					res_data <= (15 downto 8 => '0') & ps2_data;
-				end if;
-
-			elsif (mem_ram_addr(15 downto 2) = "10111111000010") then
-				if (mem_ram_addr = "1011111100001000") then
-					if (ramWrite = '1') then
-						s_ascii_input <= mem_ram_data(6 downto 0);
-					end if;
-				elsif (mem_ram_addr = "1011111100001001") then
-					if (ramWrite = '1') then
-						s_ascii_place_x <= mem_ram_data(8 downto 0);
-					end if;
-				elsif (mem_ram_addr = "1011111100001010") then
-					if (ramWrite = '1') then
-						s_ascii_place_y <= mem_ram_data(8 downto 0);
-					end if;
-				else
+			if (ramRead = '1' or ramWrite = '1') then
+				hasConflict <= '1';
+				-- when conflict happens, IF should be paused, MEM uses ram
+				
+				if mem_ram_addr = "1011111100000100" then
 					if (ramRead = '1') then
-						res_data <= "000000000000000" & s_is_idle;
+						res_data <= (15 downto 8 => '0') & ps2_data;
+					end if;
+
+				elsif (mem_ram_addr(15 downto 2) = "10111111000010") then
+					if (mem_ram_addr = "1011111100001000") then
+						if (ramWrite = '1') then
+							s_ascii_input <= mem_ram_data(6 downto 0);
+						end if;
+					elsif (mem_ram_addr = "1011111100001001") then
+						if (ramWrite = '1') then
+							s_ascii_place_x <= mem_ram_data(8 downto 0);
+						end if;
+					elsif (mem_ram_addr = "1011111100001010") then
+						if (ramWrite = '1') then
+							s_ascii_place_y <= mem_ram_data(8 downto 0);
+						end if;
+					else
+						if (ramRead = '1') then
+							res_data <= "000000000000000" & s_is_idle;
+						elsif (ramWrite = '1') then
+							s_start_signal <= '1';
+						end if;
+					end if;
+
+				elsif (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
+					-- uart
+					if (ramRead = '1') then 
+						uart_isRead <= '1';
+						uart_isUsed <= '1';
+						res_data <= uart_res;
 					elsif (ramWrite = '1') then
-						s_start_signal <= '1';
+						uart_isRead <= '0';
+						uart_isUsed <= '1';
+						uart_data <= mem_ram_data;
+					end if;
+
+					if (mem_ram_addr = "1011111100000000") then
+						uart_isData <= '1';
+					else
+						uart_isData <= '0';
+					end if;
+				else
+					-- ram1
+					if (ramRead = '1') then 
+						ram1_get_addr <= "00" & mem_ram_addr;
+						ram1_isRead <= '1';
+						ram1_isUsed <= '1';
+						res_data <= ram1_res;
+					elsif (ramWrite = '1') then
+						ram1_get_addr <= "00" & mem_ram_addr;
+						ram1_isRead <= '0';
+						ram1_isUsed <= '1';
+						ram1_write_data <= mem_ram_data;
 					end if;
 				end if;
+				-- else
+				-- 	-- ram2
+				-- 	if (ramRead = '1') then 
+				-- 		ram2_get_addr <= mem_ram_addr;
+				-- 		ram2_isRead <= '1';
+				-- 		ram2_isUsed <= '1';
+				-- 		res_data <= ram2_res;
+				-- 	elsif (ramWrite = '1') then
+				-- 		ram2_get_addr <= mem_ram_addr;
+				-- 		ram2_isRead <= '0';
+				-- 		ram2_isUsed <= '1';
+				-- 		ram2_write_data <= mem_ram_data;
+				-- 	end if;
+				-- end if;
 
-			elsif (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
-				-- uart
-				if (ramRead = '1') then 
-					uart_isRead <= '1';
-					uart_isUsed <= '1';
-					res_data <= uart_res;
-				elsif (ramWrite = '1') then
-					uart_isRead <= '0';
-					uart_isUsed <= '1';
-					uart_data <= mem_ram_data;
-				end if;
-
-				if (mem_ram_addr = "1011111100000000") then
-					uart_isData <= '1';
-				else
-					uart_isData <= '0';
-				end if;
 			else
-				-- ram1
-				if (ramRead = '1') then 
-					ram1_get_addr <= "00" & mem_ram_addr;
-					ram1_isRead <= '1';
-					ram1_isUsed <= '1';
-					res_data <= ram1_res;
-				elsif (ramWrite = '1') then
-					ram1_get_addr <= "00" & mem_ram_addr;
-					ram1_isRead <= '0';
-					ram1_isUsed <= '1';
-					ram1_write_data <= mem_ram_data;
-				end if;
+				hasConflict <= '0';
+				ram1_get_addr <= "00" & if_ram_addr;
+				ram1_isRead <= '1';
+				ram1_isUsed <= '1';
+				if_res_data <= ram1_res;
 			end if;
-			-- else
-			-- 	-- ram2
-			-- 	if (ramRead = '1') then 
-			-- 		ram2_get_addr <= mem_ram_addr;
-			-- 		ram2_isRead <= '1';
-			-- 		ram2_isUsed <= '1';
-			-- 		res_data <= ram2_res;
-			-- 	elsif (ramWrite = '1') then
-			-- 		ram2_get_addr <= mem_ram_addr;
-			-- 		ram2_isRead <= '0';
-			-- 		ram2_isUsed <= '1';
-			-- 		ram2_write_data <= mem_ram_data;
-			-- 	end if;
-			-- end if;
-
-		else
-			ram1_get_addr <= "00" & if_ram_addr;
-			ram1_isRead <= '1';
-			ram1_isUsed <= '1';
-			if_res_data <= ram1_res;
 		end if;
-
 	end process;
 
 end Behavioral;
