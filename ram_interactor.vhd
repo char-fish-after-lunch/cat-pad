@@ -160,7 +160,7 @@ begin
 		start_signal => s_start_signal
 	);
 
-	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res, isBootloaded)
+	process(if_ram_addr, mem_ram_addr, mem_ram_data, ramRead, ramWrite, uart_res, ram1_res, isBootloaded, clk)
 	begin
 		-- signal initialize: everything is disabled
 		ram1_get_addr <= "000000000000000000";
@@ -173,8 +173,6 @@ begin
 		uart_data <= "0000000000000000";
 		uart_isData <= '0';
 
-		s_start_signal <= '0';
-
 		if (isBootloaded = '1') then
 		
 			if (ramRead = '1' or ramWrite = '1') then
@@ -185,25 +183,26 @@ begin
 					if (ramRead = '1') then
 						res_data <= (15 downto 8 => '0') & ps2_data;
 					end if;
-
 				elsif (mem_ram_addr(15 downto 2) = "10111111000010") then
-					if (mem_ram_addr = "1011111100001000") then
-						if (ramWrite = '1') then
-							s_ascii_input <= mem_ram_data(6 downto 0);
-						end if;
-					elsif (mem_ram_addr = "1011111100001001") then
-						if (ramWrite = '1') then
-							s_ascii_place_x <= mem_ram_data(8 downto 0);
-						end if;
-					elsif (mem_ram_addr = "1011111100001010") then
-						if (ramWrite = '1') then
-							s_ascii_place_y <= mem_ram_data(8 downto 0);
+					if (ramRead = '1') then
+						if (mem_ram_addr = "1011111100001011") then
+							res_data <= "000000000000000" & s_is_idle;
 						end if;
 					else
-						if (ramRead = '1') then
-							res_data <= "000000000000000" & s_is_idle;
-						elsif (ramWrite = '1') then
-							s_start_signal <= '1';
+						if (ramWrite = '1') then
+							if (falling_edge(clk)) then
+								if (mem_ram_addr = "1011111100001000") then
+									s_ascii_input <= mem_ram_data(6 downto 0);
+								elsif (mem_ram_addr = "1011111100001001") then
+									s_ascii_place_x <= mem_ram_data(8 downto 0);
+								elsif (mem_ram_addr = "1011111100001010") then
+									s_ascii_place_y <= mem_ram_data(8 downto 0);
+								else
+									if (mem_ram_data(0) = '1') then
+										s_start_signal <= '1';
+									end if;
+								end if;
+							end if;
 						end if;
 					end if;
 
@@ -224,6 +223,7 @@ begin
 					else
 						uart_isData <= '0';
 					end if;
+					s_start_signal <= '0';
 				else
 					-- ram1
 					if (ramRead = '1') then 
@@ -259,6 +259,7 @@ begin
 				ram1_isRead <= '1';
 				ram1_isUsed <= '1';
 				if_res_data <= ram1_res;
+				s_start_signal <= '0';
 			end if;
 		end if;
 	end process;

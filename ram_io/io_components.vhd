@@ -61,4 +61,10 @@ package io_components is
     );
     end component;
 
+    component ascii_decoder port(
+        ascii_input : in std_logic_vector(6 downto 0);
+        ascii_pic_out : out std_logic_vector(63 downto 0)
+    );
+    end component;
+
 end io_components;

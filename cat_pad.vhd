@@ -354,7 +354,7 @@ begin
 	 
 	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
-		   s_ALUres, bootloader_state, s_mem_ram_addr, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
+		   s_ALUres, test_reg_out_1, test_reg_out_2, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
            s_vga_vs, s_vga_hs, s_vga_blue, input, s_vga_red, s_vga_green, s_pc_out)
         variable tmp1 : std_logic := '0';
         variable tmp2 : std_logic := '0';
@@ -383,8 +383,8 @@ begin
             ram1oe <= ram1oe_pad;
             ram1rw <= ram1rw_pad;
             -- leds <= tmp1 & tmp2 & tmp3 & ps2_data & ps2_clk & s_ps2_request & s_cp0_set_pc & s_cp0_status & ps2_counter;
-            leds <= s_vga_red & s_vga_green & s_vga_blue & s_vga_hs & s_vga_vs & "00000";
-				--leds <= test_reg_out_1;
+            -- leds <= s_vga_red & s_vga_green & s_vga_blue & s_vga_hs & s_vga_vs & "00000";
+				leds <= test_reg_out_1(9 downto 2) & test_reg_out_2(9 downto 2);
 			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
             -- signals connect to real CPU
 		else 

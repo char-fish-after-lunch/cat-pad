@@ -69,6 +69,7 @@ architecture Behavioral of display_controller is
 	signal ram2_isUsed : STD_LOGIC := '0';
 
 
+    signal tmp_ascii_input : std_logic_vector (6 downto 0) := (others => '0');
     signal tmp_ascii : std_logic_vector (63 downto 0) := (others => '0');
     signal tmp_x : std_logic_vector (8 downto 0) := "000000000";
     signal tmp_y : std_logic_vector (8 downto 0) := "000000000";
@@ -113,6 +114,11 @@ begin
         vga_vs => vga_vs,
         vga_enabled => s_vga_enabled
     );
+
+    ascii_decoder: ascii_decoder port map(
+        ascii_input => tmp_ascii_input,
+        ascii_pic_out => tmp_ascii
+    );
 	     
     process(clk_50m)
     begin
@@ -131,26 +137,6 @@ begin
         s_is_idle, ascii_input, ascii_place_x, ascii_place_y)
     begin
         if (rising_edge(clk_50m)) then
-            if (s_is_idle = '1') then
-                if (start_signal = '1') then
-                    tmp_ascii(63 downto 56) <= "00011100";
-                    tmp_ascii(55 downto 48) <= "00100000";
-                    tmp_ascii(47 downto 40) <= "01000000";
-                    tmp_ascii(39 downto 32) <= "01111000";
-                    tmp_ascii(31 downto 24) <= "01000100";
-                    tmp_ascii(23 downto 16) <= "01000100";
-                    tmp_ascii(15 downto 8)  <= "00111000";
-                    tmp_ascii(7 downto 0)   <= "00000000";
-
-                    tmp_x <= ascii_place_x;
-                    tmp_y <= ascii_place_y;
-
-                    tmp_x_shift <= "000";
-                    tmp_y_shift <= "000";
-
-                    s_is_idle <= '0';
-                end if;
-            end if;
 
             if (disp_state = read_ram) then
                 ram2_get_addr <= s_vga_addr;
@@ -163,25 +149,37 @@ begin
                     s_vga_data <= (others => '0');
                 end if;
 
-                if (tmp_y_shift = "111") then
-                    tmp_y_shift <= "000";
-                    if (tmp_x_shift = "111") then
-                        tmp_x_shift <= "000";
-                        s_is_idle <= '1';
-                    else 
-                        tmp_x_shift <= tmp_x_shift + "001";
-                    end if;
-                else 
-                    tmp_y_shift <= tmp_y_shift + "001";
-                end if;
-
             else
-                if (s_is_idle = '0') then
+                if (s_is_idle = '1') then
+                    if (start_signal = '1') then
+                        tmp_ascii_input <= ascii_input;
+
+                        tmp_x <= ascii_place_x;
+                        tmp_y <= ascii_place_y;
+
+                        tmp_x_shift <= "000";
+                        tmp_y_shift <= "000";
+
+                        s_is_idle <= '0';
+                    end if;
+                else
                     ram2_isUsed <= '1';
                     ram2_isRead <= '0';
                     ram2_get_addr <= (tmp_x + ("00000" & tmp_x_shift)) &
                         (tmp_y + ("00000" & tmp_y_shift));
                     ram2_write_data <= (others => tmp_ascii(63-conv_integer(tmp_x_shift & tmp_y_shift)));
+                    
+                    if (tmp_y_shift = "111") then
+                        tmp_y_shift <= "000";
+                        if (tmp_x_shift = "111") then
+                            tmp_x_shift <= "000";
+                            s_is_idle <= '1';
+                        else 
+                            tmp_x_shift <= tmp_x_shift + "001";
+                        end if;
+                    else 
+                        tmp_y_shift <= tmp_y_shift + "001";
+                    end if;
                 end if;
 
             end if;

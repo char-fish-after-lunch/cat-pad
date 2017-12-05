@@ -72,8 +72,8 @@ begin
                 
                 if x >= 0 and x < 640 and y >= 0 and y < 480 then
                     if x >= 64 and x < 576 and y >= 0 and y < 480 then
-                        vga_addr(17 downto 9) <= conv_std_logic_vector(x-64, 9);
-                        vga_addr(8 downto 0) <= conv_std_logic_vector(y, 9);
+                        vga_addr(8 downto 0) <= conv_std_logic_vector(x-64, 9);
+                        vga_addr(17 downto 9) <= conv_std_logic_vector(y, 9);
                         is_reading <= '1';
                     else
                         vga_addr(17 downto 0) <= (others => '0');

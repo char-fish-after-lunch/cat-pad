@@ -72,21 +72,21 @@ begin
 			when alu_o_b => ALUres <= regB;
 			when alu_gr  => 
 				if (regA < regB) then
-					ALUres <= "0000000000000000";
-				else 
 					ALUres <= "0000000000000001";
+				else 
+					ALUres <= "0000000000000000";
 				end if;
 			when alu_gr_s =>
 				if regA(15) = regB(15) then
 					if regA < regB then
-						ALUres <= "0000000000000000";
-					else
 						ALUres <= "0000000000000001";
+					else
+						ALUres <= "0000000000000000";
 					end if;
 				elsif regA(15) = '1' then
-					ALUres <= "0000000000000001";
-				else
 					ALUres <= "0000000000000000";
+				else
+					ALUres <= "0000000000000001";
 				end if;
 			when others => ALUres <= "0000000000000000";
 		end case;
