@@ -114,28 +114,18 @@ begin
         vga_enabled => s_vga_enabled
     );
 	     
-    process(clk_50m, disp_state)
+    process(clk_50m)
     begin
         if (rising_edge(clk_50m)) then
             if (disp_state = write_vga_ram) then
                 disp_state <= read_ram;
-            else
-                disp_state <= write_vga_ram;
-            end if;
-        end if;
-    end process;
-
-    process(disp_state, clk_50m)
-    begin
-        if (falling_edge(clk_50m)) then
-            if (disp_state = read_ram) then
                 s_vga_enabled <= '1';
             else
+                disp_state <= write_vga_ram;
                 s_vga_enabled <= '0';
             end if;
         end if;
     end process;
-
 
     process(clk_50m, disp_state, s_vga_data, s_vga_read_addr, s_vga_addr, ram2_res, tmp_x_shift, tmp_y_shift,
         s_is_idle, ascii_input, ascii_place_x, ascii_place_y)
@@ -146,7 +136,7 @@ begin
                     tmp_ascii(63 downto 56) <= "00011100";
                     tmp_ascii(55 downto 48) <= "00100000";
                     tmp_ascii(47 downto 40) <= "01000000";
-                    tmp_ascii(39 downto 32) <= "01111100";
+                    tmp_ascii(39 downto 32) <= "01111000";
                     tmp_ascii(31 downto 24) <= "01000100";
                     tmp_ascii(23 downto 16) <= "01000100";
                     tmp_ascii(15 downto 8)  <= "00111000";
@@ -191,7 +181,7 @@ begin
                     ram2_isRead <= '0';
                     ram2_get_addr <= (tmp_x + ("00000" & tmp_x_shift)) &
                         (tmp_y + ("00000" & tmp_y_shift));
-                    ram2_write_data <= (others => tmp_ascii(conv_integer(tmp_x_shift & tmp_y_shift)));
+                    ram2_write_data <= (others => tmp_ascii(63-conv_integer(tmp_x_shift & tmp_y_shift)));
                 end if;
 
             end if;

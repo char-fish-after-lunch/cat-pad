@@ -49,27 +49,32 @@ end vga_driver;
 
 architecture Behavioral of vga_driver is
     signal inner_clk : std_logic := '0';
+    -- signal inner_clk_2 : std_logic := '0';
     signal r_t, g_t, b_t : std_logic_vector (2 downto 0);
     signal hs_t, vs_t : std_logic;
-    signal x : integer range 0 to 799;
-    signal y : integer range 0 to 524;
+    signal x : integer range 0 to 799 := 0;
+    signal y : integer range 0 to 524 := 0;
     signal is_reading : std_logic := '0';
 begin
 
     process(vga_clk, vga_data, vga_enabled, x, y) -- make that 25MHz
 	begin
 		if rising_edge(vga_clk) then
-			if (vga_enabled = '1') then
+            inner_clk <= not inner_clk;
+
+            if (inner_clk = '1') then
+			-- if (vga_enabled = '1') then
                 r_t <= vga_data(8 downto 6);
                 g_t <= vga_data(5 downto 3);
                 b_t <= vga_data(2 downto 0);
-                inner_clk <= '1';
+                -- inner_clk <= '1';
             else
                 
                 if x >= 0 and x < 640 and y >= 0 and y < 480 then
                     if x >= 64 and x < 576 and y >= 0 and y < 480 then
                         vga_addr(17 downto 9) <= conv_std_logic_vector(x-64, 9);
                         vga_addr(8 downto 0) <= conv_std_logic_vector(y, 9);
+                        is_reading <= '1';
                     else
                         vga_addr(17 downto 0) <= (others => '0');
                         is_reading <= '0';
@@ -79,7 +84,7 @@ begin
                     is_reading <= '0';
                 end if;
                 
-                inner_clk <= '0';
+                -- inner_clk <= '0';
             end if;
 		end if;
     end process;
@@ -90,9 +95,15 @@ begin
     begin
 		if rising_edge(inner_clk) then
             if x = 799 then
-                y <= y + 1;
+                if (y = 524) then
+                    y <= 0;
+                else
+                    y <= y + 1;
+                end if;
+                x <= 0;
+            else
+                x <= x + 1;
 			end if;
-            x <= x + 1;
 		end if;
     end process;
 
@@ -132,6 +143,9 @@ begin
 			vga_red <= r_t;
 			vga_green <= g_t;
 			vga_blue <= b_t;
+			-- vga_red <= "111";
+			-- vga_green <= "010";
+			-- vga_blue <= "010";
 		else
 			vga_red <= (others => '0');
 			vga_green <= (others => '0');
