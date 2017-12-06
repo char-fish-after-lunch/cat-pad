@@ -124,7 +124,7 @@ begin
     );
 
 	uart_module: uart_module port map(
-		clk => clk_11m,
+		clk => clk,
 		uart_isRead => uart_isRead,
 		uart_isUsed => uart_isUsed,
 		uart_data => uart_data,

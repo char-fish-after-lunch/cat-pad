@@ -73,7 +73,7 @@ architecture Behavioral of bootloader is
  
 	signal isBooted : std_logic := '0';
 	signal slowed_clk : std_logic ;
-	signal counter : integer range 0 to 500000 := 0; 
+	signal counter : integer range 0 to 200 := 0; 
 	
 begin
 	process(clk)
@@ -85,7 +85,7 @@ begin
 	
 	process(counter)
 	begin
-		if (counter < 250000) then
+		if (counter < 100) then
 			slowed_clk <= '0';
 		else
 			slowed_clk <= '1';
@@ -143,20 +143,9 @@ begin
 	process(slowed_clk, state, flash_data, tot_loaded)
 	begin
 		if (rising_edge(slowed_clk)) then
-			flashCE <= '0';
-			flashOE <= '1';
-			flashWE <= '1';
 			flashByte <= '1';
 			flashVpen <= '1';
 			flashRP <= '1';
-			
-			flash_data <= (others => 'Z');
-
-			ram1addr <= (others => '0');
-			ram1data <= (others => 'Z');
-			ram1en <= '1';
-			ram1oe <= '1';
-			ram1rw <= '1';
 
 			isBooted <= '0';
 			
@@ -172,7 +161,15 @@ begin
 				isBooted <= '1';
 
 			when waiting => 
+				flashCE <= '0';
+				flashOE <= '1';
 				flashWE <= '0';
+				flash_data <= (others => 'Z');
+				ram1addr <= (others => '0');
+				ram1data <= (others => 'Z');
+				ram1en <= '1';
+				ram1oe <= '1';
+				ram1rw <= '1';
 
 			when read1 =>
 				flash_data <= x"00FF";
@@ -187,6 +184,7 @@ begin
 				
 			when read4 =>
 				temp_data <= flash_data;
+				flashOE <= '1';
 				
 			when write1 =>
 				
@@ -231,4 +229,3 @@ begin
 	end process;
 
 end Behavioral;
-

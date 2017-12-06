@@ -21,6 +21,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use work.components.ALL;
 use work.consts.ALL;
+use ieee.numeric_std.ALL;
+library UNISIM;
+use UNISIM.Vcomponents.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -230,10 +233,69 @@ architecture Behavioral of cat_pad is
     signal s_ram2oe : STD_LOGIC;
     signal s_ram2rw : STD_LOGIC;
     signal s_ram2en : STD_LOGIC;
+
+    signal clk_test : std_logic; --fk divider for testing
+	signal CLKIN_IBUFG_OUT : std_logic;
+    signal CLK0_OUT : std_logic;
+    
+    signal CLKFB_IN        : std_logic;
+    signal CLKFX_BUF       : std_logic;
+    signal CLKIN_IBUFG     : std_logic;
+    signal CLK0_BUF        : std_logic;
+    signal GND_BIT         : std_logic;
 begin
+    GND_BIT <= '0';
+    CLKIN_IBUFG_OUT <= CLKIN_IBUFG;
+    CLK0_OUT <= CLKFB_IN;
+    CLKFX_BUFG_INST : BUFG
+       port map (I=>CLKFX_BUF,
+                 O=>clk_test);
+    
+    CLKIN_IBUFG_INST : IBUFG
+       port map (I=>clk,
+                 O=>CLKIN_IBUFG);
+    
+    CLK0_BUFG_INST : BUFG
+       port map (I=>CLK0_BUF,
+                 O=>CLKFB_IN);
+    
+    DCM_SP_INST : DCM_SP
+    generic map( CLK_FEEDBACK => "1X",
+             CLKDV_DIVIDE => 2.0,
+             CLKFX_DIVIDE => 5,
+             CLKFX_MULTIPLY => 4,
+             CLKIN_DIVIDE_BY_2 => FALSE,
+             CLKIN_PERIOD => 20.000,
+             CLKOUT_PHASE_SHIFT => "NONE",
+             DESKEW_ADJUST => "SYSTEM_SYNCHRONOUS",
+             DFS_FREQUENCY_MODE => "LOW",
+             DLL_FREQUENCY_MODE => "LOW",
+             DUTY_CYCLE_CORRECTION => TRUE,
+             FACTORY_JF => x"C080",
+             PHASE_SHIFT => 0,
+             STARTUP_WAIT => FALSE)
+       port map (CLKFB=>CLKFB_IN,
+                 CLKIN=>CLKIN_IBUFG,
+                 DSSEN=>GND_BIT,
+                 PSCLK=>GND_BIT,
+                 PSEN=>GND_BIT,
+                 PSINCDEC=>GND_BIT,
+                 RST=>GND_BIT,
+                 CLKDV=>open,
+                 CLKFX=>CLKFX_BUF,
+                 CLKFX180=>open,
+                 CLK0=>CLK0_BUF,
+                 CLK2X=>open,
+                 CLK2X180=>open,
+                 CLK90=>open,
+                 CLK180=>open,
+                 CLK270=>open,
+                 LOCKED=>open,
+                 PSDONE=>open,
+                 STATUS=>open);
 
 	u_bootloader : bootloader port map(
-        clk => clk,
+        clk => clk_11m,
         isBootloaded => isBootloaded,
         flashByte => flashByte,
         flashVpen => flashVpen,
@@ -268,12 +330,13 @@ begin
         variable tmp7 : std_logic := '0';
         variable tmp8 : std_logic := '0';
 	 begin
-		-- if not bootloaded, all clock is blocked
+        -- if not bootloaded, all clock is blocked
+        --need to change into clk for testing
 		if (isBootloaded = '1') then
             if (input = "1111111111111111") then
                 real_clk <= manual_clk;
             else 
-	    		real_clk <= clk_11m;
+	    		real_clk <= clk_test;
             end if;
             wrn <= wrn_pad;
             rdn <= rdn_pad;
