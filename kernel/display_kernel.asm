@@ -175,7 +175,7 @@ CLEARTOZERO:
     LI R4 0x0000
     ADDIU R5 0x0008
     AND R5 R2
-    BEQZ R5 TESTSHOWTEXT
+    BEQZ R5 TESTSHOWTEXTLINE1
     NOP
 
 NONEEDRETURNZERO:
@@ -185,20 +185,19 @@ NONEEDRETURNZERO:
     NOP
 
 
-TESTSHOWTEXT:
+TESTSHOWTEXTLINE1:
 
     NOP
     NOP
-    LI R4 0x0000
-    LI R5 0x0000
-    LI R1 0x0002
+    LI R4 0x0060
+    LI R5 0x0030
+    LI R3 0x0050
+    LI R1 0x0001
     SLL R1 R1 0x0000
-    LI R2 0x0001
-    SLL R2 R2 0x0000
-    LI R3 0x00FF
-    ADDU R2 R3 R2
-    
-    LI R3 0x0021
+    LI R2 0x00A0
+    ADDU R1 R2 R1
+
+    LI R2 0x003D
 
 BEGINSHOWTEXT:
     
@@ -210,136 +209,193 @@ BEGINSHOWTEXT:
     NOP
     NOP
     LI R6 0x00BF
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     SLL R6 R6 0x0000
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     ADDIU R6 0x0008
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    ADDIU R3 0x0001
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    SW R6 R3 0x0000
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
+
+    SW R6 R2 0x0000
     SW R6 R4 0x0002
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     SW R6 R5 0x0001
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     LI R7 0x0001
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     SW R6 R7 0x0003
+
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
     NOP
     NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R3 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+
     ADDIU R4 0x0008
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     SLT R4 R1
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    BTEQZ TEXTCLEARTOZERO
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
+    BTEQZ TEXTCATPAD
     NOP
     NOP
     B TEXTNONEEDRETURNZERO
     NOP
 
 
-TEXTCLEARTOZERO:
+TEXTCATPAD:
     NOP
-    LI R4 0x0000
-    ADDIU R5 0x0008
-    AND R5 R2
-    BEQZ R5 ENDLOOP
+    
+    LI R5 0x0040
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R2 0x0043
+    LI R4 0x00E0
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; C OF CAT PAD
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R2 0x0041
+    LI R4 0x00E8
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; A OF CAT PAD
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R2 0x0054
+    LI R4 0x00F0
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; T OF CAT PAD
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R4 0x0001
+    SLL R4 R4 0x0000
+    LI R2 0x0008
+    ADDU R4 R2 R4
+
+    LI R2 0x0050
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; P OF CAT PAD
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R4 0x0001
+    SLL R4 R4 0x0000
+    LI R2 0x0010
+    ADDU R4 R2 R4
+
+    LI R2 0x0041
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; A OF CAT PAD
+
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTPRINT
+
+    NOP
+    NOP
+    LI R6 0x00BF
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0008
+
+    LI R4 0x0001
+    SLL R4 R4 0x0000
+    LI R2 0x0018
+    ADDU R4 R2 R4
+
+    LI R2 0x0044
+
+    SW R6 R2 0x0000
+    SW R6 R4 0x0002
+    SW R6 R5 0x0001
+    LI R7 0x0001
+    SW R6 R7 0x0003
+
+    ; D OF CAT PAD
+
+
+    B ENDLOOP
     NOP
 
 TEXTNONEEDRETURNZERO:
@@ -349,11 +405,6 @@ TEXTNONEEDRETURNZERO:
     NOP
 
 ENDLOOP:
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
     NOP
     NOP
     B ENDLOOP
