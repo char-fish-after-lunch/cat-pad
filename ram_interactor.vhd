@@ -189,19 +189,21 @@ begin
 							res_data <= "000000000000000" & s_is_idle;
 						end if;
 					else
-						if (ramWrite = '1') then
-							if (falling_edge(clk)) then
-								if (mem_ram_addr = "1011111100001000") then
-									s_ascii_input <= mem_ram_data(6 downto 0);
-								elsif (mem_ram_addr = "1011111100001001") then
-									s_ascii_place_x <= mem_ram_data(8 downto 0);
-								elsif (mem_ram_addr = "1011111100001010") then
-									s_ascii_place_y <= mem_ram_data(8 downto 0);
-								else
-									if (mem_ram_data(0) = '1') then
-										s_start_signal <= '1';
-									end if;
-								end if;
+						if (falling_edge(clk)) then
+							if (ramWrite = '1') then
+								case mem_ram_addr is
+									when "1011111100001000" =>
+										s_ascii_input <= mem_ram_data(6 downto 0);
+									when "1011111100001001" =>
+										s_ascii_place_x <= mem_ram_data(8 downto 0);
+									when "1011111100001010" =>
+										s_ascii_place_y <= mem_ram_data(8 downto 0);
+									when "1011111100001011" =>
+										if (mem_ram_data(0) = '1') then
+											s_start_signal <= '1';
+										end if;
+									when others =>
+								end case;
 							end if;
 						end if;
 					end if;

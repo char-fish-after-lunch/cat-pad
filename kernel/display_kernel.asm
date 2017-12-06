@@ -197,6 +197,8 @@ TESTSHOWTEXT:
     SLL R2 R2 0x0000
     LI R3 0x00FF
     ADDU R2 R3 R2
+    
+    LI R3 0x0021
 
 BEGINSHOWTEXT:
     
@@ -208,21 +210,125 @@ BEGINSHOWTEXT:
     NOP
     NOP
     LI R6 0x00BF
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     SLL R6 R6 0x0000
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     ADDIU R6 0x0008
-    LI R3 0x0007
-    AND R3 R4
-    ADDIU R3 0x0030
-    
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    ADDIU R3 0x0001
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     SW R6 R3 0x0000
-    SW R6 R4 0x0001
-    SW R6 R5 0x0002
-    LI R3 0x0001
-    SW R6 R3 0x0003
-
-    ADDIU R4 0x0009
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    SW R6 R4 0x0002
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    SW R6 R5 0x0001
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    LI R7 0x0001
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    SW R6 R7 0x0003
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    ADDIU R4 0x0008
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     SLT R4 R1
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     BTEQZ TEXTCLEARTOZERO
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     NOP
     B TEXTNONEEDRETURNZERO
     NOP
@@ -231,7 +337,7 @@ BEGINSHOWTEXT:
 TEXTCLEARTOZERO:
     NOP
     LI R4 0x0000
-    ADDIU R5 0x0007
+    ADDIU R5 0x0008
     AND R5 R2
     BEQZ R5 ENDLOOP
     NOP

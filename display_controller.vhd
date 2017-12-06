@@ -133,8 +133,7 @@ begin
         end if;
     end process;
 
-    process(clk_50m, disp_state, s_vga_data, s_vga_read_addr, s_vga_addr, ram2_res, tmp_x_shift, tmp_y_shift,
-        s_is_idle, ascii_input, ascii_place_x, ascii_place_y)
+    process(clk_50m)
     begin
         if (rising_edge(clk_50m)) then
 
@@ -168,7 +167,7 @@ begin
                     ram2_get_addr <= (tmp_x + ("00000" & tmp_x_shift)) &
                         (tmp_y + ("00000" & tmp_y_shift));
                     ram2_write_data <= (others => tmp_ascii(63-conv_integer(tmp_x_shift & tmp_y_shift)));
-                    
+
                     if (tmp_y_shift = "111") then
                         tmp_y_shift <= "000";
                         if (tmp_x_shift = "111") then
