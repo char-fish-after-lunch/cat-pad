@@ -47,9 +47,7 @@ end ram_module;
 
 architecture Behavioral of ram_module is
 	type ram_state is (unused, read_ram, write_ram);
-	type procedure_state is (prepare, get_data);
 	signal state : ram_state := unused;
-	signal pro_state : procedure_state := prepare;
 	signal temp_data : STD_LOGIC_VECTOR (15 downto 0);
 begin
 	
@@ -68,48 +66,27 @@ begin
 		end if;
 
 		-- when the clk falls down, the state goes to the next state
-		if (clk = '1') then
-			pro_state <= prepare;
-		else
-			pro_state <= get_data;
-		end if;
 	end process;
 
-	process(state, pro_state, ram_addr, ram_data, put_data_o)
+	process(state, ram_addr, ram_data, put_data_o)
 	begin
-		ram_en_o <= '1';
-		ram_oe_o <= '1';
-		ram_rw_o <= '1';
-		put_data_o <= (others => 'Z');
 		case state is
 			when unused =>
+				ram_en_o <= '1';
+				ram_oe_o <= '1';
+				ram_rw_o <= '1';
+				put_data_o <= (others => 'Z');
 			when read_ram =>
-				if (pro_state = prepare) then 
-					put_data_o <= (others => 'Z');
-					ram_addr_o <= "00" & ram_addr;
-					ram_oe_o <= '0';
-					ram_en_o <= '0';
-					temp_data <= put_data_o;
-				else
-					put_data_o <= (others => 'Z');
-					ram_addr_o <= "00" & ram_addr;
-					ram_oe_o <= '0';
-					ram_en_o <= '0';
-					temp_data <= put_data_o;
-				end if;
-
+				put_data_o <= (others => 'Z');
+				ram_addr_o <= "00" & ram_addr;
+				ram_oe_o <= '0';
+				ram_en_o <= '0';
+				temp_data <= put_data_o;
 			when write_ram =>
-				if (pro_state = prepare) then
-					ram_en_o <= '0';
-					put_data_o <= ram_data;
-					ram_addr_o <= "00" & ram_addr;
-					ram_rw_o <= '0';
-				else
-					ram_en_o <= '0';
-					put_data_o <= ram_data;
-					ram_addr_o <= "00" & ram_addr;
-					ram_rw_o <= '1';
-				end if;
+				ram_en_o <= '0';
+				put_data_o <= ram_data;
+				ram_addr_o <= "00" & ram_addr;
+				ram_rw_o <= '0';
 		end case;
 	end process;
 	

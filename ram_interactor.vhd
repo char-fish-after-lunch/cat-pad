@@ -161,8 +161,7 @@ begin
 		uart_data <= "0000000000000000";
 		uart_isData <= '0';
 
-		if (if_ram_addr < "1000000000000000" or if_ram_addr = "1011111100000000" 
-			or if_ram_addr = "1011111100000001" ) then
+		if (if_ram_addr(15) = '0' or if_ram_addr(15 downto 1) = "101111110000000") then
 			if_area := '1';
 			-- instruction or uart, use ram1
 		else
@@ -170,8 +169,7 @@ begin
 			-- data, use ram2
 		end if;
 
-		if (mem_ram_addr < "1000000000000000" or mem_ram_addr = "1011111100000000" 
-			or mem_ram_addr = "1011111100000001" ) then
+		if (mem_ram_addr(15) = '0' or if_ram_addr(15 downto 1) = "101111110000000") then
 			mem_area := '1';
 			-- instruction or uart, use ram1
 		else
@@ -183,7 +181,7 @@ begin
 			hasConflict <= '1';
 			-- when conflict happens, IF should be paused, MEM uses ram
 			if (mem_area = '1') then
-				if (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
+				if (mem_ram_addr(15 downto 1) = "101111110000000") then
 					-- uart
 					if (ramRead = '1') then 
 						uart_isRead <= '1';
@@ -195,7 +193,7 @@ begin
 						uart_data <= mem_ram_data;
 					end if;
 
-					if (mem_ram_addr = "1011111100000000") then
+					if (mem_ram_addr(0) = '0') then
 						uart_isData <= '1';
 					else
 						uart_isData <= '0';
@@ -245,7 +243,7 @@ begin
 
 			if (ramRead = '1' or ramWrite = '1') then
 				if (mem_area = '1') then
-					if (mem_ram_addr = "1011111100000000" or mem_ram_addr = "1011111100000001") then
+					if (mem_ram_addr(15 downto 1) = "101111110000000") then
 						-- uart
 						if (ramRead = '1') then 
 							uart_isRead <= '1';
@@ -257,7 +255,7 @@ begin
 							uart_data <= mem_ram_data;
 						end if;
 
-						if (mem_ram_addr = "1011111100000000") then
+						if (mem_ram_addr(0) = '0') then
 							uart_isData <= '1';
 						else
 							uart_isData <= '0';

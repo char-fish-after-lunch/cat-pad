@@ -1,0 +1,99 @@
+Release 14.7 Physical Synthesis Report P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc. All rights reserved.
+
+TABLE OF CONTENTS
+  1) Physical Synthesis Options Summary
+  2) Optimizations statistics and details
+
+
+=========================================================================
+*                 Physical Synthesis Options Summary                    *
+=========================================================================
+---- Options
+Global Optimization                 : OFF
+    Retiming                        : OFF
+    Equivalent Register Removal     : OFF
+Timing-Driven Packing and Placement : ON
+    Logic Optimization              : ON
+    Register Duplication            : ON
+
+---- Intelligent clock gating       : OFF
+
+---- Target Parameters
+Target Device                       : 3s1200efg320-4
+
+=========================================================================
+
+
+=========================================================================
+*                        Optimizations                                  *
+=========================================================================
+---- Statistics
+   Number of registers added by Replication                  | 14              
+   Number of LUTs added by Replication                       | 41              
+
+   Overall change in number of design objects                | +55              
+
+
+---- Details
+
+New or modified components                             | Optimization             | Objective           
+-------------------------------------------------------|--------------------------|----------------------
+s_exe_clear_REPLICA_0                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_1                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_10                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_11                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_12                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_13                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_14                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_15                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_16                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_17                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_18                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_19                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_2                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_20                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_21                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_22                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_23                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_24                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_25                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_26                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_27                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_28                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_29                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_3                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_30                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_31                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_32                                 | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_4                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_5                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_6                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_7                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_8                                  | Replication              | Fanout Optimization
+s_exe_clear_REPLICA_9                                  | Replication              | Fanout Optimization
+u_alu/ALUres_cmp_eq002011_REPLICA_49                   | Replication              | Fanout Optimization
+u_alu/ALUres_or0004349_1_REPLICA_53                    | Replication              | Fanout Optimization
+u_branch_judger/next_PC_o<15>1_REPLICA_52              | Replication              | Fanout Optimization
+u_branch_judger/next_PC_o<6>1_REPLICA_54               | Replication              | Fanout Optimization
+u_forward_unit/srcA<1>1_REPLICA_50                     | Replication              | Fanout Optimization
+u_forward_unit/srcB<0>1_1_REPLICA_51                   | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_33                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_34                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_35                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_36                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_37                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_38                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_39                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_40                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_41                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_42                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_43                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_44                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_45                      | Replication              | Fanout Optimization
+u_id_exe/inner_oprSrcB_REPLICA_46                      | Replication              | Fanout Optimization
+u_pc_controller/pc_pause_inv_REPLICA_47                | Replication              | Fanout Optimization
+u_pc_controller/pc_pause_inv_REPLICA_48                | Replication              | Fanout Optimization
+
+   Flops added for Enable Generation                       
+-------------------------

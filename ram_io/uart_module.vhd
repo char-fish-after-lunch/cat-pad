@@ -49,8 +49,8 @@ entity uart_module is port(
 end uart_module;
 
 architecture Behavioral of uart_module is
-	signal can_read : STD_LOGIC := '0';
-	signal can_write : STD_LOGIC := '0';
+	signal can_read : STD_LOGIC := '1';
+	signal can_write : STD_LOGIC := '1';
 	type uart_state is (unused, read_uart, write_uart);
 	type uart_procedure is (prepare, done, idling);
 	signal state : uart_state := unused;

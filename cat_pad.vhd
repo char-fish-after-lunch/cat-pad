@@ -262,8 +262,8 @@ begin
     DCM_SP_INST : DCM_SP
     generic map( CLK_FEEDBACK => "1X",
              CLKDV_DIVIDE => 2.0,
-             CLKFX_DIVIDE => 5,
-             CLKFX_MULTIPLY => 4,
+             CLKFX_DIVIDE => 4,
+             CLKFX_MULTIPLY => 2,
              CLKIN_DIVIDE_BY_2 => FALSE,
              CLKIN_PERIOD => 20.000,
              CLKOUT_PHASE_SHIFT => "NONE",
@@ -442,7 +442,7 @@ begin
         ramData => s_ram_data, ALUres => s_ALUres_mem, dstSrc_o => s_dstSrc_wb, wbSrc_o => s_wbSrc_wb, wbEN_o => s_wbEN_wb,
         ramData_o => s_ramData_wb, ALUres_o => s_ALUres_wb);
 		
-    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => real_clk, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
+    u_ram_interactor: ram_interactor port map(clk => real_clk, clk_11m => clk_11m, if_ram_addr => s_if_ram_addr, mem_ram_addr => s_mem_ram_addr,
         mem_ram_data => s_mem_ram_data, ramWrite => s_ramWrite_ram, ramRead => s_ramRead_ram, res_data => s_res_data,
         if_res_data => s_if_res_data, ram1data => ram1data, ram1addr => ram1addr_pad, ram1oe => ram1oe_pad, ram1rw => ram1rw_pad, ram1en => ram1en_pad,
         ram2data => ram2data, ram2addr => ram2addr, ram2oe => s_ram2oe, ram2rw => s_ram2rw, ram2en => s_ram2en, rdn => rdn_pad, wrn => wrn_pad, 
