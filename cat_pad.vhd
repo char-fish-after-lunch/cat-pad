@@ -65,8 +65,8 @@ entity cat_pad is port(
 	 
 	 -- PS/2
 	 
-	 ps2_data: in std_logic;
-	 ps2_clk: in std_logic;
+	 ps2_data: inout std_logic;
+	 ps2_clk: inout std_logic;
     
     flashByte : out std_logic;
     flashVpen : out std_logic;
@@ -94,6 +94,13 @@ entity cat_pad is port(
 end cat_pad;
 
 architecture Behavioral of cat_pad is
+	-- for PS/2 debugging
+	signal s_ps2_error1 : std_logic;
+	signal s_ps2_error2 : std_logic;
+	signal s_ps2_error3 : std_logic;
+	signal s_ps2_all_data : std_logic_vector(10 downto 0);
+
+
 	signal isBootloaded : std_logic := '0';
 
 	signal s_pc_inc : std_logic;
@@ -384,8 +391,9 @@ begin
             ram1rw <= ram1rw_pad;
             -- leds <= tmp1 & tmp2 & tmp3 & ps2_data & ps2_clk & s_ps2_request & s_cp0_set_pc & s_cp0_status & ps2_counter;
             -- leds <= s_vga_red & s_vga_green & s_vga_blue & s_vga_hs & s_vga_vs & "00000";
-				leds <= test_reg_out_1(9 downto 2) & test_reg_out_2(9 downto 2);
-			disp2 <= s_dstSrc_mem(3 downto 0) & s_wbEN_mem & s_wbSrc_mem & s_ramWrite_ram;
+				-- leds <= test_reg_out_1(9 downto 2) & test_reg_out_2(9 downto 2);
+				leds <= s_cp0_trap & s_cp0_eret & s_ps2_error3 & s_ps2_all_data & (1 downto 0 => '0');
+			disp2 <= s_dstSrc_mem(3 downto 0) & s_cp0_status & s_ps2_request & '0';
             -- signals connect to real CPU
 		else 
 			real_clk <= '0';
@@ -632,7 +640,11 @@ begin
 		ps2_clk => ps2_clk,
 		ps2_data => ps2_data,
 		data_request => s_ps2_request,
-		data => s_ps2_data_o
+		data => s_ps2_data_o,
+		error1 => s_ps2_error1,
+		error2 => s_ps2_error2,
+		error3 => s_ps2_error3,
+		all_data => s_ps2_all_data
 	 );
 
 	process(s_next_pc_o, s_next_pc_out, s_pc_inc, s_stall_set_pc,

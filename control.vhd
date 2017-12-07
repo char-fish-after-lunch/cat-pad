@@ -144,6 +144,12 @@ begin
 				isINT		<= '1';
 			when INSTR_H_ERET => 
 				isERET		<= '1';
+			when INSTR_H_CMPI =>
+				regSrcA		<= "0" & inst(10 downto 8);
+				oprSrcB		<= '1';
+				dstSrc		<= "1010";
+				ALUop		<= "1000";
+				wbCtrl		:= "11";
 			when INSTR_H_GROUP1 =>
 				case inst(4 downto 0) is
 					when "01100" =>
