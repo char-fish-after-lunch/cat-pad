@@ -79,7 +79,7 @@ begin
 			else
 				if (isData = '1') then
 					state <= write_uart;
-				else			
+				else
 					state <= unused;
 				end if;
 			end if;
