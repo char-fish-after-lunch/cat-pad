@@ -26,6 +26,7 @@ INT:
     SLL R0 R0 0x0000
 
 
+
     ADDIU R0 0x0010 ; the bottom of the stack R6=0xbf10
 
     SW R0 R6 0x0000 ; used to store the registers that might change in the interrupt handler
@@ -57,24 +58,36 @@ INT_PS2:
     LI R3 @DATA
     LW R3 R5 0x0000
     
-    CMPI R5 0x0000
-    BTEQZ INT_FINISH
-    NOP
-    ; not ready (zero) 
-
-
     LW R1 R2 0x0004
     ; load the data to R2
     
     
+    SW R1 R2 0x0000
     
+
+    CMPI R5 0x0000
+    BTEQZ INT_FINISH_J
+    NOP
+    B INT_FISHISH_SKIP
+    NOP
+    INT_FINISH_J:
+    B INT_FINISH
+    NOP
+    ; not ready (zero) 
+    INT_FINISH_SKIP:
+
     ; check if R2 = E0 or F0
     SRL R4 R2 0x0007
     ; get the most significant bit
     CMPI R4 0x0001
-    BTEQZ INT_PS2_FINISH
+    BTEQZ INT_PS2_FINISH_J
     NOP
-
+    B INT_PS2_FINISH_SKIP
+    NOP
+    INT_PS2_FINISH_J:
+    B INT_PS2_FINISH
+    NOP
+    INT_PS2_FINISH_SKIP:
 
     LW R3 R5 0x0003 ; R5 = last PS/2 data
     ; check if it is R5 = E0 or F0
@@ -321,12 +334,12 @@ INT_PS2:
     LI R1 0x0001
     SW R4 R1 0x000b ; ready to write
 
-    LI R6 0x0010
+    LI R6 0b10
     SLL R6 R6 0x0000
     ; boundary R0 = 512
 
     ADDIU R2 0x0008
-    CMP R2 R5
+    CMP R2 R6
     BTEQZ INT_PS2_CL
     NOP
     B INT_PS2_SKIP_CL
@@ -349,7 +362,6 @@ INT_PS2_FINISH:
     LI R1 0x00bf
     SLL R1 R1 0x0000
 
-    SW R1 R2 0x0000
 
     LW R1 R2 0x0004
 
