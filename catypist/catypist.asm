@@ -25,8 +25,7 @@ INT:
     LI R0 0x00bf
     SLL R0 R0 0x0000
 
-
-
+   
     ADDIU R0 0x0010 ; the bottom of the stack R6=0xbf10
 
     SW R0 R6 0x0000 ; used to store the registers that might change in the interrupt handler
@@ -35,6 +34,7 @@ INT:
     SW R0 R3 0x0003
     SW R0 R4 0x0004
     SW R0 R5 0x0005
+
 
     ; cause of the interrupt
     MFCS R6
@@ -60,15 +60,12 @@ INT_PS2:
     
     LW R1 R2 0x0004
     ; load the data to R2
-    
-    
     SW R1 R2 0x0000
-    
 
     CMPI R5 0x0000
     BTEQZ INT_FINISH_J
     NOP
-    B INT_FISHISH_SKIP
+    B INT_FINISH_SKIP
     NOP
     INT_FINISH_J:
     B INT_FINISH
@@ -93,11 +90,20 @@ INT_PS2:
     ; check if it is R5 = E0 or F0
     SRL R4 R5 0x0004
     CMPI R4 0x000f
-    BTEQZ INT_PS2_FINISH
+    BTEQZ INT_PS2_FINISH_J2
     NOP
+    B INT_PS2_FINISH_SKIP2
+    NOP
+    INT_PS2_FINISH_J2:
+    B INT_PS2_FINISH
+    NOP
+    INT_PS2_FINISH_SKIP2:
 
     ; temporarily does not check 
     ; CMPI R4 0x000e
+    CMPI R2 0x29
+    BTEQZ INT_PS2_SPACE
+    NOP
 
     CMPI R2 28
     BTEQZ INT_PS2_a
@@ -156,47 +162,96 @@ INT_PS2:
     NOP
 
     CMPI R2 68
-    BTEQZ INT_PS2_0
+    BTEQZ INT_PS2_o
     NOP
-
+/////
     CMPI R2 77
-    BTEQZ INT_PS2_1
+    BTEQZ INT_PS2_p
     NOP
 
     CMPI R2 21
-    BTEQZ INT_PS2_2
+    BTEQZ INT_PS2_q
     NOP
 
     CMPI R2 45
-    BTEQZ INT_PS2_3
+    BTEQZ INT_PS2_r
     NOP
 
     CMPI R2 27
-    BTEQZ INT_PS2_4
+    BTEQZ INT_PS2_s
     NOP
 
     CMPI R2 44
-    BTEQZ INT_PS2_5
+    BTEQZ INT_PS2_t
     NOP
 
     CMPI R2 60
-    BTEQZ INT_PS2_6
+    BTEQZ INT_PS2_u
     NOP
 
     CMPI R2 42
-    BTEQZ INT_PS2_7
+    BTEQZ INT_PS2_v
     NOP
 
     CMPI R2 29
-    BTEQZ INT_PS2_8
+    BTEQZ INT_PS2_w
     NOP
 
     CMPI R2 34
+    BTEQZ INT_PS2_x
+    NOP
+
+    CMPI R2 53
+    BTEQZ INT_PS2_y
+    NOP
+
+    CMPI R2 26
+    BTEQZ INT_PS2_z
+    NOP
+
+    CMPI R2 69
+    BTEQZ INT_PS2_0
+    NOP
+
+    CMPI R2 22
+    BTEQZ INT_PS2_1
+    NOP
+
+    CMPI R2 30
+    BTEQZ INT_PS2_2
+    NOP
+
+    CMPI R2 38
+    BTEQZ INT_PS2_3
+    NOP
+
+    CMPI R2 37
+    BTEQZ INT_PS2_4
+    NOP
+
+    CMPI R2 46
+    BTEQZ INT_PS2_5
+    NOP
+
+    CMPI R2 54
+    BTEQZ INT_PS2_6
+    NOP
+
+    CMPI R2 61
+    BTEQZ INT_PS2_7
+    NOP
+
+    CMPI R2 62
+    BTEQZ INT_PS2_8
+    NOP
+
+    CMPI R2 70
     BTEQZ INT_PS2_9
     NOP
 
-    ; not matched
-    B INT_PS2_FINISH
+    INT_PS2_SPACE:
+    LI R6 0
+    B INT_PS2_PRINT
     NOP
 
     INT_PS2_a:
@@ -267,6 +322,66 @@ INT_PS2:
     INT_PS2_n:
     LI R6 110
     B INT_PS2_PRINT
+    NOP/////
+
+    INT_PS2_o:
+    LI R6 111
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_p:
+    LI R6 112
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_q:
+    LI R6 113
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_r:
+    LI R6 114
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_s:
+    LI R6 115
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_t:
+    LI R6 116
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_u:
+    LI R6 117
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_v:
+    LI R6 118
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_w:
+    LI R6 119
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_x:
+    LI R6 120
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_y:
+    LI R6 121
+    B INT_PS2_PRINT
+    NOP
+
+    INT_PS2_z:
+    LI R6 122
+    B INT_PS2_PRINT
     NOP
 
     INT_PS2_0:
@@ -297,7 +412,7 @@ INT_PS2:
     INT_PS2_5:
     LI R6 53
     B INT_PS2_PRINT
-    NOP
+    NOP////
 
     INT_PS2_6:
     LI R6 54
@@ -318,8 +433,11 @@ INT_PS2:
     LI R6 57
     B INT_PS2_PRINT
     NOP
+    
+    B INT_PS2_FINISH
+    NOP
 
- INT_PS2_PRINT:
+INT_PS2_PRINT:
     LI R4 0x00bf
     SLL R4 R4 0x0000
 
@@ -349,12 +467,31 @@ INT_PS2:
     ; change line
     NOP
     LI R2 0x0000
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     ADDIU R5 0x0008
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
 
     INT_PS2_SKIP_CL:
     ; write back x and y
-    SW R3 R5 0x0001
+
     SW R3 R2 0x0002
+    SW R3 R5 0x0001
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
     
 
 INT_PS2_FINISH:
@@ -420,6 +557,9 @@ BEGINCLEAR:
     NOP
     LI R6 0x00BF
     SLL R6 R6 0x0000
+
+    ;SW R6 R6 0x0000
+
     ADDIU R6 0x0008
     LI R3 0x0000
     SW R6 R3 0x0000
@@ -427,6 +567,7 @@ BEGINCLEAR:
     SW R6 R5 0x0001
     LI R3 0x0001
     SW R6 R3 0x0003
+
 
     ADDIU R4 0x0008
     CMP R4 R1
@@ -449,6 +590,11 @@ NONEEDRETURNZERO:
     NOP
 
 TESTSHOWTEXT:
+    ;LI R4 0xbf
+    ;SLL R4 R4 0x0000
+    ;LI R1 0x1
+    ;SW R4 R1 0x0000
+
     LI R1 @DATA_READY
     LI R2 0x0001
     SW R1 R2 0x0000 ; VGA ready
@@ -462,7 +608,62 @@ TESTSHOWTEXT:
         NOP
         NOP
         NOP
+             NOP
         NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+NOP
         NOP
         NOP
         B LOOP
@@ -480,3 +681,4 @@ TESTPRINT:
     NOP
     JR R7
     NOP
+

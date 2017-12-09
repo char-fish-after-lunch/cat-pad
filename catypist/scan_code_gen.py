@@ -1,5 +1,5 @@
 if __name__ == '__main__':
-    KEYS = 'abcdefghijklmn0123456789'
+    KEYS = 'abcdefghijklmnopqrstuvwxyz0123456789'
     KEY_CODES = [
             0x1c, 0x32, 0x21, 0x23,
             0x24, 0x2b, 0x34, 0x33, 0x43,

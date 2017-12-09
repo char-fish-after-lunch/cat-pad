@@ -15,6 +15,8 @@ DELINT:
     LI R6 0x00bf
     SLL R6 R6 0x0000
 
+    SW R6 R6 0x0000
+
 
     ADDIU R6 0x0010 ; the bottom of the stack R6=0xbf10
 
@@ -28,8 +30,9 @@ DELINT:
     ; cause of the interrupt
     MFCS R0
 
-    CMPI R0 0x000a  ; PS/2 ISR
-    BTEQZ DELINT_PS2
+    ;CMPI R0 0x000a  ; PS/2 ISR
+    ;BTEQZ DELINT_PS2
+    B DELINT_PS2
     NOP
     B DELINT_FINISH
     NOP
@@ -50,7 +53,6 @@ DELINT_PS2:
     LI R3 0x00bf
     SLL R3 R3 0x0000
 
-    SW R3 R2 0x0000 ; write to the port
 
     ; TODO: do something with R2 (possibly feed it to VGA or store
     ; it in a buffer for further processing)
