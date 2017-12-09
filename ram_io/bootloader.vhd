@@ -73,7 +73,7 @@ architecture Behavioral of bootloader is
  
 	signal isBooted : std_logic := '0';
 	signal slowed_clk : std_logic ;
-	signal counter : integer range 0 to 200 := 0; 
+	signal counter : integer range 0 to 2000 := 0; 
 	
 begin
 	process(clk)
@@ -85,7 +85,7 @@ begin
 	
 	process(counter)
 	begin
-		if (counter < 100) then
+		if (counter < 1000) then
 			slowed_clk <= '0';
 		else
 			slowed_clk <= '1';

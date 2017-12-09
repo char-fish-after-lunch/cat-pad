@@ -102,22 +102,22 @@ architecture Behavioral of id_exe is
 	signal inner_immeExt		:	std_logic;
 	signal inner_oprSrcB		:	std_logic;
 	signal inner_ALUop			:	std_logic_vector(3 downto 0);
-	signal inner_isBranch		:	std_logic;
-	signal inner_isCond		:	std_logic;
-	signal inner_isRelative	:	std_logic;
-	signal inner_isMFPC		:	std_logic;
-	signal inner_ramWrite		:	std_logic;
-	signal inner_ramRead		:	std_logic;
-	signal inner_wbSrc			:	std_logic;
-	signal inner_wbEN			:	std_logic;
-	signal inner_int			:	std_logic;
+	signal inner_isBranch		:	std_logic := '0';
+	signal inner_isCond		:	std_logic := '0';
+	signal inner_isRelative	:	std_logic := '0';
+	signal inner_isMFPC		:	std_logic := '0';
+	signal inner_ramWrite		:	std_logic := '0';
+	signal inner_ramRead		:	std_logic := '0';
+	signal inner_wbSrc			:	std_logic := '0';
+	signal inner_wbEN			:	std_logic := '0';
+	signal inner_int			:	std_logic := '0';
 	signal inner_intCode		:	std_logic_vector(3 downto 0);
 	signal inner_bubble			:	std_logic := '1';
-	signal inner_isINT			:	std_logic;
-	signal inner_isERET			:	std_logic;
-	signal inner_isMFEPC		:	std_logic;
-	signal inner_isMTEPC		:	std_logic;
-	signal inner_isMFCS			:	std_logic;
+	signal inner_isINT			:	std_logic := '0';
+	signal inner_isERET			:	std_logic := '0';
+	signal inner_isMFEPC		:	std_logic := '0';
+	signal inner_isMTEPC		:	std_logic := '0';
+	signal inner_isMFCS			:	std_logic := '0';
 begin
 	process(clk)
 	begin

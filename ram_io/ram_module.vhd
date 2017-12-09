@@ -103,12 +103,12 @@ begin
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
 					ram_addr_o <= ram_addr;
-					ram_rw_o <= '0';
+					ram_rw_o <= '1';
 				else
 					ram_en_o <= '0';
 					put_data_o <= ram_data;
 					ram_addr_o <= ram_addr;
-					ram_rw_o <= '1';
+					ram_rw_o <= '0';
 				end if;
 		end case;
 	end process;

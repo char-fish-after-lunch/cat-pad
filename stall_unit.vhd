@@ -82,8 +82,7 @@ begin
 					idKeep <= '1';
 					exeClear <= '1';
 					pcInc <= '1';
-				end if;
-				if (exeBranchJudge = '1') and (exeBranchTo /= ifAddr) then
+				elsif (exeBranchJudge = '1') and (exeBranchTo /= ifAddr) then
 					-- the last fetched instruction is cleared
 					idClear <= '1';
 				else

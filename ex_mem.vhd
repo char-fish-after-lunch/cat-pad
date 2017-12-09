@@ -42,6 +42,7 @@ entity ex_mem is port(
 	PC			:	in std_logic_vector(15 downto 0);
 	isERET		:	in std_logic;
 	isMTEPC		:	in std_logic;
+	isBranch	:	in std_logic;
 	
 	regB 		:  in std_logic_vector(15 downto 0);
 	ALUres 	:	in std_logic_vector(15 downto 0);
@@ -51,6 +52,7 @@ entity ex_mem is port(
 	int		: 	in std_logic;
 	intCode	:	in std_logic_vector(3 downto 0);
 
+	isBranch_o		:	out std_logic;
 	isMTEPC_o		:	out std_logic;
 	
 	dstSrc_o		:	out std_logic_vector(3 downto 0);
@@ -85,11 +87,12 @@ architecture Behavioral of ex_mem is
 	signal inner_ALUres 		:	std_logic_vector(15 downto 0) := "0000000000000000";
 	signal inner_bubble		:  std_logic := '1';
 	
-	signal inner_int: 	std_logic;
+	signal inner_int: 	std_logic := '0';
 	signal inner_intCode	:	std_logic_vector(3 downto 0);
-	signal inner_isERET	:	std_logic;
+	signal inner_isERET	:	std_logic := '0';
 	signal inner_PC		:	std_logic_vector(15 downto 0);
-	signal inner_isMTEPC	:	std_logic;
+	signal inner_isMTEPC	:	std_logic := '0';
+	signal inner_isBranch	:	std_logic := '0';
 begin
 	process(clk)
 	begin
@@ -108,6 +111,7 @@ begin
 				inner_PC <= PC;
 				inner_bubble <= bubble;
 				inner_isMTEPC <= isMTEPC;
+				inner_isBranch <= isBranch;
 			else
 				inner_dstSrc <= (others => '0');
 				inner_ramWrite <= '0';
@@ -122,6 +126,7 @@ begin
 				inner_PC <= PC;
 				inner_bubble <= '1';
 				inner_isMTEPC <= '0';
+				inner_isBranch <= '0';
 			end if;
 		end if;
 	end process;
@@ -142,6 +147,7 @@ begin
 	bubble_o <= inner_bubble;
 
 	isMTEPC_o <= inner_isMTEPC;
+	isBranch_o <= inner_isBranch;
 
 end Behavioral;
 

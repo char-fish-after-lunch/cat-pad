@@ -10,7 +10,9 @@ entity interrupt_control is
 		wbERet : in std_logic; -- whether the instruction is an eret
 		wbIsMTEPC : in std_logic;
 		wbALUres : in std_logic_vector(15 downto 0);
+		wbIsBranch : in std_logic;
 		
+		wbPC : in std_logic_vector(15 downto 0);
 		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
 		exePC : in std_logic_vector(15 downto 0);
 		idPC  : in std_logic_vector(15 downto 0);
@@ -49,7 +51,7 @@ architecture behavioral of interrupt_control is
 begin
 	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memPC, exePC, idPC, ifPC, cp0Trap, cp0ERet, 
 			ps2Request, idBubble, exeBubble, memBubble, wbBubble,
-			wbIsMTEPC, wbALUres)
+			wbIsMTEPC, wbALUres, wbIsBranch, wbPC)
 			type Cause is range 0 to 10;
 
 		variable cp0IntEvent : std_logic;
@@ -150,7 +152,9 @@ begin
 			if cp0StatusUpdateV = '0' then
 			-- this means that the CP0 running state would be changed (switched
 			-- from the user mode to the kernel mode)
-				if wbBubble = '0' or memBubble = '0' then -- if there is an instruction in WB or MEM
+				if wbIsBranch = '1' then
+					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(wbPC)) - 1, 16));
+				elsif memBubble = '0' then -- if there is an instruction in WB or MEM
 					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(memPC)) - 1, 16));
 				elsif exeBubble = '0' then
 					cp0EpcUpdateV := std_logic_vector(to_unsigned(to_integer(unsigned(exePC)) - 1, 16));

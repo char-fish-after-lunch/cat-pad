@@ -100,6 +100,7 @@ architecture Behavioral of cat_pad is
 	signal s_ps2_error3 : std_logic;
 	signal s_ps2_all_data : std_logic_vector(10 downto 0);
 
+    signal s_good_clk : std_logic;
 
 	signal isBootloaded : std_logic := '0';
 
@@ -139,7 +140,7 @@ architecture Behavioral of cat_pad is
     signal s_isERET  : std_logic;
 	signal s_isMFEPC : std_logic;
 	signal s_isMTEPC : std_logic;
-	signal s_isMFCS : std_logic;
+    signal s_isMFCS : std_logic;
     
     signal s_regAN : std_logic_vector(3 downto 0);
     signal s_regBN : std_logic_vector(3 downto 0);
@@ -240,6 +241,7 @@ architecture Behavioral of cat_pad is
     signal s_ram_data : std_logic_vector(15 downto 0);
 
     signal s_PC_mem : std_logic_vector(15 downto 0);
+    signal s_isBranch_mem    : std_logic;
 
     -- mem/wb
 	signal s_isMTEPC_wb : std_logic;
@@ -254,12 +256,13 @@ architecture Behavioral of cat_pad is
     signal s_intCode_wb    : std_logic_vector(3 downto 0);
     signal s_post_int_wb    : std_logic;
     signal s_post_intCode_wb    : std_logic_vector(3 downto 0);
-	signal s_PC_wb			: std_logic_vector(15 downto 0);
+    signal s_PC_wb			: std_logic_vector(15 downto 0);
+    signal s_isBranch_wb    : std_logic;
 	-- stall unit
 	signal s_stall_set_pc	: std_logic;
 	signal s_stall_set_pc_val	: std_logic_vector(15 downto 0);
 
-	signal real_clk : std_logic := '0';
+	signal real_clk : std_logic := '1';
 
     signal wrn_bootloader : std_logic;
     signal rdn_bootloader : std_logic;
@@ -326,7 +329,7 @@ architecture Behavioral of cat_pad is
 	 signal s_ps2_request: std_logic;
 	 signal s_ps2_data_o: std_logic_vector(7 downto 0);
 
-
+    signal s_ps2_request_fake : std_logic;
      
     signal s_vga_red : std_logic_vector(2 downto 0);
     signal s_vga_green : std_logic_vector(2 downto 0);
@@ -334,6 +337,9 @@ architecture Behavioral of cat_pad is
 
     signal s_vga_hs : std_logic;
     signal s_vga_vs : std_logic;
+
+    signal s_good : std_logic := '0';
+    signal s_reset_good : std_logic := '0';
 begin
 
 	u_bootloader : bootloader port map(
@@ -359,7 +365,7 @@ begin
 		  res_log => res_log
     ); 
 	 
-	 process(clk, clk_11m, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
+	 process(clk, s_good_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
 		   s_ALUres, test_reg_out_1, test_reg_out_2, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
            s_vga_vs, s_vga_hs, s_vga_blue, input, s_vga_red, s_vga_green, s_pc_out)
@@ -378,12 +384,7 @@ begin
 			ps2_counter := std_logic_vector(to_unsigned(to_integer(unsigned(ps2_counter)) + 1, 8));
 		end if;
 		if (isBootloaded = '1') then
-            if (input = "1111111111111111") then
-                real_clk <= manual_clk;
-            else 
-	    		real_clk <= clk_11m;
-            end if;
-            wrn <= wrn_pad;
+           wrn <= wrn_pad;
             rdn <= rdn_pad;
             ram1addr <= ram1addr_pad;
             ram1en <= ram1en_pad;
@@ -396,7 +397,6 @@ begin
 			disp2 <= s_dstSrc_mem(3 downto 0) & s_cp0_status & s_ps2_request & '0';
             -- signals connect to real CPU
 		else 
-			real_clk <= '0';
             wrn <= wrn_bootloader;
             rdn <= rdn_bootloader;
             ram1addr <= ram1addr_bootloader;
@@ -495,7 +495,10 @@ begin
 		bubble_o => s_bubble_mem,
 
 		isMTEPC => s_isMTEPC_exe,
-		isMTEPC_o => s_isMTEPC_mem
+        isMTEPC_o => s_isMTEPC_mem,
+
+        isBranch => s_isBranch_exe,
+        isBranch_o => s_isBranch_mem
 	);
 
     u_mem_access : mem_access port map(ram_addr => s_ALUres_mem, ram_data_in => s_regB_mem, ramWrite => s_ramWrite_mem,
@@ -518,7 +521,9 @@ begin
 		bubble => s_bubble_mem,
 		bubble_o => s_bubble_wb,
 		PC => s_PC_mem,
-		PC_o => s_PC_wb,
+        PC_o => s_PC_wb,
+        isBranch => s_isBranch_mem,
+        isBranch_o => s_isBranch_wb,
 
 		isMTEPC => s_isMTEPC_mem,
 		isMTEPC_o => s_isMTEPC_wb
@@ -608,17 +613,18 @@ begin
         wbIntCode => s_intCode_wb,
         wbERet => s_isERET_wb,
 		wbIsMTEPC => s_isMTEPC_wb,
-		wbALUres => s_ALUres_wb,
+        wbALUres => s_ALUres_wb,
+        wbIsBranch => s_isBranch_wb,
         memPC => s_PC_mem, -- it seems that this is the shifted PC
 		exePC => s_IDPC_o,
 		idPC => s_IFPC_o,
-		ifPC => s_pc_out,
+		ifPC => s_next_pc_out,
         cp0Status => s_cp0_status,
         cp0Epc => s_cp0_epc,
         cp0Cause => s_cp0_cause,
         cp0ERet => s_cp0_eret,
         cp0Trap => s_cp0_trap,
-        ps2Request => s_ps2_request,
+        ps2Request => s_ps2_request_fake,
         memRamLock => s_ram_lock_mem,
         pipelineClear => s_pipeline_clear,
         cp0StatusUpdate => s_cp0_status_update,
@@ -632,7 +638,8 @@ begin
 		wbBubble => s_bubble_wb,
 		memBubble => s_bubble_mem,
 		exeBubble => s_bubble_exe,
-		idBubble => s_bubble_id
+        idBubble => s_bubble_id,
+        wbPC => s_PC_wb
     );
 	 
 	 u_ps2_controller : ps2_controller port map (
@@ -705,13 +712,51 @@ begin
         end if;
     end process;
 
-    
+    process(clk_11m)
+    begin
+        if rising_edge(clk_11m) then
+            if s_good = '1' then
+                s_good_clk <= '1';
+            else
+                s_good_clk <= '0';
+            end if;
+            s_good <= not s_good;
+        end if;
+    end process;
 
+    process(rst, isBootloaded)
+    begin
+        if isBootloaded = '0' then
+            s_reset_good <= '0';
+        elsif falling_edge(rst) then
+            s_reset_good <= '1';
+        end if;
+    end process;
+    
+    process(s_reset_good, s_good_clk, input, manual_clk)
+    begin
+        if s_reset_good = '0' then
+            real_clk <= '1';
+        elsif input(0) = '1' then
+            real_clk <= s_good_clk;
+        else
+            real_clk <= manual_clk;
+        end if;
+    end process;
+
+    -- s_ps2_request_fake <= input(15);
+    process(input)
+    begin
+        if input(1) = '1' then
+            s_ps2_request_fake <= s_ps2_request;
+        else
+            s_ps2_request_fake <= input(2);
+        end if;
+    end process;
     -- test_ALUres <= s_ALUres_o;
     -- test_regSrcA <= s_regSrcA;
     -- test_regSrcB <= s_regSrcB;
     -- test_regA <= s_ALU_oprB;
-
 
 end Behavioral;
 

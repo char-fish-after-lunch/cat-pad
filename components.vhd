@@ -74,6 +74,9 @@ package components is
 		intCode		:	in std_logic_vector(3 downto 0);
 		PC			:	in std_logic_vector(15 downto 0);
 
+		isBranch	:	in std_logic;
+		isBranch_o	:	out std_logic;
+
 		bubble		:	in std_logic;
 		bubble_o	:	out std_logic;
 
@@ -292,6 +295,8 @@ package components is
 
 		bubble	:	in std_logic;
 		bubble_o	:	out std_logic;
+		isBranch	: in std_logic;
+		isBranch_o	: out std_logic; 
 		
 		PC		:	in std_logic_vector(15 downto 0);
 		PC_o	:	out std_logic_vector(15 downto 0);
@@ -533,7 +538,9 @@ package components is
 		wbERet : in std_logic; -- whether the instruction is an eret
 		wbIsMTEPC : in std_logic;
 		wbALUres : in std_logic_vector(15 downto 0);
+		wbIsBranch	: in std_logic;
 	
+		wbPC : in std_logic_vector(15 downto 0);
 		memPC : in std_logic_vector(15 downto 0); -- PC in different stages
 		exePC : in std_logic_vector(15 downto 0);
 		idPC  : in std_logic_vector(15 downto 0);
