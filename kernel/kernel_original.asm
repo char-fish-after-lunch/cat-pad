@@ -4,77 +4,107 @@
     B START
     NOP
 DELINT:
-
     ERET
-    ; handles interrupts (including synchronous interrupts and asynchronous ISRs)
     NOP
     NOP
     NOP
-
-    ; store R6 to the stack before using it
-    SW_SP R6 0xffff  
-
     LI R6 0x00bf
     SLL R6 R6 0x0000
-
-
-    ADDIU R6 0x0010 ; the bottom of the stack R6=0xbf10
-
-    SW R6 R0 0x0000 ; used to store the registers that might change in the interrupt handler
+    ADDIU R6 0x0010
+    SW R6 R0 0x0000
     SW R6 R1 0x0001
     SW R6 R2 0x0002
-    SW R6 R3 0x0003
     SW R6 R4 0x0004
     SW R6 R5 0x0005
-
-    ; cause of the interrupt
-    MFCS R0
-
-    CMPI R0 0x000a  ; PS/2 ISR
-    BTEQZ DELINT_PS2
+    LW_SP R1 0x0000
+    ADDSP 0x0001
+    LI R0 0x00ff
+    AND R1 R0
+    LW_SP R2 0x0000
+    ADDSP 0x0001
+    ADDSP 0xffff
+    SW_SP R3 0x0000
+    ADDSP 0xffff
+    SW_SP R7 0x0000
+    LI R3 0x000f
+    MFPC R7
+    ADDIU R7 0x0003
     NOP
-    B DELINT_FINISH
+    B TESTW
     NOP
-
-    ; TODO: other interrupt types
-
-DELINT_PS2:
-    ; handles PS/2 ISR 
-
-    LI R1 0x00bf
-    SLL R1 R1 0x0000
-    ADDIU R1 0x0004
-    ; R1=0xbf04, address of PS/2 data
-
-    LW R1 R2 0x0000
-    ; load the data to R2
-
-    LI R3 0x00bf
-    SLL R3 R3 0x0000
-
-    SW R3 R2 0x0000 ; write to the port
-
-    ; TODO: do something with R2 (possibly feed it to VGA or store
-    ; it in a buffer for further processing)
-
-    B DELINT_FINISH
+    LI R6 0x00bf
+    SLL R6 R6 0x0000
+    SW R6 R3 0x0000
     NOP
-
-DELINT_FINISH:
-    ; restore R0-R5
-    LW R6 R0 0x0000
-    LW R6 R1 0x0001
-    LW R6 R2 0x0002
-    LW R6 R3 0x0003
-    LW R6 R4 0x0004
-    LW R6 R5 0x0005
-
-
-    ; restore R6
-    LW_SP R6 0xffff
-
-    ERET
-
+    LI R6 0x00bf
+    SLL R6 R6 0x0000
+    ADDIU R6 0x0010
+    LI R0 0x0000
+    CMP R0 R1
+    BTNEZ L2
+    NOP
+    LW R6 R4 0x0007
+L2:
+    LI R0 0x0020
+    CMP R0 R1
+    BTNEZ L3
+    NOP
+    LW R6 R4 0x0008
+L3:
+    LI R0 0x0010
+    CMP R0 R1
+    BTNEZ L4
+    NOP
+    LW R6 R4 0x0009
+L4:
+    NOP
+    LW R6 R5 0x0006
+    SLT R4 R5
+    BTNEZ L5
+    NOP
+    SW R6 R4 0x0006
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTW
+    NOP
+    LI R6 0x00bf
+    SLL R6 R6 0x0000
+    SW R6 R1 0x0000
+    NOP
+L5:
+    NOP
+    LI R3 0x000f
+    MFPC R7
+    ADDIU R7 0x0003
+    NOP
+    B TESTW
+    NOP
+    LI R6 0x00bf
+    SLL R6 R6 0x0000
+    SW R6 R3 0x0000
+    NOP
+    ADDIU3 R2 R6 0x0000
+    MFIH R3
+    LI R0 0x0080
+    SLL R0 R0 0x0000
+    OR R3 R0
+    LI R7 0x00bf
+    SLL R7 R7 0x0000
+    ADDIU R7 0x0010
+    LW R7 R0 0x0000
+    LW R7 R1 0x0001
+    LW R7 R2 0x0002
+    LW R7 R4 0x0004
+    LW R7 R5 0x0005
+    LW_SP R7 0x0000
+    ADDSP 0x0001
+    ADDSP 0x0001
+    NOP
+    MTIH R3
+    JR R6
+    LW_SP R3 0x00ff
+    NOP
 START:
     LI R0 0x0007
     MTIH R0
@@ -137,281 +167,39 @@ START:
     SW R6 R0 0x0000
     NOP
 BEGIN:
-    LI R4 0x0000
-    LI R5 0x0000
-    LI R1 0x0002
-    SLL R1 R1 0x0000
-    LI R2 0x0001
-    SLL R2 R2 0x0000
-    LI R3 0x00FF
-    ADDU R2 R3 R2
-
-BEGINCLEAR:
-    
     MFPC R7
     ADDIU R7 0x0003
     NOP
-    B TESTPRINT
-
+    B TESTR
     NOP
-    NOP
-    LI R6 0x00BF
+    LI R6 0x00bf
     SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-    LI R3 0x0000
-    SW R6 R3 0x0000
-    SW R6 R4 0x0001
-    SW R6 R5 0x0002
-    LI R3 0x0001
-    SW R6 R3 0x0003
-
-    ADDIU R4 0x0008
-    CMP R4 R1
-    BTEQZ CLEARTOZERO
+    LW R6 R1 0x0000
+    LI R6 0x00ff
+    AND R1 R6
     NOP
-    B NONEEDRETURNZERO
+    LI R0 0x0052
+    CMP R0 R1
+    BTEQZ SHOWREGS
     NOP
-
-CLEARTOZERO:
+    LI R0 0x0044
+    CMP R0 R1
+    BTEQZ SHOWMEM
     NOP
-    LI R4 0x0000
-    ADDIU R5 0x0008
-    AND R5 R2
-    BEQZ R5 TESTSHOWTEXTLINE1
+    LI R0 0x0041
+    CMP R0 R1
+    BTEQZ GOTOASM
     NOP
-
-NONEEDRETURNZERO:
-
+    LI R0 0x0055
+    CMP R0 R1
+    BTEQZ GOTOUASM
     NOP
-    B BEGINCLEAR
+    LI R0 0x0047
+    CMP R0 R1
+    BTEQZ GOTOCOMPILE
     NOP
-
-
-TESTSHOWTEXTLINE1:
-
+    B BEGIN
     NOP
-    NOP
-    LI R4 0x0060
-    LI R5 0x0030
-    LI R3 0x0050
-    LI R1 0x0001
-    SLL R1 R1 0x0000
-    LI R2 0x00A0
-    ADDU R1 R2 R1
-
-    LI R2 0x003D
-
-BEGINSHOWTEXT:
-    
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R3 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-
-    ADDIU R4 0x0008
-    SLT R4 R1
-    BTEQZ TEXTCATPAD
-    NOP
-    NOP
-    B TEXTNONEEDRETURNZERO
-    NOP
-
-
-TEXTCATPAD:
-    NOP
-    
-    LI R5 0x0040
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R2 0x0043
-    LI R4 0x00E0
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; C OF CAT PAD
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R2 0x0041
-    LI R4 0x00E8
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; A OF CAT PAD
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R2 0x0054
-    LI R4 0x00F0
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; T OF CAT PAD
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R4 0x0001
-    SLL R4 R4 0x0000
-    LI R2 0x0008
-    ADDU R4 R2 R4
-
-    LI R2 0x0050
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; P OF CAT PAD
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R4 0x0001
-    SLL R4 R4 0x0000
-    LI R2 0x0010
-    ADDU R4 R2 R4
-
-    LI R2 0x0041
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; A OF CAT PAD
-
-    MFPC R7
-    ADDIU R7 0x0003
-    NOP
-    B TESTPRINT
-
-    NOP
-    NOP
-    LI R6 0x00BF
-    SLL R6 R6 0x0000
-    ADDIU R6 0x0008
-
-    LI R4 0x0001
-    SLL R4 R4 0x0000
-    LI R2 0x0018
-    ADDU R4 R2 R4
-
-    LI R2 0x0044
-
-    SW R6 R2 0x0000
-    SW R6 R4 0x0002
-    SW R6 R5 0x0001
-    LI R7 0x0001
-    SW R6 R7 0x0003
-
-    ; D OF CAT PAD
-
-
-    B ENDLOOP
-    NOP
-
-TEXTNONEEDRETURNZERO:
-
-    NOP
-    B BEGINSHOWTEXT
-    NOP
-
-ENDLOOP:
-    NOP
-    NOP
-    B ENDLOOP
-    NOP
-
 GOTOUASM:
     NOP
     B USAM
@@ -767,17 +555,4 @@ COMPILE:
     SLL R6 R6 0x0000
     SW R6 R1 0x0000
     B BEGIN
-    NOP
-
-TESTPRINT:
-    NOP
-    LI R6 0x00bf
-    SLL R6 R6 0x0000
-    ADDIU R6 0x000b
-    LW R6 R0 0x0000
-    LI R6 0x0001
-    AND R0 R6
-    BEQZ R0 TESTPRINT
-    NOP
-    JR R7
     NOP
