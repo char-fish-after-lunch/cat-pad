@@ -1,7 +1,7 @@
 Release 14.7 - par P.20131013 (nt64)
 Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-Sat Dec 09 22:46:26 2017
+Sat Dec 09 23:49:34 2017
 
 
 INFO: The IO information is provided in three file formats as part of the Place and Route (PAR) process.  These formats are:
@@ -216,9 +216,9 @@ Pinout by Pin Number:
 |L18       |ram1data<13>  |IOB      |IO_L10P_1                |BIDIR    |LVCMOS25*  |1             |12        |SLOW     |NONE**     |IFD      |       |LOCATED   |YES        |NONE            |
 |M1        |input<11>     |IBUF     |IP                       |INPUT    |LVCMOS25*  |3             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |M2        |              |         |VCCAUX                   |         |           |              |          |         |           |         |2.5    |          |           |                |
-|M3        |flash_addr<13>|IOB      |IO_L18N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
-|M4        |flash_addr<12>|IOB      |IO_L18P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
-|M5        |flash_addr<11>|IOB      |IO_L19P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |NO         |NONE            |
+|M3        |flash_addr<13>|IOB      |IO_L18N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
+|M4        |flash_addr<12>|IOB      |IO_L18P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
+|M5        |flash_addr<11>|IOB      |IO_L19P_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
 |M6        |flash_addr<10>|IOB      |IO_L19N_3                |OUTPUT   |LVCMOS25*  |3             |12        |SLOW     |NONE**     |         |       |LOCATED   |YES        |NONE            |
 |M7        |              |         |GND                      |         |           |              |          |         |           |         |       |          |           |                |
 |M8        |              |         |VCCO_2                   |         |           |2             |          |         |           |         |2.50   |          |           |                |
