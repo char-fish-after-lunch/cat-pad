@@ -32,6 +32,7 @@ entity interrupt_control is
 
 		-- external hardware ISRs
 		ps2Request : in std_logic; -- PS/2 ISR
+		timeoutRequest : in std_logic; -- timeout ISR
 		
 		memRamLock: out std_logic;
 		pipelineClear: out std_logic; -- whether clear the whole pipeline
@@ -51,7 +52,7 @@ architecture behavioral of interrupt_control is
 begin
 	process(wbInt, wbIntCode, wbERet, cp0Cause, cp0Epc, cp0Status, memPC, exePC, idPC, ifPC, cp0Trap, cp0ERet, 
 			ps2Request, idBubble, exeBubble, memBubble, wbBubble,
-			wbIsMTEPC, wbALUres, wbIsBranch, wbPC)
+			wbIsMTEPC, wbALUres, wbIsBranch, wbPC, timeoutRequest)
 			type Cause is range 0 to 10;
 
 		variable cp0IntEvent : std_logic;
@@ -80,6 +81,14 @@ begin
 
 		if ps2Request = '1' then
 			cp0CauseUpdateV(10) := '1'; -- 10 for PS/2 ISR
+			if cp0ERet = '0' and cp0Trap = '0' and cp0Status = '0' then
+				-- no switching bewteen the user mode and the kernel mode
+				cp0IntEvent := '1';
+			end if;
+		end if;
+
+		if timeoutRequest = '1' then
+			cp0CauseUpdateV(9) := '1'; -- 9 for timeout ISR 
 			if cp0ERet = '0' and cp0Trap = '0' and cp0Status = '0' then
 				-- no switching bewteen the user mode and the kernel mode
 				cp0IntEvent := '1';
