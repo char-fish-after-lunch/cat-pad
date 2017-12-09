@@ -21,6 +21,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use work.io_components.ALL;
+use work.consts.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
@@ -49,6 +50,10 @@ entity display_controller is port(
     ascii_input : in std_logic_vector(6 downto 0);
     ascii_place_x : in std_logic_vector(8 downto 0);
     ascii_place_y : in std_logic_vector(8 downto 0);
+    pixel_graphic : in std_logic_vector(64 downto 0);
+    graphic_type : in std_logic_vector(3 downto 0);
+    graphic_color : in std_logic_vector(8 downto 0);
+    graphic_enlarge : in std_logic_vector(3 downto 0);
     is_idle : out std_logic;
     start_signal : in std_logic
 
@@ -76,6 +81,16 @@ architecture Behavioral of display_controller is
 
     signal tmp_x_shift : std_logic_vector (2 downto 0) := "000";
     signal tmp_y_shift : std_logic_vector (2 downto 0) := "000";
+
+    signal tmp_shift_count_x : std_logic_vector(3 downto 0) := "0000";
+    signal tmp_shift_count_y : std_logic_vector(3 downto 0) := "0000";
+    signal tmp_shift_real_x : std_logic_vector(8 downto 0) := "000000000";
+    signal tmp_shift_real_y : std_logic_vector(8 downto 0) := "000000000";
+    signal tmp_enlarge : std_logic_vector(3 downto 0) := "0000";
+
+    signal tmp_pixel_graphic : std_logic_vector(64 downto 0);
+    signal tmp_graphic_type : std_logic_vector(3 downto 0);
+    signal tmp_graphic_color : std_logic_vector(8 downto 0);
     
     signal s_vga_addr : std_logic_vector(17 downto 0);
     signal s_vga_data : std_logic_vector(15 downto 0) := (others => '0');
@@ -158,26 +173,82 @@ begin
 
                         tmp_x_shift <= "000";
                         tmp_y_shift <= "000";
+                        tmp_shift_count_x <= "0000";
+                        tmp_shift_count_y <= "0000";
+                        tmp_shift_real_x <= "000000000";
+                        tmp_shift_real_y <= "000000000";
+                        
+                        tmp_enlarge <= graphic_enlarge;
+                        tmp_pixel_graphic <= pixel_graphic;
+                        tmp_graphic_type <= graphic_type;
+                        tmp_graphic_color <= graphic_color;
 
                         s_is_idle <= '0';
                     end if;
                 else
                     ram2_isUsed <= '1';
                     ram2_isRead <= '0';
-                    ram2_get_addr <= (tmp_x + ("00000" & tmp_x_shift)) &
-                        (tmp_y + ("00000" & tmp_y_shift));
-                    ram2_write_data <= (others => tmp_ascii(63-conv_integer(tmp_x_shift & tmp_y_shift)));
+                    ram2_get_addr <= (tmp_x + tmp_shift_real_x) &
+                        (tmp_y + tmp_shift_real_y);
 
-                    if (tmp_y_shift = "111") then
-                        tmp_y_shift <= "000";
-                        if (tmp_x_shift = "111") then
-                            tmp_x_shift <= "000";
+                    case tmp_graphic_type is
+                        when graphic_type_ascii =>
+                            if (tmp_ascii(63-conv_integer(tmp_x_shift & tmp_y_shift)) = '1') then
+                                ram2_write_data <= "0000000" & tmp_graphic_color;                    
+                                ram2_isUsed <= '1';
+                            else
+                                ram2_write_data <= (others => '1');
+                                ram2_isUsed <= '0';
+                            end if;
+                        
+                        when graphic_type_pixel =>
+                            if (tmp_ascii_input(0) = '1') then
+                                ram2_write_data <= "0000000" & tmp_graphic_color;
+                                ram2_isUsed <= '1';
+                            else
+                                ram2_write_data <= (others => '1');
+                                ram2_isUsed <= '0';
+                            end if;
+
                             s_is_idle <= '1';
+
+                        when graphic_type_bitmap =>
+                            if (tmp_pixel_graphic(63-conv_integer(tmp_x_shift & tmp_y_shift)) = '1') then
+                                ram2_write_data <= "0000000" & tmp_graphic_color;
+                                ram2_isUsed <= '1';
+                            else
+                                ram2_write_data <= (others => '1');
+                                ram2_isUsed <= '0';
+                            end if;
+                        when others =>
+                            ram2_write_data <= (others => '1');
+                            ram2_isUsed <= '0';
+                    end case;
+
+                    if (tmp_shift_count_y = tmp_enlarge) then
+                        tmp_shift_count_y <= "0000";
+                        if (tmp_y_shift = "111") then
+                            tmp_shift_real_y <= "000000000";
+                            tmp_y_shift <= "000";
+                            if (tmp_shift_count_x = tmp_enlarge) then
+                                tmp_shift_count_x <= "0000";
+                                if (tmp_x_shift = "111") then
+                                    tmp_shift_real_x <= "000000000";
+                                    tmp_x_shift <= "000";
+                                    s_is_idle <= '1';
+                                else 
+                                    tmp_x_shift <= tmp_x_shift + "001";
+                                end if;
+                            else
+                                tmp_shift_count_x <= tmp_shift_count_x + "0001";
+                                tmp_shift_real_x <= tmp_shift_real_x + "000000001";
+                            end if;
                         else 
-                            tmp_x_shift <= tmp_x_shift + "001";
+                            tmp_y_shift <= tmp_y_shift + "001";
                         end if;
-                    else 
-                        tmp_y_shift <= tmp_y_shift + "001";
+                    else
+                        tmp_shift_count_y <= tmp_shift_count_y + "0001";
+                        tmp_shift_real_y <= tmp_shift_real_y + "000000001";
                     end if;
                 end if;
 

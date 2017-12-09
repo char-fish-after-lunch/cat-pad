@@ -593,6 +593,10 @@ package components is
 		ascii_input : in std_logic_vector(6 downto 0);
 		ascii_place_x : in std_logic_vector(8 downto 0);
 		ascii_place_y : in std_logic_vector(8 downto 0);
+		pixel_graphic : in std_logic_vector(64 downto 0);
+		graphic_type : in std_logic_vector(3 downto 0);
+		graphic_color : in std_logic_vector(8 downto 0);
+		graphic_enlarge : in std_logic_vector(3 downto 0);
 		is_idle : out std_logic;
 		start_signal : in std_logic
 	);

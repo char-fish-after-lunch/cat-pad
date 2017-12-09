@@ -102,8 +102,13 @@ architecture Behavioral of ram_interactor is
 	signal s_ascii_input : std_logic_vector(6 downto 0);
 	signal s_ascii_place_x : std_logic_vector(8 downto 0);
 	signal s_ascii_place_y : std_logic_vector(8 downto 0);
+    signal s_pixel_graphic : std_logic_vector(64 downto 0);
+    signal s_graphic_type : std_logic_vector(3 downto 0);
+    signal s_graphic_color : std_logic_vector(8 downto 0);
+    signal s_graphic_enlarge : std_logic_vector(3 downto 0);
 	signal s_is_idle : std_logic;
 	signal s_start_signal : std_logic;
+	signal s_start_signal_update : std_logic;
 
 begin
 	ram1_module: ram_module port map (
@@ -156,6 +161,10 @@ begin
 		ascii_input => s_ascii_input,
 		ascii_place_x => s_ascii_place_x,
 		ascii_place_y => s_ascii_place_y,
+		pixel_graphic => s_pixel_graphic,
+		graphic_type => s_graphic_type,
+		graphic_color => s_graphic_color,
+		graphic_enlarge => s_graphic_enlarge,
 		is_idle => s_is_idle,
 		start_signal => s_start_signal
 	);
@@ -183,24 +192,37 @@ begin
 					if (ramRead = '1') then
 						res_data <= (15 downto 8 => '0') & ps2_data;
 					end if;
-				elsif (mem_ram_addr(15 downto 2) = "10111111000010") then
+					s_start_signal_update <= '0';
+				elsif (mem_ram_addr(15 downto 3) = "1011111100001") then
 					if (ramRead = '1') then
 						if (mem_ram_addr = "1011111100001011") then
 							res_data <= "000000000000000" & s_is_idle;
 						end if;
+						s_start_signal_update <= '0';
 					else
 						if (falling_edge(clk)) then
 							if (ramWrite = '1') then
-								case mem_ram_addr is
-									when "1011111100001000" =>
+								case mem_ram_addr(2 downto 0) is
+									when "000" =>
 										s_ascii_input <= mem_ram_data(6 downto 0);
-									when "1011111100001001" =>
+										s_pixel_graphic(63 downto 48) <= mem_ram_data;
+									when "001" =>
+										s_pixel_graphic(47 downto 32) <= mem_ram_data;
+									when "010" =>
+										s_pixel_graphic(31 downto 16) <= mem_ram_data;
+									when "011" =>
+										s_pixel_graphic(15 downto 0) <= mem_ram_data;
+									when "100" =>
 										s_ascii_place_x <= mem_ram_data(8 downto 0);
-									when "1011111100001010" =>
+									when "101" =>
 										s_ascii_place_y <= mem_ram_data(8 downto 0);
-									when "1011111100001011" =>
+									when "110" =>
+										s_graphic_color <= mem_ram_data(8 downto 0);
+									when "111" =>
+										s_graphic_enlarge <= mem_ram_data(15 downto 12);
+										s_graphic_type <= mem_ram_data(11 downto 8);
 										if (mem_ram_data(0) = '1') then
-											s_start_signal <= '1';
+											s_start_signal_update <= '1';
 										end if;
 									when others =>
 								end case;
@@ -225,7 +247,7 @@ begin
 					else
 						uart_isData <= '0';
 					end if;
-					s_start_signal <= '0';
+					s_start_signal_update <= '0';
 				else
 					-- ram1
 					if (ramRead = '1') then 
@@ -239,6 +261,8 @@ begin
 						ram1_isUsed <= '1';
 						ram1_write_data <= mem_ram_data;
 					end if;
+
+					s_start_signal_update <= '0';
 				end if;
 				-- else
 				-- 	-- ram2
@@ -261,8 +285,20 @@ begin
 				ram1_isRead <= '1';
 				ram1_isUsed <= '1';
 				if_res_data <= ram1_res;
-				s_start_signal <= '0';
+				
+				s_start_signal_update <= '0';
 			end if;
+		end if;
+	end process;
+
+	process(s_start_signal_update, s_is_idle)
+	begin
+		if (s_is_idle = '1') then
+			if (s_start_signal_update = '1') then
+				s_start_signal <= '1';
+			end if;
+		else
+			s_start_signal <= '0';
 		end if;
 	end process;
 

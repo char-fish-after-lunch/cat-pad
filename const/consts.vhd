@@ -42,6 +42,11 @@ package consts is
 		constant fwd_wb_alu    : std_logic_vector(1 downto 0) := "11";
 		
 		
+		constant graphic_type_pixel  : std_logic_vector(3 downto 0) := "0001";
+		constant graphic_type_ascii  : std_logic_vector(3 downto 0) := "0010";
+		constant graphic_type_bitmap : std_logic_vector(3 downto 0) := "0100";
+		-- constant graphic_type_ascii  : std_logic_vector(1 downto 0) := "0010";
+		
 
 		-- consts for instruction headers
 		constant INSTR_H_ADDIU	: std_logic_vector(4 downto 0) := "01001";

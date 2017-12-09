@@ -38,7 +38,7 @@ end ascii_decoder;
 architecture Behavioral of ascii_decoder is
     signal tmp_graphic : std_logic_vector(63 downto 0);
 begin
-    ascii_pic_out <= not tmp_graphic;
+    ascii_pic_out <= tmp_graphic;
 
     process(ascii_input)
     begin
