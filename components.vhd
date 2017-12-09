@@ -559,6 +559,7 @@ package components is
 
 		-- external hardware ISRs
 		ps2Request : in std_logic; -- PS/2 ISR
+		timeoutRequest : in std_logic;
 		
 		memRamLock: out std_logic;
 		pipelineClear: out std_logic; -- whether clear the whole pipeline

@@ -293,6 +293,18 @@ begin
 						regSrcA		<= "0" & inst(10 downto 8);
 						ALUop		<= "1001";
 						isMTEPC		<= '1';	
+					when "11111000" =>
+						-- MTT
+						regSrcA		<= "0" & inst(10 downto 8);
+						ALUop		<= "1001";
+						dstSrc		<= "1010";
+						wbCtrl		:= "11";
+					when "11110000" =>
+						-- MFT
+						ALUop		<= "1001";
+						wbCtrl		:= "11";
+						regSrcA		<= "1010";
+						dstSrc		<= "0" & inst(10 downto 8);
 					when others =>
 				end case;
 			when INSTR_H_GROUP5 =>

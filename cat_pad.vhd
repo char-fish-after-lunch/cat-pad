@@ -94,13 +94,15 @@ entity cat_pad is port(
 end cat_pad;
 
 architecture Behavioral of cat_pad is
+    -- for timeout ISR
+    signal s_timeout_counter : integer range 0 to 100000 := 0; 
+    signal s_timeout_request : std_logic := '0';
+
 	-- for PS/2 debugging
 	signal s_ps2_error1 : std_logic;
 	signal s_ps2_error2 : std_logic;
 	signal s_ps2_error3 : std_logic;
 	signal s_ps2_all_data : std_logic_vector(10 downto 0);
-
-    signal s_good_clk : std_logic;
 
 	signal isBootloaded : std_logic := '0';
 
@@ -243,6 +245,8 @@ architecture Behavioral of cat_pad is
     signal s_PC_mem : std_logic_vector(15 downto 0);
     signal s_isBranch_mem    : std_logic;
 
+
+    signal s_good_clk   : std_logic := '0';
     -- mem/wb
 	signal s_isMTEPC_wb : std_logic;
     signal s_dstSrc_wb	: std_logic_vector(3 downto 0);
@@ -338,8 +342,7 @@ architecture Behavioral of cat_pad is
     signal s_vga_hs : std_logic;
     signal s_vga_vs : std_logic;
 
-    signal s_good : std_logic := '0';
-    signal s_reset_good : std_logic := '0';
+    signal s_reset : std_logic := '0';
 begin
 
 	u_bootloader : bootloader port map(
@@ -365,7 +368,7 @@ begin
 		  res_log => res_log
     ); 
 	 
-	 process(clk, s_good_clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
+	 process(clk, isBootloaded, wrn_pad, rdn_pad, ram1en_pad, ram1oe_pad, ram1rw_pad, wrn_bootloader,
         rdn_bootloader, ram1en_bootloader, ram1oe_bootloader, ram1rw_bootloader, ram1addr_bootloader, ram1addr_pad, s_hasConflict,
 		   s_ALUres, test_reg_out_1, test_reg_out_2, s_dstSrc_mem, s_ramData_wb, s_wbSrc_mem, s_regB_mem, s_wbEN_mem,
            s_vga_vs, s_vga_hs, s_vga_blue, input, s_vga_red, s_vga_green, s_pc_out)
@@ -625,6 +628,8 @@ begin
         cp0ERet => s_cp0_eret,
         cp0Trap => s_cp0_trap,
         ps2Request => s_ps2_request_fake,
+        timeoutRequest => s_timeout_request,
+
         memRamLock => s_ram_lock_mem,
         pipelineClear => s_pipeline_clear,
         cp0StatusUpdate => s_cp0_status_update,
@@ -715,27 +720,22 @@ begin
     process(clk_11m)
     begin
         if rising_edge(clk_11m) then
-            if s_good = '1' then
-                s_good_clk <= '1';
-            else
-                s_good_clk <= '0';
-            end if;
-            s_good <= not s_good;
+            s_good_clk <= not s_good_clk;
         end if;
     end process;
 
     process(rst, isBootloaded)
     begin
         if isBootloaded = '0' then
-            s_reset_good <= '0';
+            s_reset <= '0';
         elsif falling_edge(rst) then
-            s_reset_good <= '1';
+            s_reset <= '1';
         end if;
     end process;
     
-    process(s_reset_good, s_good_clk, input, manual_clk)
+    process(s_reset, s_good_clk, input, manual_clk)
     begin
-        if s_reset_good = '0' then
+        if s_reset = '0' then
             real_clk <= '1';
         elsif input(0) = '1' then
             real_clk <= s_good_clk;
@@ -757,6 +757,22 @@ begin
     -- test_regSrcA <= s_regSrcA;
     -- test_regSrcB <= s_regSrcB;
     -- test_regA <= s_ALU_oprB;
+
+    process(real_clk)
+    begin
+        if rising_edge(real_clk) then
+            s_timeout_counter <= s_timeout_counter + 1;
+        end if;
+    end process;
+
+    process(s_timeout_counter)
+    begin
+        if s_timeout_counter = 100000 then
+            s_timeout_request <= '1';            
+        else
+            s_timeout_request <= '0';
+        end if;
+    end process;
 
 end Behavioral;
 
