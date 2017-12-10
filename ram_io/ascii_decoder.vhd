@@ -890,14 +890,7 @@ begin
                 tmp_graphic(15 downto 8)   <= "00000000";
                 tmp_graphic(7 downto 0)   <= "00000000";
             when "0100000" => -- 
-                tmp_graphic(63 downto 56)   <= "01111100";
-                tmp_graphic(55 downto 48)   <= "01111100";
-                tmp_graphic(47 downto 40)   <= "01111100";
-                tmp_graphic(39 downto 32)   <= "01111100";
-                tmp_graphic(31 downto 24)   <= "01111100";
-                tmp_graphic(23 downto 16)   <= "01111100";
-                tmp_graphic(15 downto 8)   <= "01111100";
-                tmp_graphic(7 downto 0)   <= "01111100";
+                tmp_graphic(63 downto 0) <= (others => '0');
 
             when others =>
                 tmp_graphic(63 downto 0) <= (others => '0');
