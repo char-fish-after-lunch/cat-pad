@@ -891,6 +891,8 @@ begin
                 tmp_graphic(7 downto 0)   <= "00000000";
             when "0100000" => -- 
                 tmp_graphic(63 downto 0) <= (others => '0');
+            when "0011010" => -- 
+                tmp_graphic(63 downto 0) <= (others => '1');
 
             when others =>
                 tmp_graphic(63 downto 0) <= (others => '0');
